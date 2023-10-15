@@ -1,0 +1,32 @@
+{% extends 'admin_temp/base.html' %}
+
+{% block content %}
+<div class="card-body">
+    <h4 class="card-title">Add Category</h4>
+
+    <form class="forms-sample" action="{% url 'admin_side:add_category' %}" enctype="multipart/form-data" method="POST">
+        
+
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="category_name">Category Name</label>
+            <input type="text" class="form-control" id="category_name" name="category_name" placeholder="Category Name" value="{{i.category_name}}">
+        </div>
+        
+        <div class="form-group">
+            <label for="category_image">Category Photo</label>
+            <input type="file" class="form-control-file" id="category_image" name="cat_image" value="{{i.cat_image.url}}">
+
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea class="form-control" id="description" name="description" placeholder="Description">{{i.description}}</textarea>
+        </div>
+        
+        <!-- Save and Cancel Buttons -->
+        <button type="submit" class="btn btn-success">Save</button>
+        <button type="button" class="btn btn-secondary"   href="{% url 'admin_side:category' %}">Cancel</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,61 @@
+{%extends 'admin_temp/base.html'%}
+{%load static %}
+{%block content%}
+<div class="card-body">
+    <h4 class="card-title">Brand Table</h4>
+    <!-- <p class="card-description"> Add class <code>.table-striped</code></p> -->
+    <div class="table-responsive">
+       <button class="btn btn-primary" id="add-brand-button" style="background-color: #007BFF; color: #fff; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s;">
+    <a href="{% url 'admin_side:add_brand' %}" style="color: #fff; text-decoration: none;">Add Brand</a>
+</button>
+
+
+        <table class="table table-striped">
+            
+   
+   
+            <thead>
+                <tr>
+                    <th> Brand Name </th>
+                    <th> Brand Image </th>
+                    <th> Actions </th>
+                </tr>
+            </thead>
+            <tbody>
+                <ul class="messages">
+                    {% for message in messages %}
+                    <li {% if message.tags %} class="{{ message.error }}"{% endif %}>{{ message }}</li>
+                    {% endfor %}
+        
+                </ul>
+                {% for i in brand %}
+                <tr>
+                    <td>{{ i.brand_name }}</td>
+                    <td>
+                        {% if i.brand_image %}
+                        <img src="{{ i.brand_image.url }}" alt="Brand Image" style="max-width: 100px;" >
+                        {% else  %}
+                        <p>no brand image</p>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'admin_side:edit_brand' i.id %}">
+                            <button class="btn btn-success">Edit</button>
+                        </a>
+                        
+                    </td>
+                    <td>
+                        {% if not i.is_deleted %}
+                            <a href="{% url 'admin_side:brand_delete' i.id %}" class="btn btn-danger">Delete</a>
+                        {% else %}
+                            <a href="{% url 'admin_side:brand_undelete' i.id %}" class="btn btn-success">Un delete</a>
+                        {% endif %}
+                        </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
