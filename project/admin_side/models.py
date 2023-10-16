@@ -32,3 +32,7 @@ class Product(models.Model):
     is_deleted = models.BooleanField(default=False)
     def __str__(self):
         return self.product_name
+    
+class ProductImage(models.Model):
+    image=models.ImageField(upload_to='product_image/',null=True) 
+    product=models.ForeignKey(Product,on_delete=models.CASCADE)

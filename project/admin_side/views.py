@@ -3,7 +3,7 @@ import re
 from django.contrib.auth import authenticate,login
 from django.db.models import Q
 from django.shortcuts import redirect, render , get_object_or_404
-from .models import Brand
+from .models import Brand, ProductImage
 from .models import Category
 from .models import Product
 from django.contrib import messages
@@ -275,30 +275,28 @@ def product(request):
 def add_product(request):
     if request.user.is_superuser:
         if request.method == 'POST':
-            product_image = request.FILES.get('product_image')
+            product_images = request.FILES.getlist('product_image')
             product_name = request.POST.get('product_name')
             product_brand = request.POST.get('product_brand')
             product_offer = request.POST.get('product_offer')
             product_category = request.POST.get('product_category')
+            print('the product image is the', product_images)
             try:
                 product_price = Decimal(request.POST.get('product_price'))
                 product_quantity = Decimal(request.POST.get('product_quantity'))
             except InvalidOperation:
                 messages.error(request, 'Invalid Attempt. Enter correct values.')
                 return redirect('admin_side:product')
-            if product_price or product_quantity <= 0:
-                    messages.error(request, 'Product price must be greater than zero.')
-                    return redirect('admin_side:product')
                 
             if not re.search(r'[a-zA-Z]', product_name):
-                    messages.error(request, 'product name Name must contain both letters and not only numbers. Please try again.')
-                    return redirect('admin_side:product') 
+                messages.error(request, 'Product name must contain both letters and not only numbers. Please try again.')
+                return redirect('admin_side:product') 
                 
-            if not (product_image and product_name and product_brand and product_offer and product_category and product_price and product_quantity):
+            if not (product_name and product_brand and product_offer and product_category and product_price and product_quantity):
                 messages.error(request, 'All fields are required. Please fill them in')
                 return redirect('admin_side:product')
             
-            if Product.objects.filter( Q (product_name__iexact=product_name)).exists():
+            if Product.objects.filter(product_name__iexact=product_name).exists():
                 messages.error(request, 'A product with this name already exists. Please choose a unique name.')
                 return redirect('admin_side:product')
             else:
@@ -306,18 +304,26 @@ def add_product(request):
                 category, created = Category.objects.get_or_create(category_name=product_category)
 
                 new_product = Product(
-                    product_image=product_image,
-                    product_name=product_name,
-                    product_price=product_price,
-                    product_brand=brand,
-                    product_offer=product_offer,
-                    product_category=category,
-                    product_quantity=product_quantity
-                )
+                        product_image=product_images[0],
+                        product_name=product_name,
+                        product_price=product_price,
+                        product_brand=brand,
+                        product_offer=product_offer,
+                        product_category=category,
+                        product_quantity=product_quantity
+                    )
 
                 new_product.save()
+
+                
+
+                for img in product_images:
+                        photo = ProductImage.objects.create(product=new_product, image=img)
+                        photo.save()
+
                 return redirect('admin_side:product')
 
+    
         brand = Brand.objects.all()
         category = Category.objects.all()
         context = {

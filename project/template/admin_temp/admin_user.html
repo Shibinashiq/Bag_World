@@ -28,7 +28,7 @@
                         <td>{{ i.email }}</td>
                         
                         <td>
-                        {% if not i.is_active %}
+                        {% if  i.is_active %}
                             <a href="{% url 'admin_side:user_block' i.id %}" class="btn btn-danger">Block</a>
                         {% else %}
                             <a href="{% url 'admin_side:user_unblock' i.id %}" class="btn btn-success">Un Block</a>

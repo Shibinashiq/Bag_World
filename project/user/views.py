@@ -7,6 +7,8 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate,login
 from django.views.decorators.cache import never_cache
 from django.contrib.auth import login
+
+from admin_side.models import Product
 from .utils import send_otp
 from datetime import datetime, timedelta
 import pyotp
@@ -102,4 +104,12 @@ def otp_page(request):
 
 
 def shop(request):
-    return render(request, 'user_temp/shop.html')
+    
+    product=Product.objects.all()
+    for i in product:
+        if i.product_image:
+            print(i.product_image.url)
+    context={
+        'product':product
+    }
+    return render (request, 'user_temp/shop.html',context)
