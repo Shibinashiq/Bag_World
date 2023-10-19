@@ -9,11 +9,14 @@ from .models import Product
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth import logout
 
 
-# Create your views here.
+@login_required(login_url='admin_login')  
 def admin_dashboard(request):
     return render(request,'admin_temp/dashboard.html')
+
 
 
 def admin_login(request):
@@ -29,6 +32,11 @@ def admin_login(request):
             return redirect('admin_side:admin_login')
     
     return render(request,'admin_temp/admin_login.html')
+
+def admin_logout(request):
+    logout(request)
+    # Redirect to the admin login page after logging out.
+    return redirect('admin_side:admin_login')
 
 # def admin_users(request):
 #     return render(request,'admin_users.html')
@@ -259,7 +267,7 @@ def category_undelete(request, cat_id):
 
 
 
-
+@login_required(login_url='admin_login')  
 def product(request):
     product=Product.objects.all()
     brand=Brand.objects.all()

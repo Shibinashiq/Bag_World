@@ -7,9 +7,12 @@ app_name='user'
 urlpatterns = [
     path('',views.home,name='home'),
     path('user_login',views.user_login, name='user_login'),
+    path('user_logout',views.user_logout, name='user_logout'),
     path('user_signup',views.user_signup, name='user_signup'),
     path('otp',views.otp_page,name='otp'),
+    
     path('shop',views.shop,name='shop'),
+    
     # path('contact',views.contact,name='contact'),
     # path('blog',views.contact,name='blog.html'),
     # path('about_us',views.about_us,name='about_us.html'),

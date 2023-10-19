@@ -6,7 +6,7 @@ from django.contrib import messages,auth
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate,login
 from django.views.decorators.cache import never_cache
-from django.contrib.auth import login
+from django.contrib.auth import login,logout
 
 from admin_side.models import Product
 from .utils import send_otp
@@ -68,6 +68,8 @@ def otp_page(request):
     error_message = None
     if request.method == 'POST':
         otp = request.POST['otp']
+        import pdb
+        pdb.set_trace()
         username = request.session['username']  
         otp_secret_key = request.session['otp_secret_key']  # Use square brackets here
         otp_valid_until = request.session['otp_valid_date']  # Use square brackets here
@@ -87,12 +89,14 @@ def otp_page(request):
                     user = User.objects.create(username=username, email=email, password=make_password(password))
                     user.save()
                     login(request, user)
+                    import pdb
+                    pdb.set_trace()
                     if request.session['username']:
-                      del request.session['username']
-                    del request.session['password']
-                    del request.session['email']
-                    del request.session['otp_secret_key']
-                    del request.session['otp_valid_date']
+                        del request.session['username']
+                        del request.session['password']
+                        del request.session['email']
+                        del request.session['otp_secret_key']
+                        del request.session['otp_valid_date']
                     return redirect('user:home')
                 else:
                     error_message='invalid OTP'
@@ -101,6 +105,12 @@ def otp_page(request):
         else:
             error_message='Oops,something went wrong'
     return render(request, 'user_temp/otp.html', {'error_message':error_message})
+
+
+def user_logout(request):
+    if request.user.is_authenticated:
+        logout(request)
+    return redirect('user:home')
 
 
 def shop(request):
@@ -113,3 +123,5 @@ def shop(request):
         'product':product
     }
     return render (request, 'user_temp/shop.html',context)
+
+
