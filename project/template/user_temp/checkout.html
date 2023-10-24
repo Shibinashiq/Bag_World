@@ -1,3 +1,4 @@
+{%load static%}
 <!doctype html>
 <html class="no-js" lang="zxx">
 
@@ -6,23 +7,23 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Payne - Backpack eCommerce HTML Template</title>
+    <title>Bag world </title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Favicons -->
-    <link rel="shortcut icon" href="assets/img/favicon.ico" type="image/x-icon">
-    <link rel="apple-touch-icon" href="assets/img/icon.png">
+    <link rel="shortcut icon" href="{% static 'assets/img/favicon.ico'%}" type="image/x-icon">
+    <link rel="apple-touch-icon" href="{%static 'assets/img/icon.png'%}">
 
     <!-- ************************* CSS Files ************************* -->
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="assets/css/bootstrap.css">
+    <link rel="stylesheet" href="{%static 'assets/css/bootstrap.css'%}">
 
     <!-- Vendor CSS -->
-    <link rel="stylesheet" href="assets/css/vendor.css">
+    <link rel="stylesheet" href="{%static 'assets/css/vendor.css'%}">
 
     <!-- style css -->
-    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="{%static 'assets/css/main.css'%}">
 </head>
 
 <body> 
@@ -48,10 +49,10 @@
                             <div class="header__col header__left">
                                 <a href="index.html" class="logo">
                                     <figure class="logo--normal">
-                                        <img src="assets/img/logo/logo.png" alt="Logo">
+                                        <img src="{%static 'assets/img/logo/logo.png'%}" alt="Logo">
                                     </figure>
                                     <figure class="logo--transparency">
-                                        <img src="assets/img/logo/logo.png" alt="Logo">
+                                        <img src="{%static 'assets/img/logo/logo.png'%}" alt="Logo">
                                     </figure>
                                 </a>
                             </div>
@@ -185,48 +186,7 @@
                                         </li>
                                         <li class="mainmenu__item menu-item-has-children position-relative">
                                             <a href="#" class="mainmenu__link">Blog</a>
-                                            <div class="inner-menu">
-                                                <ul class="sub-menu">
-                                                    <li class="has-children">
-                                                        <a href="#">Blog Grid</a>
-                                                        <ul class="sub-menu">
-                                                            <li>
-                                                                <a href="blog-left-sidebar.html">Left Sidebar</a>
-                                                            </li>
-                                                            <li>
-                                                                <a href="blog.html">Right Sidebar</a>
-                                                            </li>
-                                                            <li>
-                                                                <a href="blog-01-column.html">One Column</a>
-                                                            </li>
-                                                            <li>
-                                                                <a href="blog-02-columns.html">Two Columns</a>
-                                                            </li>
-                                                            <li>
-                                                                <a href="blog-03-columns.html">Three Columns</a>
-                                                            </li>
-                                                        </ul>
-                                                    </li>
-                                                    <li class="has-children">
-                                                        <a href="#">Blog Details</a>
-                                                        <ul class="sub-menu">
-                                                            <li>
-                                                                <a href="blog-details-image.html">Image Post</a>
-                                                            </li>
-                                                            <li>
-                                                                <a href="blog-details-audio.html">Audio Post</a>
-                                                            </li>
-                                                            <li>
-                                                                <a href="blog-details-video.html">Video Post</a>
-                                                            </li>
-                                                            <li>
-                                                                <a href="blog-details-gallery.html">Gallery Post</a>
-                                                            </li>
-                                                        </ul>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </li>
+                                            
                                         <li class="mainmenu__item">
                                             <a href="contact-us.html" class="mainmenu__link">Contact Us</a>
                                         </li>
@@ -234,11 +194,11 @@
                                 </nav>
                             </div>
                             <div class="header__col header__right">
-                                <div class="toolbar-item d-none d-lg-block">
+                                <!-- <div class="toolbar-item d-none d-lg-block">
                                     <a href="login-register.html" class="toolbar-btn">
                                         <span>Login</span>
                                     </a>
-                                </div>
+                                </div> -->
                                 <div class="toolbar-item d-block d-lg-none">
                                     <a href="#offcanvasnav" class="hamburger-icon js-toolbar menu-btn">
                                         <span></span>
@@ -321,7 +281,7 @@
                             </div>
                             <div class="checkout-form">
                                 <form action="#" class="form form--checkout">
-                                    <div class="row mb--20">
+                                    <!-- <div class="row mb--20">
                                         <div class="form__group col-md-6 mb-sm--30">
                                             <label for="billing_fname" class="form__label">First Name  <span class="required">*</span></label>
                                             <input type="text" name="billing_fname" id="billing_fname" class="form__input">
@@ -340,7 +300,7 @@
                                     <div class="row mb--20">
                                         <div class="form__group col-12">
                                             <label for="billing_country" class="form__label">Country <span class="required">*</span></label>
-                                            <select id="billing_country" name="billing_country" class="form__input nice-select">
+                                            <select id="billing_country" name="billing_country" class="form__input nice-select" style="display: none;">
                                                 <option value="">Select a country…</option>
                                                 <option value="AF">Afghanistan</option>
                                                 <option value="AL">Albania</option>
@@ -388,7 +348,7 @@
                                                 <option value="AE">United Arab Emirates</option>
                                                 <option value="GB">United Kingdom (UK)</option>
                                                 <option value="US">United States (US)</option>
-                                            </select>
+                                            </select><div class="nice-select form__input" tabindex="0"><span class="current">Bangladesh</span><div class="nice-select-search-box"><input type="text" class="nice-select-search" placeholder="Search..."></div><ul class="list"><li data-value="" class="option">Select a country…</li><li data-value="AF" class="option">Afghanistan</li><li data-value="AL" class="option">Albania</li><li data-value="DZ" class="option">Algeria</li><li data-value="AR" class="option">Argentina</li><li data-value="AM" class="option">Armenia</li><li data-value="AU" class="option">Australia</li><li data-value="AT" class="option">Austria</li><li data-value="AZ" class="option">Azerbaijan</li><li data-value="BH" class="option">Bahrain</li><li data-value="BD" class="option selected focus">Bangladesh</li><li data-value="BD" class="option">Brazil</li><li data-value="CN" class="option">China</li><li data-value="EG" class="option">Egypt</li><li data-value="FR" class="option">France</li><li data-value="DE" class="option">Germany</li><li data-value="HK" class="option">Hong Kong</li><li data-value="HU" class="option">Hungary</li><li data-value="IS" class="option">Iceland</li><li data-value="IN" class="option">India</li><li data-value="ID" class="option">Indonesia</li><li data-value="IR" class="option">Iran</li><li data-value="IQ" class="option">Iraq</li><li data-value="IE" class="option">Ireland</li><li data-value="IT" class="option">Italy</li><li data-value="JP" class="option">Japan</li><li data-value="KW" class="option">Kuwait</li><li data-value="MY" class="option">Malaysia</li><li data-value="MV" class="option">Maldives</li><li data-value="MX" class="option">Mexico</li><li data-value="MC" class="option">Monaco</li><li data-value="NP" class="option">Nepal</li><li data-value="RU" class="option">Russia</li><li data-value="KR" class="option">South Korea</li><li data-value="SS" class="option">South Sudan</li><li data-value="ES" class="option">Spain</li><li data-value="LK" class="option">Sri Lanka</li><li data-value="SD" class="option">Sudan</li><li data-value="SZ" class="option">Swaziland</li><li data-value="SE" class="option">Sweden</li><li data-value="CH" class="option">Switzerland</li><li data-value="TN" class="option">Tunisia</li><li data-value="TR" class="option">Turkey</li><li data-value="UA" class="option">Ukraine</li><li data-value="AE" class="option">United Arab Emirates</li><li data-value="GB" class="option">United Kingdom (UK)</li><li data-value="US" class="option">United States (US)</li></ul></div>
                                         </div>
                                     </div>
                                     <div class="row mb--20">
@@ -423,7 +383,21 @@
                                             <label for="billing_email" class="form__label">Email Address  <span class="required">*</span></label>
                                             <input type="email" name="billing_email" id="billing_email" class="form__input">
                                         </div>
-                                    </div>
+                                    </div> -->
+
+                                    {% for i in user_profile %}
+                                                    <p>
+                                                        {{ i.firstname }} {{ i.lastname }}<br>
+                                                        {{ i.streetaddress }}<br>
+                                                        {{ i.town }}, {{ i.state }}<br>
+                                                        {{ i.phone }}<br>
+                                                        {{ i.email }}<br>
+                                                        {{ i.ordernote }}<br>
+                                                        {{ i.company_name }}<br>
+                                                        {{ i.country }}
+                                                    </p>
+                                    {% endfor %}
+
                                     <div class="row">
                                         <div class="form__group col-12">
                                             <div class="custom-checkbox mb--20">
@@ -451,7 +425,7 @@
                                                 <div class="row mb--20">
                                                     <div class="form__group col-12">
                                                         <label for="shipping_country" class="form__label">Country <span class="required">*</span></label>
-                                                        <select id="shipping_country" name="shipping_country" class="form__input nice-select">
+                                                        <select id="shipping_country" name="shipping_country" class="form__input nice-select" style="display: none;">
                                                             <option value="">Select a country…</option>
                                                             <option value="AF">Afghanistan</option>
                                                             <option value="AL">Albania</option>
@@ -499,7 +473,7 @@
                                                             <option value="AE">United Arab Emirates</option>
                                                             <option value="GB">United Kingdom (UK)</option>
                                                             <option value="US">United States (US)</option>
-                                                        </select>
+                                                        </select><div class="nice-select form__input" tabindex="0"><span class="current">Bangladesh</span><div class="nice-select-search-box"><input type="text" class="nice-select-search" placeholder="Search..."></div><ul class="list"><li data-value="" class="option">Select a country…</li><li data-value="AF" class="option">Afghanistan</li><li data-value="AL" class="option">Albania</li><li data-value="DZ" class="option">Algeria</li><li data-value="AR" class="option">Argentina</li><li data-value="AM" class="option">Armenia</li><li data-value="AU" class="option">Australia</li><li data-value="AT" class="option">Austria</li><li data-value="AZ" class="option">Azerbaijan</li><li data-value="BH" class="option">Bahrain</li><li data-value="BD" class="option selected">Bangladesh</li><li data-value="BD" class="option">Brazil</li><li data-value="CN" class="option">China</li><li data-value="EG" class="option">Egypt</li><li data-value="FR" class="option">France</li><li data-value="DE" class="option">Germany</li><li data-value="HK" class="option">Hong Kong</li><li data-value="HU" class="option">Hungary</li><li data-value="IS" class="option">Iceland</li><li data-value="IN" class="option">India</li><li data-value="ID" class="option">Indonesia</li><li data-value="IR" class="option">Iran</li><li data-value="IQ" class="option">Iraq</li><li data-value="IE" class="option">Ireland</li><li data-value="IT" class="option">Italy</li><li data-value="JP" class="option">Japan</li><li data-value="KW" class="option">Kuwait</li><li data-value="MY" class="option">Malaysia</li><li data-value="MV" class="option">Maldives</li><li data-value="MX" class="option">Mexico</li><li data-value="MC" class="option">Monaco</li><li data-value="NP" class="option">Nepal</li><li data-value="RU" class="option">Russia</li><li data-value="KR" class="option">South Korea</li><li data-value="SS" class="option">South Sudan</li><li data-value="ES" class="option">Spain</li><li data-value="LK" class="option">Sri Lanka</li><li data-value="SD" class="option">Sudan</li><li data-value="SZ" class="option">Swaziland</li><li data-value="SE" class="option">Sweden</li><li data-value="CH" class="option">Switzerland</li><li data-value="TN" class="option">Tunisia</li><li data-value="TR" class="option">Turkey</li><li data-value="UA" class="option">Ukraine</li><li data-value="AE" class="option">United Arab Emirates</li><li data-value="GB" class="option">United Kingdom (UK)</li><li data-value="US" class="option">United States (US)</li></ul></div>
                                                     </div>
                                                 </div>
                                                 <div class="row mb--20">
@@ -561,23 +535,19 @@
                                             </tr>
                                         </thead>
                                         <tbody>
+                                            {% for item in cart_items %}
                                             <tr>
-                                                <th>Aliquam lobortis est 
-                                                    <strong><span>&#10005;</span>1</strong>
+                                                <th>{{ item.product.product_name }}
+                                                    <strong><span>✕</span>{{ item.quantity }}</strong>
                                                 </th>
-                                                <td class="text-end">$80.00</td>
+                                                <td class="text-end">${{ item.total_price }}</td>
                                             </tr>
-                                            <tr>
-                                                <th>Auctor gravida enim 
-                                                    <strong><span>&#10005;</span>1</strong>
-                                                </th>
-                                                <td class="text-end">$60.00</td>
-                                            </tr>
+                                            {% endfor %}
                                         </tbody>
                                         <tfoot>
                                             <tr class="cart-subtotal">
                                                 <th>Subtotal</th>
-                                                <td class="text-end">$56.00</td>
+                                                <td class="text-end">${{ cart_subtotal }}</td>
                                             </tr>
                                             <tr class="shipping">
                                                 <th>Shipping</th>
@@ -587,16 +557,16 @@
                                             </tr>
                                             <tr class="order-total">
                                                 <th>Order Total</th>
-                                                <td class="text-end"><span class="order-total-ammount">$56.00</span></td>
+                                                <td class="text-end"><span class="order-total-ammount">${{item.grand_total}}</span></td>
                                             </tr>
                                         </tfoot>
                                     </table>
-                                </div>
+                                    
                                 <div class="checkout-payment">
                                     <form action="#" class="payment-form">
                                         <div class="payment-group mb--10">
                                             <div class="payment-radio">
-                                                <input type="radio" value="bank" name="payment-method" id="bank" checked>
+                                                <input type="radio" value="bank" name="payment-method" id="bank" checked="">
                                                 <label class="payment-label" for="bank">Direct Bank Transfer</label>
                                             </div>
                                             <div class="payment-info" data-method="bank">
@@ -1268,10 +1238,10 @@ Hasthemes</p>
     <!-- ************************* JS Files ************************* -->
 
     <!-- jQuery JS -->
-    <script src="assets/js/vendor.js"></script>
+    <script src="{%static 'assets/js/vendor.js'%}"></script>
 
     <!-- Main JS -->
-    <script src="assets/js/main.js"></script>
+    <script src="{%static 'assets/js/main.js'%}"></script>
 </body>
 
 

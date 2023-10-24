@@ -163,7 +163,7 @@
                 <div class="container">
                     <div class="row">
                         <div class="col-lg-8 mb-md--50">
-                            <form class="cart-form" action="#">
+                            <form class="cart-form" action="#" method="POST">
                                 <div class="row g-0">
                                     <div class="col-12">
                                         <div class="table-content table-responsive">
@@ -173,24 +173,34 @@
                                                         <th>&nbsp;</th>
                                                         <th>&nbsp;</th>
                                                         <th class="text-start">Product</th>
+                                                   
                                                         <th>price</th>
                                                         <th>quantity</th>
                                                         <th>total</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
+                                                    {% if messages %}
+                                                        <ul class="messages">
+                                                            {% for message in messages %}
+                                                                 <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                     {% endif %}
+
                                                     {% for i in cart %}
                                                         <tr>
-                                                            <td class="product-remove text-start"><a href="{% url 'cart:delete_cart' i.id%}"><i class="flaticon-cross"></i></a></td>
-                                                            <td class="product-thumbnail text-start">
+                                                             <td class="product-remove text-start"><a href="#"><i class="flaticon-cross"></i></a></td>
+                                                            <td class="product-thumbnail text-start" >
                                                                 <img src="{{ i.product.product_image.url }}" alt="Product Thumbnail" style="width: 70px; height: 88px;">
                                                             </td>
                                                             
                                                             <td class="product-name text-start wide-column">
                                                                 <h3>
-                                                                    <a href="product-details.html">{{ i.product.product_name }}</a> <!-- Replace 'i.product.name' with the correct variable for the product name -->
+                                                                    <a href="product-details.html">{{ i.product.product_name }}</a>
                                                                 </h3>
                                                             </td>
+                                                            
                                                             <td class="product-price">
                                                                 <span class="product-price-wrapper">
                                                                     <span class="money">{{ i.product.product_price}}</span>
@@ -198,9 +208,9 @@
                                                             </td>
                                                             <td class="product-quantity">
                                                                 <div class="quantity">
-                                                                    <input type="number" class="quantity-input" name="qty" id="qty-1" value="1" min="1" fdprocessedid="169ehu">
-                                                                    <div class="dec qtybutton" id="decrement-button">-</div>
-                                                                    <div class="inc qtybutton" id="increment-button">+</div>
+                                                                    <input type="number" class="quantity-input" name="product_count" id="qty-1" value="1" min="1" fdprocessedid="169ehu">
+                                                                    <div class="dec qtybutton" id="decrement-button" href="">-</div>
+                                                                    <div class="inc qtybutton" id="increment-button" href="">+</div>
                                                                 </div>
                                                             </td>
                                                             
@@ -224,8 +234,9 @@
                                             <button type="submit" class="cart-form__btn" fdprocessedid="tgsc7">Apply Coupon</button>
                                         </div>
                                     </div>
+                                    
                                     <div class="col-sm-6 text-sm-end">
-                                        <button type="submit" class="cart-form__btn" fdprocessedid="cszxoo">Clear Cart</button>
+                                        <button type="submit" class="cart-form__btn" href="">Clear Cart</button>
                                         <button type="submit" class="cart-form__btn" fdprocessedid="kd3zj8">Update Cart</button>
                                     </div>
                                 </div>
@@ -241,7 +252,7 @@
                                                 <span>Subtotal</span>
                                             </div>
                                             <div class="cart-calculator__item--value">
-                                                <span>$196.00</span>
+                                                <span>${{total_price}}</span>
                                             </div>
                                         </div>
                                         <div class="cart-calculator__item">
@@ -249,11 +260,8 @@
                                                 <span>Shipping</span>
                                             </div>
                                             <div class="cart-calculator__item--value">
-                                                <span>Flat rate: $20.00</span>
-                                                <div class="shipping-calculator-wrap">
-                                                    <a href="#shipping_calculator" class="expand-btn">Calculate Shipping</a>
-                                                   
-                                                </div>
+                                                <span>Flat rate: ${{shipping_charge}}</span>
+                                                
                                             </div>
                                         </div>
                                         <div class="cart-calculator__item order-total">
@@ -262,13 +270,13 @@
                                             </div>
                                             <div class="cart-calculator__item--value">
                                                 <span class="product-price-wrapper">
-                                                    <span class="money">{{ total_price }}</span>
+                                                    <span class="money">${{grand_total}}</span>
                                                 </span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <a href="checkout.html" class="btn btn-size-md btn-shape-square btn-fullwidth">
+                                <a href="{%url 'cart:checkout'%}" class="btn btn-size-md btn-shape-square btn-fullwidth">
                                     Proceed To Checkout
                                 </a>
                             </div>
@@ -564,7 +572,7 @@ Hasthemes</p>
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="checkout.html">
+                                    <a href="{%url 'cart:checkout'%}">
                                         <span class="mm-text">Checkout</span>
                                     </a>
                                 </li>
@@ -805,9 +813,14 @@ Hasthemes</p>
 
     <!-- Main JS -->
     <script src="{%static 'assets/js/main.js'%}"></script>
-    <script>
+    <script> 
+        
+
+
+
+        
     // Get references to the input field and buttons
-const quantityInput = document.getElementById("qty-1");
+ const quantityInput = document.getElementById("qty-1");
 const decrementButton = document.getElementById("decrement-button");
 const incrementButton = document.getElementById("increment-button");
 
@@ -820,7 +833,50 @@ decrementButton.addEventListener("click", () => {
 
 incrementButton.addEventListener("click", () => {
     quantityInput.value = parseInt(quantityInput.value) + 1;
-});</script>
+});</script> 
+
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        $('.qtybutton').off('click').click(function(e) {
+            e.preventDefault();
+            var action = $(this).attr('id') === 'increment-button' ? 'increment' : 'decrement';
+            var productId = $(this).closest('.quantity').find('.quantity-input').data('product-id');
+            var input = $(this).closest('.quantity').find('.quantity-input');
+            var qty = parseInt(input.val(), 10) || 0;
+            
+            if (action === 'increment') {
+                qty += 1;
+            } else if (action === 'decrement' && qty > 1) {
+                qty -= 1;
+            }
+            
+            input.val(qty);
+
+            $.ajax({
+                method: "POST",
+                
+                
+                url: "{% url 'cart:update_cart' %}", // Replace with the actual URL to update the cart
+                data: {
+                    'product_id': productId,
+                    'quantity': qty,
+                    'action': action,
+                    'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val()
+                },
+                success: function(response) {
+                    // Handle the response from the server, e.g., update the total price or show a success message.
+                },
+                error: function(error) {
+                    alert("Error updating cart.");
+                }
+            });
+        });
+    });
+</script>
+
 
 </body>
 

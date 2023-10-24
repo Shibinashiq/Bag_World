@@ -13,6 +13,13 @@ urlpatterns = [
     
     path('shop',views.shop,name='shop'),
     
+    
+    path('user_profile',views.user_profile, name='user_profile'),
+    # path('user_address',views.user_address, name='user_address'),
+    # path('edit_address/<int:user_id>/',views.edit_address, name='edit_address'),
+    
+    
+    
     # path('contact',views.contact,name='contact'),
     # path('blog',views.contact,name='blog.html'),
     # path('about_us',views.about_us,name='about_us.html'),

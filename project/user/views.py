@@ -1,3 +1,4 @@
+from .models import Profile
 import random
 from django.db import IntegrityError
 from django.shortcuts import redirect, render,get_object_or_404
@@ -7,18 +8,17 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate,login
 from django.views.decorators.cache import never_cache
 from django.contrib.auth import login,logout
-
 from admin_side.models import Product
 from .utils import send_otp
 from datetime import datetime, timedelta
 import pyotp
-
 from django.core.mail import send_mail
 from django.conf import settings
 # Create your views here.
 
 def home(request):
-    return render(request,'user_temp/home.html')
+    
+    return render(request,'user_temp\home.html')
 
 def user_login(request):
  if request.method=='POST':
@@ -125,3 +125,88 @@ def shop(request):
     return render (request, 'user_temp/shop.html',context)
 
 
+# def user_address(request):
+#     if request.method == 'POST':
+#     # Retrieve the user's address data, assuming you have a user profile
+#         user_profile = Profile.objects.filter(user=request.user.id)
+#         print(user_profile)
+#         # Prepare the context with the user's address data
+#         context = {
+#             'user_profile': user_profile
+#         }
+
+#     return render(request, 'user_temp/user_profile.html', context)
+def user_profile(request):
+    if request.method == 'POST':
+        # Handle address update
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        company_name = request.POST.get('company_name')
+        country = request.POST.get('country')
+        street_address = request.POST.get('street_address')
+        town = request.POST.get('town')
+        state = request.POST.get('state')
+        phone = request.POST.get('phone')
+        email = request.POST.get('email')
+
+        # Create a new Profile object
+        address = Profile(
+            user=request.user,  # Assuming user is associated with the logged-in user
+            firstname=first_name,
+            lastname=last_name,
+            company_name=company_name,
+            country=country,
+            streetaddress=street_address,
+            town=town,
+            state=state,
+            phone=phone,
+            email=email
+        )
+        address.save()
+
+        messages.success(request, 'Address Added Successfully ')
+
+        # Redirect to a success page or the same page
+
+    # Retrieve the user's address data, assuming you have a user profile
+    user_profile = Profile.objects.filter(user=request.user.id)
+
+    # Prepare the context with the user's address data
+    context = {
+        'user_profile': user_profile
+    }
+
+    return render(request, 'user_temp/user_profile.html', context)
+
+
+# def edit_address(request):
+#     if request.method == 'POST':
+#         first_name = request.POST.get('first_name')
+#         last_name = request.POST.get('last_name')
+#         company_name = request.POST.get('company_name')
+#         country = request.POST.get('country')
+#         street_address = request.POST.get('street_address')
+#         town = request.POST.get('town')
+#         state = request.POST.get('state')
+#         phone = request.POST.get('phone')
+#         email = request.POST.get('email')
+        
+        
+#         edit= Profile.objects.filter(user=request.user.id)
+        
+#         edit.first_name=first_name
+#         edit.last_name=last_name
+#         edit.company_name=company_name
+#         edit.country=country
+#         edit.street_address=street_address
+#         edit.town=town
+#         edit.state=state
+#         edit.phone=phone
+#         edit.email=email
+#         edit.save()
+#         messages.success(request, 'Address Edited Successfully ')
+
+#         # Redirect to a success page
+       
+
+#     return render(request, 'user_temp/user_profile.html')

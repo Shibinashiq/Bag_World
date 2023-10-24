@@ -1,52 +1,241 @@
-from django.shortcuts import redirect, render
-from django.contrib import messages
-from admin_side.models import Product
+# views.py
+
+import decimal
+from user.models import Profile
+
+
+# Now you can use the Product model in your cart app.
+
+from django.db.models import ExpressionWrapper, F, FloatField
+from django.forms import DecimalField, FloatField
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+
 from .models import Cart
 
-# Create your views here.
+from django.contrib import messages
+from admin_side.models import  Product, ProductImage
 
+from django.db.models import Sum
+from django.core.exceptions import ObjectDoesNotExist
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import Product, Cart
+from django.db.models import F, Sum
+from django.db.models.functions import Coalesce
+from django.db.models import Sum
 
 def cart(request):
     if request.user.is_authenticated:
-        cart = Cart.objects.filter(user = request.user)
-        context={
-            'cart':cart
-            
+        cart = Cart.objects.filter(user=request.user).order_by('id')
+        # cart_image = ProductImage.objects.filter(is_available=True).first()
+
+        # Calculate the total price using Sum
+        total_price = cart.aggregate(total=Sum(F('product__product_price') * F('quantity')))['total'] or 0
+
+        shipping_charge = 10  # Set your shipping charge here
+
+        grand_total = total_price + shipping_charge
+        total_price = 0  # Initialize the total price to zero
+
+        # for item in cart:
+        #     total_pro_price += item.product.product_price * item.quantity
+
+        
+        context = {
+            'cart': cart,
+            # 'cart_image': cart_image,
+            # 'totalprice': totalprice,
+            'shipping_charge': shipping_charge,
+            'grand_total': grand_total,
+            'total_price' :total_price
         }
-     
-        return render(request,'user_temp/cart.html',context)
-    else:
-        messages.error(request,'Please Register Your Account')
-        return redirect('user:user_login')
-    
-  
 
-def add_cart(request, product_id):
-    if request.user.is_authenticated:
-        if request.method == 'GET':
-            quantity = '1'
-            quantity = int(quantity)
-            av_pro = Product.objects.get(id=product_id)
-
-            if Cart.objects.filter(user=request.user, product_id=product_id).exists():
-                messages.error(request, 'This Product Is Already Exist In Your Cart')
-            else:
-                c_obj = Cart.objects.create(user=request.user, product_id=product_id, quantity=quantity)
-                c_obj.save()
-        return redirect('cart:cart')  # Redirect to the cart page after adding the item
+        return render(request, 'user_temp/cart.html', context)
     else:
-        messages.error(request, 'Please Register Your Account')
+        messages.error(request, 'Please Login')
         return redirect('user:user_login')
+
+
+
+def add_cart(request):
+    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     
-    
-def delete_cart(request, cart_id):
+    print(request.method)
+    print(request.method)
+    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     if request.method == 'POST':
-        try:
-            cart_item = Cart.objects.get(id=cart_id)
-            cart_item.delete()
-        except Cart.DoesNotExist:
-            # Handle the case where the cart item doesn't exist
-            pass
+        if request.user.is_authenticated:
+            print('calling the function')
+            
+            
+            pro_id = request.POST.get('product_id')
+            quantity = int(request.POST.get('product_count'))
+
+            # Validation
+            try:
+                check_product = Product.objects.get(id=pro_id)
+            except Product.DoesNotExist:
+                messages.error(request, 'Product does not exist')
+                return redirect('user:shop')
+
+            # Check if the product is already in the cart
+            if Cart.objects.filter(user=request.user, product_id=pro_id).exists():
+                messages.error(request, 'Product already exists in the cart')
+                return redirect('cart:cart')
+            else:
+                product_qty = quantity
+
+                # Create the product in the cart
+                if check_product.product_quantity >= int(product_qty):
+                    product_price = check_product.product_price
+                    total_price = product_price * product_qty
+
+                    cart_obj = Cart.objects.create(user=request.user, product_id=pro_id, quantity=product_qty, total_price=total_price)
+                    cart_obj.save()
+                    messages.success(request, 'Product Added Successfully')
+                    return redirect('cart:cart')
+                else:
+                    messages.error(request, 'Only a few quantities available')
+                    return redirect('user:shop')
+        else:
+            messages.error(request, 'Please log in')
+            return redirect('user:user_login')
+
+    return render(request, 'user_temp/cart.html')
+
+from django.http import JsonResponse
+from django.shortcuts import redirect
+from decimal import Decimal  # Import Decimal for precise decimal calculations
+
+def update_cart(request):
+    if request.method == 'POST':
+        product_id = request.POST.get('product_id')
+        action = request.POST.get('action')
+        product_qty = int(request.POST.get('quantity'))
+
+        # Check if the product exists in the user's cart
+        cart_item = Cart.objects.filter(user=request.user, product_id=product_id).first()
+        if cart_item:
+            if product_qty == 0:
+                # Prevent adding zero quantity items
+                status = 'zero qty not allowed'
+            elif product_qty > cart_item.product.product_quantity:
+                # Check if the requested quantity exceeds available quantity
+                status = 'Requested quantity exceeds available quantity'
+            else:
+                # Update the quantity in the cart
+                cart_item.quantity = product_qty
+                cart_item.save()
+
+                # Calculate the single item price
+                product_price = cart_item.product.product_price
+                brand_offer = cart_item.product.product_brand.offer
+                product_offer = cart_item.product.offer
+
+                if product_offer and brand_offer:
+                    max_discount = max(product_offer.discount_amount, brand_offer.discount_amount)
+                elif product_offer:
+                    max_discount = product_offer.discount_amount
+                elif brand_offer:
+                    max_discount = brand_offer.discount_amount
+                else:
+                    max_discount = 0
+
+                discount = Decimal((max_discount / 100) * product_price)
+                discount_price = product_price - discount
+                single_price = discount_price * cart_item.quantity
+
+                # Update total price in the cart
+                cart_items = Cart.objects.filter(product_id=product_id, user=request.user)
+                grand_total = {}
+                for item in cart_items:
+                    if action == 'increment':
+                        item.total_price += Decimal(single_price)
+                    elif action == 'decrement':
+                        item.total_price -= Decimal(single_price)
+                    item.save()
+                    grand_total[item.id] = item.total_price
+                max_id = max(grand_total)
+                total = grand_total[max_id]
+
+                status = 'Cart Updated Successfully'
+        else:
+            status = 'No matching product found in cart'
+
+        return JsonResponse({'status': status, 'single_price': single_price, 'total': total})
+
+    else:
+        return redirect('cart')
+
+
+
+def delete_cart(request,delete_id):
+    if request.method == 'POST':
+        dele = Cart.objects.filter(id = delete_id)
+   
+        dele.delete()
+        messages.success(request, 'Successfully Removed')
         return redirect('cart:cart')
     else:
-        return redirect('cart:cart')
+        messages.error(request , 'please login')
+        return redirect('user:user_login')
+    
+    
+    
+    
+    
+def checkout(request):
+    cart_items = Cart.objects.filter(user=request.user)
+    user_profile = Profile.objects.filter(user=request.user.id)
+    context = {
+        'cart_items': cart_items,
+        'user_profile':user_profile
+        
+    }
+
+    return render(request, 'user_temp/checkout.html', context)
+
+def multiple_address(request):
+    if request.method == 'POST':
+        print("Form data received:", request.POST)
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        company_name = request.POST.get('company_name')
+        country = request.POST.get('country')
+        street_address = request.POST.get('street_address')
+        town = request.POST.get('town')
+        state = request.POST.get('state')
+        phone = request.POST.get('phone')
+        email = request.POST.get('email')
+
+        # Create a new Profile object associated with the logged-in user
+        address = Profile.objects.create(
+            user=request.user,
+            firstname=first_name,
+            lastname=last_name,
+            company_name=company_name,
+            country=country,
+            streetaddress=street_address,
+            town=town,
+            state=state,
+            phone=phone,
+            email=email
+        )
+        address.save()
+        print(address)
+
+        messages.success(request, 'Address Added Successfully ')
+
+        # Redirect to a success page or the same page if needed
+
+    return render(request, 'user_temp/cart.html')
+    
+
+
+
+
