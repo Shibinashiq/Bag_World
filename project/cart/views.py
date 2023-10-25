@@ -1,24 +1,15 @@
 # views.py
-
 import decimal
 from user.models import Profile
-
-
-# Now you can use the Product model in your cart app.
-
 from django.db.models import ExpressionWrapper, F, FloatField
 from django.forms import DecimalField, FloatField
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
-
 from .models import Cart
-
 from django.contrib import messages
 from admin_side.models import  Product, ProductImage
-
 from django.db.models import Sum
 from django.core.exceptions import ObjectDoesNotExist
-
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import Product, Cart
@@ -60,17 +51,10 @@ def cart(request):
 
 
 def add_cart(request):
-    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-    
-    print(request.method)
-    print(request.method)
-    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+  
     if request.method == 'POST':
         if request.user.is_authenticated:
-            print('calling the function')
+       
             
             
             pro_id = request.POST.get('product_id')
@@ -199,10 +183,9 @@ def checkout(request):
     }
 
     return render(request, 'user_temp/checkout.html', context)
-
-def multiple_address(request):
+def multiple_address (request):
     if request.method == 'POST':
-        print("Form data received:", request.POST)
+        # Handle address update
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
         company_name = request.POST.get('company_name')
@@ -213,9 +196,9 @@ def multiple_address(request):
         phone = request.POST.get('phone')
         email = request.POST.get('email')
 
-        # Create a new Profile object associated with the logged-in user
-        address = Profile.objects.create(
-            user=request.user,
+        # Create a new Profile object
+        address = Profile(
+            user=request.user,  # Assuming user is associated with the logged-in user
             firstname=first_name,
             lastname=last_name,
             company_name=company_name,
@@ -226,16 +209,11 @@ def multiple_address(request):
             phone=phone,
             email=email
         )
-        address.save()
         print(address)
+        address.save()
 
         messages.success(request, 'Address Added Successfully ')
-
-        # Redirect to a success page or the same page if needed
-
-    return render(request, 'user_temp/cart.html')
-    
-
+    return render (request,'user_temp/checkout.html')
 
 
 

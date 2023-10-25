@@ -14,7 +14,11 @@ urlpatterns = [
     path('shop',views.shop,name='shop'),
     
     
-    path('user_profile',views.user_profile, name='user_profile'),
+    path('user_profile/', views.user_profile, name='user_profile'),
+    path('order_success/', views.order_success, name='order_success'),
+    
+    
+
     # path('user_address',views.user_address, name='user_address'),
     # path('edit_address/<int:user_id>/',views.edit_address, name='edit_address'),
     

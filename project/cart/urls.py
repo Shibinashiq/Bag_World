@@ -11,6 +11,8 @@ urlpatterns = [
     
     
     path('update_cart',views.update_cart , name='update_cart'),
+    
+    path('multiple_address',views.multiple_address, name='multiple_address'),
 
   
     # path('decrease_cart/<int:product_id>/', views.decrease_cart, name='decrease_cart'),

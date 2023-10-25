@@ -210,3 +210,9 @@ def user_profile(request):
        
 
 #     return render(request, 'user_temp/user_profile.html')
+
+
+
+
+def order_success(request):
+    return render (request,'user_temp/order_success.html')
