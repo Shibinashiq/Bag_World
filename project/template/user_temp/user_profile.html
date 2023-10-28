@@ -186,56 +186,78 @@
                                     <a class="nav-link" href="{%url 'user:user_logout'%}">Logout</a>
                                 </div>
                                 <div class="user-dashboard-tab__content tab-content">
+                                    {%for message in messages%}
+                                    <div class="alert alert-{{ message.tags }}">
+                                    {{ message }}
+                                    </div>
+                                    {% endfor %}
+                                    
                                     <div class="tab-pane fade show active" id="dashboard">
                                         <p>Hello <strong>{{ user.username }}</strong>
                                         (not {{ user.username }}? <a href="login-register.html">Log out</a>)</p>
                                         <p>From your account dashboard, you can easily check & view your <a href="#">recent orders</a>,
                                         manage your <a href="#">shipping and billing addresses</a> and <a href="#">edit your password and account details</a>.</p>
                                     </div>
-                                    
-                                    
-                                    {%for message in messages%}
-                                            <div class="alert alert-{{ message.tags }}">
-                                            {{ message }}
-                                            </div>
-                                    {% endfor %}
+                                  
+                                   
                                                                 
                                     <div class="tab-pane fade" id="orders">
-                                        <div class="message-box mb--30 d-none">
-                                            <p><i class="fa fa-check-circle"></i>No order has been made yet.</p>
-                                            <a href="shop.html">Go Shop</a>
-                                        </div>
-                                        <div class="table-content table-responsive">
-                                            <table class="table text-center">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Order</th>
-                                                        <th>Date</th>
-                                                        <th>Status</th>
-                                                        <th>Total</th>
-                                                        <th>Actions</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-
-                                                    <tr>
-                                                        <td>1</td>
-                                                        <td class="wide-column">September 19, 2018</td>
-                                                        <td>Processing</td>
-                                                        <td class="wide-column">$49.00 for 1 item</td>
-                                                        <td><a href="product-details.html" class="btn">View</a></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>2</td>
-                                                        <td class="wide-column">September 19, 2018</td>
-                                                        <td>Processing</td>
-                                                        <td class="wide-column">$49.00 for 1 item</td>
-                                                        <td><a href="product-details.html" class="btn">View</a></td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
+                                        {% if user_order %}
+                                            <div class="table-content table-responsive">
+                                                <table class="table text-center">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Order ID</th>
+                                                            <th>User Name</th>
+                                                            <th>Product Name</th>
+                                                            <th>Product Price</th>
+                                                            <th>Address</th>
+                                                            <th>Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for order in user_order %}
+                                                            <tr>
+                                                                <td>{{ order.id }}</td> <!-- Order ID -->
+                                                                <td>{{ order.user.username }}</td> <!-- User Name -->
+                                                                <td>
+                                                                    {% for item in order.product.all %}
+                                                                        {{ item.product_name }}
+                                                                        <br>
+                                                                    {% endfor %}
+                                                                </td> <!-- Product Name -->
+                                                                <td>
+                                                                    {% for item in order.product.all %}
+                                                                        ${{ item.product_price }}
+                                                                        <br>
+                                                                    {% endfor %}
+                                                                </td> <!-- Total Price -->
+                                                                <td>{{ order.profile.streetaddress }}, {{ order.profile.town }}, {{ order.profile.state }}, {{ order.profile.country }}</td> <!-- Address -->
+                                                                <td>
+                                                                    {% if not order.is_cancelled %}
+                                                                        <form method="post" action="">
+                                                                            {% csrf_token %}
+                                                                            <button type="submit" class="btn btn-danger">Cancel Order</button>
+                                                                        </form>
+                                                                    {% else %}
+                                                                        <span class="badge badge-warning">Order Cancelled</span>
+                                                                    {% endif %}
+                                                                </td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        {% else %}
+                                            <div class="message-box mb--30">
+                                                <p><i class="fa fa-check-circle"></i>No orders have been made yet.</p>
+                                                <a href="{% url 'user:shop' %}">Go Shop</a>
+                                            </div>
+                                        {% endif %}
                                     </div>
+                                    
+                                    
+                                    
                                     <div class="tab-pane fade" id="downloads">
                                         <div class="message-box mb--30 d-none">
                                             <p><i class="fa fa-exclamation-circle"></i>No downloads available yet.</p>
@@ -274,16 +296,20 @@
                                             <div class="col-md-6 mb-sm--20">
                                                 <div class="text-block">
                                                     <h4 class="mb--20">Billing address</h4>
-                                                    {% for i in user_profile %}
-                                                   
-                                                        <p>{{ i.streetaddress }}<br>
-                                                        {{ i.town }}, {{i.state }}<br>
-                                                        {{ i.country }}</p>
-                                                    
-                                                        
-                                                    
-                                                    {%endfor%}
+                                                    {% if user_profile %}
+                                                        {% for i in user_profile %}
+                                                            <p> {{ i.first_name }} {{ i.last_name }}<br>
+                                                                {{ i.streetaddress }}<br>
+                                                                {{ i.town }}<br>{{ i.state }}<br>
+                                                                {{ i.country }}</p>
+                                                            
+                                                        {% endfor %}
+                                                    {% else %}
+                                                        <p>You have not set up this type of address yet.</p>
+                                                    {% endif %}
                                                 </div>
+                                                
+                                                
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="text-block">
@@ -296,7 +322,7 @@
                                     </div>
                                     <div class="tab-pane fade" id="accountdetails" style="display: block !important;">
                                         
-                                        <form action="#" class="form form--account" method="POST">
+                                        <form action="" class="form form--account" method="POST">
                                             {%csrf_token%}
                                             <div class="row mb--20">
                                                 <div class="col-md-6 mb-sm--20">
@@ -347,21 +373,23 @@
                                                         <input type="text" name="phone" id="phone" class="form__input">
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="row mb--20">
-                                                <div class="col-12">
+                                           
+                                            
+                                                <div class="col-md-6">
                                                     <div class="form__group">
                                                         <label class="form__label" for="email">Email Address <span class="required">*</span></label>
                                                         <input type="email" name="email" id="email" class="form__input">
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-12">
+                                           
+                                            <div class="col-md-6">
                                                 <div class="form__group">
                                                     <button type="submit" class="btn">Save</button>
                                                 </div>
                                             </div>
-                                            
+
+                                        </form>
+                                        
                                 </div>
                             </div>
                         </div>

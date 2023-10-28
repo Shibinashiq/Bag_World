@@ -248,6 +248,13 @@
             </div>
         </section>
         <!-- Breadcrumb area End -->
+        {% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+        <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
  
         <!-- Main Content Wrapper Start -->
         <div class="main-content-wrapper">
@@ -280,25 +287,11 @@
                                 <h2>Billing Details</h2>
                             </div>
                             <div class="checkout-form">
-                                <form action="{% url 'cart:multiple_address' %}" class="form form--checkout" method="POST">
+                                <form action="{% url 'cart:multiple_address' %}" class="form form--checkout" method="POST" >
                                     {%csrf_token%}
-                                    {% for i in user_profile %}
-                                    <label>
-                                        <input type="radio" name="selected_address" value="{{ i.id }}">
-                                        {{ i.firstname }} {{ i.lastname }}<br>
-                                        {{ i.streetaddress }}<br>
-                                        {{ i.town }}, {{ i.state }}<br>
-                                        {{ i.phone }}
-                                        {{ i.email }}
-                                        {{ i.ordernote }}<br>
-                                        {{ i.company_name }}<br>
-                                        {{ i.country }}<br>
-                                    </label><br><br>
-                                    {% endfor %}
                                     
-                                    <div class="form__group">
-                                        <button type="submit" class="btn">Use Selected Address</button>
-                                    </div>
+                                
+                                   
 
                                     <div class="row">
                                         <div class="form__group col-12">
@@ -309,11 +302,11 @@
                                             </div>
                                             <div class="ship-box-info hide-in-default mt--30">
                                                 <div class="row mb--20">
-                                                    <div class="form__group col-md-6 mb-sm--30">
+                                                    <div class="form__group col-12">
                                                         <label for="shipping_fname" class="form__label">First Name  <span class="required">*</span></label>
                                                         <input type="text" name="first_name" id="shipping_fname" class="form__input">
                                                     </div>
-                                                    <div class="form__group col-md-6">
+                                                    <div class="form__group col-12">
                                                         <label for="shipping_lname" class="form__label">Last Name  <span class="required">*</span></label>
                                                         <input type="text" name="last_name" id="shipping_lname" class="form__input">
                                                     </div>
@@ -423,7 +416,24 @@
                                     </table>
                                     
                                 <div class="checkout-payment">
-                                    <form action="#" class="payment-form">
+                                    <form action="{% url 'user:place_order' %}" class="payment-form" method="POST">
+                                        {%csrf_token%}
+
+                                        {% for i in user_profile %}
+                                        <label>
+                                            <input type="radio" name="address_id"  id="address_id" value="{{ i.id }}">
+                                            {{ i.firstname }} {{ i.lastname }}<br>
+                                            {{ i.streetaddress }}<br>
+                                            {{ i.town }}, {{ i.state }}<br>
+                                            {{ i.phone }}
+                                            {{ i.email }}
+                                            {{ i.ordernote }}<br>
+                                            {{ i.company_name }}<br>
+                                            {{ i.country }}<br>
+                                        </label>
+                                        {% endfor %}
+
+
                                         <div class="payment-group mb--10">
                                             <div class="payment-radio">
                                                 <input type="radio" value="bank" name="payment-method" id="bank" checked="">
@@ -456,8 +466,9 @@
                                             </div>
                                         </div>
                                         <div class="payment-group mt--20">
+                                            <input type="hidden" name="product_id" value="{{ product_id }}">
                                             <p class="mb--15">Your personal data will be used to process your order, support your experience throughout this website, and for other purposes described in our privacy policy.</p>
-                                           <a href="{% url 'user:order_success' %}" class="btn btn-success">Place Order</a>
+                                           <button  type="submit" class="btn btn-success">Place Order</button>
                                         </div>
                                     </form>
                                 </div>
@@ -1134,6 +1145,20 @@ Hasthemes</p>
     </script> -->
 </body>
 
+<script>
+  // Get all the radio buttons with the class "address-radio"
 
+
+// Add a change event listener to each radio button
+addressRadios.forEach(function(radio) {
+  radio.addEventListener('change', function() {
+    if (radio.checked) {
+      console.log(radio.value); // This will log the value of the selected radio button
+    }
+  });
+});
+
+
+</script>
 <!-- Mirrored from htmldemo.net/payne/payne/checkout.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 11 Oct 2023 15:26:56 GMT -->
 </html>

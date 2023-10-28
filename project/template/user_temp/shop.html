@@ -150,7 +150,15 @@
             </div>
         </section>
         <!-- Breadcrumb area End -->
-
+        {% if messages %}
+        <div class="messages">
+            {%for message in messages%}
+            <div class="alert alert-{{ message.tags }}">
+             {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
         <!-- Main Content Wrapper Start -->
         <div  class="main-content-wrapper">
            
@@ -189,20 +197,15 @@
                                     </div>
                                 </div>
                             </div>
-                          
+                            {% for pro in products %}
                             <div class="shop-products list">
                                 <div class="row">
                                     <div class="col-xl-4 col-sm-6 mb--50">
-                                        {% for pro in product %}
                                         <div class="payne-product-list">
                                             <div class="product__inner">
                                                 <figure class="product__image">
-                                                    <a href="product-details.html" class="d-block">
-                                                    {% if pro.product_image %}
+                                                    <a href="" class="d-block">
                                                         <img src="{{ pro.product_image.url }}" alt="Product Image" style="max-width: 270px; max-height: 300px;">
-                                                    {% else %}
-                                                        <p>No product images</p>
-                                                    {% endif %}
                                                     </a>
                                                     <div class="product__thumbnail-action">
                                                         <a data-bs-toggle="modal" data-bs-target="#productModal" class="action-btn quick-view">
@@ -214,10 +217,10 @@
                                                 
                                                 <div class="product__info">
                                                     <h3 class="product__title">
-                                                        <a href="product-details.html"> </a>
+                                                        <a >{{ pro.product_name }}</a>
                                                     </h3>
                                                     <div class="product__price">
-                                                        <span class="money"> {{pro.product_price}} </span>
+                                                        <span class="money">{{ pro.product_price }}</span>
                                                         <span class="sign">$</span>
                                                     </div>
                                                     <span class="product__rating">
@@ -228,33 +231,28 @@
                                                         <i class="fa fa-star"></i>
                                                     </span>
                                                     <p class="product__short-description">  
-                                                    {{pro.product_category.description}}
+                                                        {{ pro.product_category.description }}
                                                     </p>  
                                                     <div class="d-flex product__list-action">
-                                                        <form method="post" action="{% url 'cart:add_cart'%}">
+                                                        <form method="post" action="{% url 'cart:add_cart' %}">
                                                             {% csrf_token %}
                                                             <input type="hidden" name="product_id" value="{{ pro.id }}">
                                                             <input type="hidden" name="product_count" value="1">
                                                             <button class="btn btn-size-sm">Add To Cart</button>
-                            
-                                                            <!-- <a href="{% url 'cart:add_cart'  %}" class="btn btn-size-sm">Add To Cart</a> -->
                                                         </form>
-                                                        
-
                                                         <a href="compare.html" class="action-btn">
                                                             <i class="fa fa-repeat"></i>
                                                             <span class="sr-only">Add To Compare</span>
                                                         </a>
                                                     </div>                                           
                                                 </div>
-                                                {% endfor %}
                                             </div>
                                         </div>
-                                        
                                     </div>
-
                                 </div>
                             </div>
+                        {% endfor %}
+                        
                             <nav class="pagination-wrap">
                                 <ul class="pagination">
                                     <li><span class="page-number current">1</span></li>
@@ -355,6 +353,7 @@
             </div>
         </div>
         <!-- Main Content Wrapper Start -->
+        
 
         <!-- Footer Start-->
         <footer class="footer bg-color pt--70 pt-xs--60" data-bg-color="#f4f8fa">
@@ -560,18 +559,7 @@ Hasthemes</p>
                             <a href="#">
                                 <span class="mm-text">Home</span>
                             </a>
-                            <ul class="sub-menu">
-                                <li class="has-children">
-                                    <a href="index.html">
-                                        <span class="mm-text">Home One</span>
-                                    </a>
-                                </li>
-                                <li class="has-children">
-                                    <a href="index-02.html">
-                                        <span class="mm-text">Home Two</span>
-                                    </a>
-                                </li>
-                            </ul>
+                            
                         </li>
                         <li>
                             <a href="shop.html">
@@ -582,54 +570,8 @@ Hasthemes</p>
                             <a href="#">
                                 <span class="mm-text">Shop</span>
                             </a>
-                            <ul class="sub-menu">
-                                <li class="has-children">
-                                    <a href="#">
-                                        <span class="overlay-menu__title">Shop Layout</span>
-                                    </a>
-                                    <ul class="sub-menu">
-                                        <li>
-                                            <a href="shop-fullwidth.html">
-                                                <span class="mm-text">Full Width</span>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="shop.html">
-                                                <span class="mm-text">Left Sidebar</span>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="shop-right-sidebar.html">
-                                                <span class="mm-text">Right Sidebar</span>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="shop-three-columns.html">
-                                                <span class="mm-text">Three Columns</span>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="shop-four-columns.html">
-                                                <span class="mm-text">Four Columns</span>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="shop-list.html">
-                                                <span class="mm-text">Full Width</span>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="shop-list-sidebar.html">
-                                                <span class="mm-text">Left Sidebar</span>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="shop-list-right-sidebar.html">
-                                                <span class="mm-text">Right Sidebar</span>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </li>
+                           
+                        </li>
                                 <li class="has-children">
                                     <a href="#">
                                         <span class="overlay-menu__title">Single Product</span>
@@ -846,6 +788,7 @@ Hasthemes</p>
         Mini Cart End -->
 
         <!-- Qicuk View Modal Start -->
+        {%for i in product%}
         <div class="modal fade product-modal" id="productModal" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -864,25 +807,25 @@ Hasthemes</p>
                                 }'>
                                 <div class="item">
                                     <figure class="product-gallery__image">
-                                        <img src="assets/img/products/product-03-270x300.jpg" alt="Product">
+                                        <img src="{{ i.ProductImage.url }}" alt="Product">
                                         <span class="product-badge sale">Sale</span>
                                     </figure>
                                 </div>
                                 <div class="item">
                                     <figure class="product-gallery__image">
-                                        <img src="assets/img/products/product-04-270x300.jpg" alt="Product">
+                                        <img src="{{i.ProductImage.url}}" alt="Product">
                                         <span class="product-badge sale">Sale</span>
                                     </figure>
                                 </div>
                                 <div class="item">
                                     <figure class="product-gallery__image">
-                                        <img src="assets/img/products/product-05-270x300.jpg" alt="Product">
+                                        <img src="{{i.ProductImage.url}}" alt="Product">
                                         <span class="product-badge sale">Sale</span>
                                     </figure>
                                 </div>
                                 <div class="item">
                                     <figure class="product-gallery__image">
-                                        <img src="assets/img/products/product-06-270x300.jpg" alt="Product">
+                                        <img src="{{i.ProductImage.url}}" alt="Product">
                                         <span class="product-badge sale">Sale</span>
                                     </figure>
                                 </div>
@@ -900,47 +843,12 @@ Hasthemes</p>
                                         </div>
                                     </div>
                                     <h3 class="product-title mb--20">Golden Easy Spot Chair.</h3>
-                                    <p class="product-short-description mb--20">Donec accumsan auctor iaculis. Sed suscipit
-                                        arcu ligula, at egestas magna molestie a. Proin ac ex maximus, ultrices justo eget,
-                                        sodales orci. Aliquam egestas libero ac turpis pharetra, in vehicula lacus
-                                        scelerisque. Vestibulum ut sem laoreet, feugiat tellus at, hendrerit arcu.</p>
+                                    <p class="product-short-description mb--20">{{i.product_category.description}}</p>
                                     <div class="product-price-wrapper mb--25">
-                                        <span class="money">$200.00</span>
-                                        <span class="price-separator">-</span>
-                                        <span class="money">$400.00</span>
+                                        <span class="money">${{i.product_price}}</span>
+                                        
                                     </div>
-                                    <form action="#" class="variation-form mb--20">
-                                        <div class="product-size-variations d-flex align-items-center mb--15">
-                                            <p class="variation-label">Size:</p>
-                                            <div class="product-size-variation variation-wrapper">
-                                                <div class="variation">
-                                                    <a class="product-size-variation-btn selected" data-bs-toggle="tooltip"
-                                                        data-bs-placement="top" title="S">
-                                                        <span class="product-size-variation-label">S</span>
-                                                    </a>
-                                                </div>
-                                                <div class="variation">
-                                                    <a class="product-size-variation-btn" data-bs-toggle="tooltip"
-                                                        data-bs-placement="top" title="M">
-                                                        <span class="product-size-variation-label">M</span>
-                                                    </a>
-                                                </div>
-                                                <div class="variation">
-                                                    <a class="product-size-variation-btn" data-bs-toggle="tooltip"
-                                                        data-bs-placement="top" title="L">
-                                                        <span class="product-size-variation-label">L</span>
-                                                    </a>
-                                                </div>
-                                                <div class="variation">
-                                                    <a class="product-size-variation-btn" data-bs-toggle="tooltip"
-                                                        data-bs-placement="top" title="XL">
-                                                        <span class="product-size-variation-label">XL</span>
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <a href="#" class="reset_variations">Clear</a>
-                                    </form>
+                                   
                                     <div class="product-action d-flex flex-sm-row align-items-sm-center flex-column align-items-start mb--30">
                                         <div class="quantity-wrapper d-flex align-items-center mr--30 mr-xs--0 mb-xs--30">
                                             <label class="quantity-label" for="qty">Quantity:</label>
@@ -967,6 +875,7 @@ Hasthemes</p>
                         </div>
                     </div>
                 </div>
+                {%endfor%}
             </div>
         </div>
         <!-- Qicuk View Modal End -->

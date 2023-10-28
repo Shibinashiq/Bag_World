@@ -13,7 +13,7 @@ class Cart(models.Model):
     quantity = models.PositiveIntegerField()
 
     def __str__(self):
-        return f'{self.user.user_name}'
+        return self.user.username   
     
     
     

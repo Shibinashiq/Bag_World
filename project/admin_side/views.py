@@ -128,30 +128,21 @@ def edit_brand(request, brand_id):
    else:
         return redirect('admin_login')
     
-    
-@login_required(login_url='admin_login') 
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponseForbidden
+
+@login_required(login_url='admin_login')   
 def brand_delete(request, brand_id):
     if request.user.is_superuser:
-        brand = get_object_or_404( Brand, id=brand_id)
-        if not brand.is_deleted:
-            brand.is_deleted = True
-            brand.save()
-            messages.error(request,'Deleted successfully')
+        brand = get_object_or_404(Brand, id=brand_id)
+        
+        # Delete the brand
+        brand.delete()
+        messages.error(request, 'Brand deleted successfully')
+        
         return redirect('admin_side:brand')
     else:
-        return redirect('admin_login')
-    
-@login_required(login_url='admin_login')    
-def brand_undelete(request, brand_id):
-    if request.user.is_superuser:
-        brand = get_object_or_404( Brand, id=brand_id)
-        if brand.is_deleted:
-            brand.is_deleted = False
-            brand.save()
-            messages.error(request,'Un Deleted successfully')
-        return redirect('admin_side:brand')
-    else:
-        return redirect('admin_login')
+        return HttpResponseForbidden("Forbidden")
     
 
 
@@ -240,30 +231,19 @@ def edit_category(request, cat_id):
     else:
         return redirect('admin_login') 
     
+    
 @login_required(login_url='admin_login')   
 def category_delete(request, cat_id):
     if request.user.is_superuser:
         category = get_object_or_404(Category, id=cat_id)
+        
         if not category.is_deleted:
-            category.is_deleted = True
-            category.save()
-            messages.error(request,'Deleted successfully')
+            category.delete()
+            messages.error(request, 'Category deleted successfully')
+        
         return redirect('admin_side:category')
     else:
-        return redirect('admin_login') 
-    
-    
-@login_required(login_url='admin_login')      
-def category_undelete(request, cat_id):
-    if request.user.is_superuser:
-        category = get_object_or_404(Category, id=cat_id)
-        if category.is_deleted:
-            category.is_deleted = False
-            category.save()
-            messages.error(request,'Un Deleted successfully')
-        return redirect('admin_side:category')
-    else:
-        return redirect('admin_login') 
+        return redirect('admin_login')
 
 
 

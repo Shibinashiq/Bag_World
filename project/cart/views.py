@@ -54,9 +54,7 @@ def add_cart(request):
   
     if request.method == 'POST':
         if request.user.is_authenticated:
-       
-            
-            
+
             pro_id = request.POST.get('product_id')
             quantity = int(request.POST.get('product_count'))
 
@@ -183,37 +181,53 @@ def checkout(request):
     }
 
     return render(request, 'user_temp/checkout.html', context)
-def multiple_address (request):
+
+
+
+
+def multiple_address(request):
     if request.method == 'POST':
-        # Handle address update
-        first_name = request.POST.get('first_name')
-        last_name = request.POST.get('last_name')
-        company_name = request.POST.get('company_name')
-        country = request.POST.get('country')
-        street_address = request.POST.get('street_address')
-        town = request.POST.get('town')
-        state = request.POST.get('state')
-        phone = request.POST.get('phone')
-        email = request.POST.get('email')
+        # Retrieve the list of addresses submitted in the request
+        addresses = request.POST.getlist('address')
+        
+        for address_data in addresses:
+            # Parse the address data
+            first_name = address_data.get('first_name')
+            last_name = address_data.get('last_name')
+            company_name = address_data.get('company_name')
+            country = address_data.get('country')
+            street_address = address_data.get('street_address')
+            town = address_data.get('town')
+            state = address_data.get('state')
+            phone = address_data.get('phone')
+            email = address_data.get('email')
 
-        # Create a new Profile object
-        address = Profile(
-            user=request.user,  # Assuming user is associated with the logged-in user
-            firstname=first_name,
-            lastname=last_name,
-            company_name=company_name,
-            country=country,
-            streetaddress=street_address,
-            town=town,
-            state=state,
-            phone=phone,
-            email=email
-        )
-        print(address)
-        address.save()
+            # Perform validation for each address
+            if not first_name or not last_name or not email:
+                messages.error(request, 'Please fill in required fields (First Name, Last Name, Email)')
+            elif len(phone) < 10:
+                messages.error(request, 'Phone number must be at least 10 digits long')
+            else:
+                # Data is valid; create a new Profile object and save it
+                address = Profile(
+                    user=request.user,  # Assuming user is associated with the logged-in user
+                    firstname=first_name,
+                    lastname=last_name,
+                    company_name=company_name,
+                    country=country,
+                    streetaddress=street_address,
+                    town=town,
+                    state=state,
+                    phone=phone,
+                    email=email
+                )
+                address.save()
+        
+        messages.success(request, 'Addresses Added Successfully ')
+        return redirect('success_page')  # Redirect to a success page
 
-        messages.success(request, 'Address Added Successfully ')
-    return render (request,'user_temp/checkout.html')
+    return render(request, 'user_temp/checkout.html')
+
 
 
 
