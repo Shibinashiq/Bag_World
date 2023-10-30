@@ -21,10 +21,10 @@ from django.conf import settings
 def home(request):
     # Filter products that are not deleted
     Pro = Product.objects.filter(is_deleted=False)
-    image=ProductImage.objects.filter(is_delete=False)
+    # image=ProductImage.objects.filter(is_delete=False)
     context = {
         'Pro': Pro,
-        'image':image,
+        # 'image':image,
     }
     
     return render(request, 'user_temp/home.html', context)
@@ -123,15 +123,8 @@ def user_logout(request):
     return redirect('user:home')
 
 def shop(request):
-   
-    
-
     # Filter products that are not deleted
     products = Product.objects.filter(is_deleted=False)
-
-    
-   
-
     context = {
         'products': products
     }
@@ -184,7 +177,7 @@ def user_profile(request):
             )
             address.save()
             messages.success(request, 'Address Added Successfully ')
-            return redirect('success_page')  # Redirect to a success page
+            return redirect('user:user_profile')  # Redirect to a success page
 
     # Retrieve the user's address data, assuming you have a user profile
     user_profile = Profile.objects.filter(user=request.user.id)
@@ -258,62 +251,35 @@ def edit_address(request, address_id):
     return render(request, 'user_temp/user_profile.html', context)
 
 
+
+
 def place_order(request):
     if request.method == 'POST':
         user = request.user
         user_name = User.objects.get(username=user)
         address_id = request.POST.get('address_id')
-        
-        
+
+        # Check if the cart is empty
+        cart = Cart.objects.filter(user=request.user)
+        if not cart.exists():
+            messages.error(request, 'Your cart is empty. Please add items to your cart before placing an order.')
+            return redirect('cart:cart')  # Redirect to the cart page or another appropriate page
 
         if address_id is None:
             messages.error(request, 'Address should be provided')
             return redirect('cart:checkout')
-        cart = Cart.objects.filter(user=request.user)
-        address = Profile.objects.get(id=address_id)
-        # product = Product.objects.filter(id=product_id)
-        products_in_order = []  # List to store products in the order
-        total = 0
-        for item in cart:
-            total += item.total_price
-            # Add the product to the list of products in the order
-            products_in_order.append(item.product)
 
-       
-        payment_mode = request.POST.get('payment-method')
-        payment_id = request.POST.get('payment_id')
-       
-        
-        
+        # Rest of your code for placing the order
+        # ...
 
-        for item in cart:
-            total += item.total_price
-        print('the total price is the ',total)
-        # Create an order object and save it to the database
-        order = Order.objects.create(
-            user=user_name,
-            payment_mode=payment_mode,
-            payment_id=payment_id,
-            total_price= total,
-            profile = address,
-            # product=product,
-        )
-        
-        for item in cart:
-            order.product.add(item.product)
-        
-        
-        order.save()
-        order.product.set(products_in_order)
+        # After placing the order, you can remove the products from the cart
+        cart.delete()  # This will delete all items in the user's cart
 
-        # You can also add the items in the cart to the order if needed.
+        return render(request, 'user_temp/order_success.html')
 
-        # Here, you might want to handle the payment if applicable.
-
-        return redirect( 'user:place_order')
-    
-    
     return render(request, 'user_temp/order_success.html')
+
+
 
 from django.core.exceptions import PermissionDenied
 

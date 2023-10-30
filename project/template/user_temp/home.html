@@ -125,7 +125,7 @@
                                                         <a href="{% url 'user:user_profile' %}">My Account</a>
                                                     </li>
                                                     <li>
-                                                        <a href="checkout.html">Checkout</a>
+                                                        <a href="{%url 'cart:checkout'%}">Checkout</a>
                                                     </li>
                                                     <li>
                                                         <a href="{% url 'cart:cart' %}">Cart</a>
@@ -171,7 +171,7 @@
                                     </a>
                                 </div>
                                 <div class="toolbar-item">
-                                    <a href="wishlist.html" class="toolbar-btn">
+                                    <a href="{%url 'cart:wishlist'%}" class="toolbar-btn">
                                         <i class="flaticon-heart"></i>
                                     </a>
                                 </div>
@@ -230,7 +230,7 @@
                                                     tempora Neque porro quisquam est, qui dolorem ipsum</p>
                                             </div>
                                             <div class="slider-content__btn">
-                                                <a href="{%url 'user:shope'%}" class="btn-link" data-animation="fadeInUp"
+                                                <a href="{%url 'user:shop'%}" class="btn-link" data-animation="fadeInUp"
                                                     data-duration=".3s" data-delay=".6s">Shop Now</a>
                                             </div>
                                         </div>
@@ -370,33 +370,40 @@
 
                                         </figure>
                                         <a href="product-details.html" class="product-overlay"></a>
-                                        <div class="product__action">
-                                            <a data-bs-toggle="modal" data-bs-target="#productModal" class="action-btn">
-                                                <i class="fa fa-eye"></i>
-                                                <span class="sr-only">Quick View</span>
-                                            </a>
-                                            <a href="wishlist.html" class="action-btn">
-                                                <i class="fa fa-heart-o"></i>
-                                                <span class="sr-only">Add to wishlist</span>
-                                            </a>
-                                            <a href="wishlist.html" class="action-btn">
-                                                <i class="fa fa-repeat"></i>
-                                                <span class="sr-only">Add To Compare</span>
-                                            </a>
-                                            <a href="cart.html" class="action-btn">
-                                                <i class="fa fa-shopping-cart"></i>
-                                                <span class="sr-only">Add To Cart</span>
-                                            </a>
-                                        </div>
-                                    </div>
+                                        <form method="POST" action="{% url 'cart:add_wishlist' i.id %}">
+                                            {% csrf_token %} <!-- Add the CSRF token for security -->
+                                        
+                                            <div class="product__action">
+                                                <a data-bs-toggle="modal" data-bs-target="#productModal" class="action-btn">
+                                                    <i class="fa fa-eye"></i>
+                                                    <span class="sr-only">Quick View</span>
+                                                </a>
+                                                
+                                                <a href="" class="action-btn">
+                                                    <i class="fa fa-repeat"></i>
+                                                    <span class="sr-only">Add To Compare</span>
+                                                </a>
+                                                <a href="" class="action-btn">
+                                                    <i class="fa fa-shopping-cart"></i>
+                                                    <span class="sr-only">Add To Cart</span>
+                                                </a>
+                                            </div>
+                                        
+                                        
+                                         </div>
                                    
-                                    <div class="product__info">
-                                        <div class="product__info--left">
-                                            <h3 class="product__title">
-                                                <a href="product-details.html">Lexbaro Begadi</a>
-                                            </h3>
+                                                <div class="product__info">
+                                                    <div class="product__info--left">
+                                                        <h3 class="product__title">
+                                                            <a href="product-details.html">{{i.product_name}}</a>
+                                                            <button type="submit" style="background: none; border: none;">
+                                                                <i class="fa fa-heart-o"></i>
+                                                                <span class="sr-only">Add to wishlist</span>
+                                                            </button>
+                                                        </h3>
+                                        </form> 
                                             <div class="product__price">
-                                                <span class="money">132.00</span>
+                                                <span class="money">{{i.product_price}}</span>
                                                 <span class="sign">$</span>
                                             </div>
                                         </div>
@@ -1289,10 +1296,10 @@
                                     "prevArrow": {"buttonClass": "slick-btn slick-prev", "iconClass": "fa fa-angle-double-left" },
                                     "nextArrow": {"buttonClass": "slick-btn slick-next", "iconClass": "fa fa-angle-double-right" }
                                 }'>
-                                {% for  in i.productimage_set.all %}
+                                {% for  i in pro %}
                                     <div class="item">
                                         <figure class="product-gallery__image">
-                                            <img src="{{ image.image.url }}" alt="Product Image">
+                                            <img src="{{ i.product_image.url }}" alt="Product Image">
                                             <span class="product-badge sale">Sale</span>
                                         </figure>
                                     </div>

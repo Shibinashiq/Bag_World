@@ -5,7 +5,7 @@ from django.db.models import ExpressionWrapper, F, FloatField
 from django.forms import DecimalField, FloatField
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from .models import Cart
+from .models import Cart, Wishlist
 from django.contrib import messages
 from admin_side.models import  Product, ProductImage
 from django.db.models import Sum
@@ -20,35 +20,28 @@ from django.db.models import Sum
 def cart(request):
     if request.user.is_authenticated:
         cart = Cart.objects.filter(user=request.user).order_by('id')
-        # cart_image = ProductImage.objects.filter(is_available=True).first()
 
-        # Calculate the total price using Sum
+        # Check if the cart is empty
+        if not cart.exists():
+            messages.error(request, 'Your cart is empty. Please add items to your cart.')
+            return redirect('user:shop')  # Redirect to the shop or another appropriate page
+        # eligible_for_coupon = grand_total > 2000
         total_price = cart.aggregate(total=Sum(F('product__product_price') * F('quantity')))['total'] or 0
-
         shipping_charge = 10  # Set your shipping charge here
-
         grand_total = total_price + shipping_charge
-        total_price = 0  # Initialize the total price to zero
 
-        # for item in cart:
-        #     total_pro_price += item.product.product_price * item.quantity
-
-        
         context = {
             'cart': cart,
-            # 'cart_image': cart_image,
-            # 'totalprice': totalprice,
             'shipping_charge': shipping_charge,
             'grand_total': grand_total,
-            'total_price' :total_price
+            'total_price': total_price,
+            
         }
 
         return render(request, 'user_temp/cart.html', context)
     else:
         messages.error(request, 'Please Login')
         return redirect('user:user_login')
-
-
 
 def add_cart(request):
   
@@ -100,6 +93,9 @@ def update_cart(request):
         action = request.POST.get('action')
         product_qty = int(request.POST.get('quantity'))
 
+        # Initialize sub_total
+        sub_total = 0
+        total=0
         # Check if the product exists in the user's cart
         cart_item = Cart.objects.filter(user=request.user, product_id=product_id).first()
         if cart_item:
@@ -130,16 +126,16 @@ def update_cart(request):
 
                 discount = Decimal((max_discount / 100) * product_price)
                 discount_price = product_price - discount
-                single_price = discount_price * cart_item.quantity
+                sub_total = discount_price * cart_item.quantity
 
                 # Update total price in the cart
                 cart_items = Cart.objects.filter(product_id=product_id, user=request.user)
                 grand_total = {}
                 for item in cart_items:
                     if action == 'increment':
-                        item.total_price += Decimal(single_price)
+                        item.total_price += Decimal(sub_total)
                     elif action == 'decrement':
-                        item.total_price -= Decimal(single_price)
+                        item.total_price -= Decimal(sub_total)
                     item.save()
                     grand_total[item.id] = item.total_price
                 max_id = max(grand_total)
@@ -149,11 +145,10 @@ def update_cart(request):
         else:
             status = 'No matching product found in cart'
 
-        return JsonResponse({'status': status, 'single_price': single_price, 'total': total})
+        return JsonResponse({'status': status, 'sub_total': sub_total, 'total': total})
 
     else:
         return redirect('cart')
-
 
 
 def delete_cart(request,delete_id):
@@ -224,10 +219,63 @@ def multiple_address(request):
                 address.save()
         
         messages.success(request, 'Addresses Added Successfully ')
-        return redirect('success_page')  # Redirect to a success page
+        return redirect('cart:checkout')  # Redirect to a success page
 
     return render(request, 'user_temp/checkout.html')
 
 
+def wishlist(request):
+    list = Wishlist.objects.filter(user=request.user).order_by('created_at')
+    
+    context = {
+        'list': list
+    }
+    
+    return render(request, 'user_temp/wishlist.html', context)
 
 
+
+def add_wishlist(request, product_id):
+    if request.method == 'POST':
+        if request.user.is_authenticated:
+            try:
+                pro_id = Product.objects.get(id=product_id)
+                # Check if the product is already in the user's wishlist
+                if Wishlist.objects.filter(user=request.user, product=pro_id).exists():
+                    messages.warning(request, 'This product is already in your wishlist.')
+                    return redirect('cart:wishlist')
+                else:
+                    Wishlist.objects.create(user=request.user, product=pro_id)
+                    messages.success(request, 'Product added to your wishlist.')
+                    return redirect('cart:wishlist')
+            except Product.DoesNotExist:
+                messages.error(request, 'Product not found.')
+        else:
+            messages.error(request, 'Please log in to add products to your wishlist.')
+            return redirect('user:user_login')
+    return render(request, 'user_temp/wishlist.html')
+
+def remove_wishlist(request, product_id):
+    if request.user.is_authenticated:
+        # Use get_object_or_404 to get the Wishlist item or return a 404 if it doesn't exist
+        item = get_object_or_404(Wishlist, id=product_id, user=request.user)
+        item.delete()  # Remove the item from the wishlist
+        messages.success(request,'Item Removed ')
+    return redirect('cart:wishlist') 
+
+
+
+
+import random
+
+# Define the length of the coupon code
+code_length = 4 # You can adjust this to your desired length
+
+# Generate a random coupon code containing numbers only
+def generate_coupon_code(length):
+    coupon_code = ''.join(str(random.randint(0, 9)) for _ in range(length))
+    return coupon_code
+
+# Generate and print a random coupon code
+coupon = generate_coupon_code(code_length)
+print("Random Coupon Code:", coupon)

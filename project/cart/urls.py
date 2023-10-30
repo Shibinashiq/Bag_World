@@ -5,7 +5,12 @@ app_name = 'cart'
 
 urlpatterns = [
     path('cart/', views.cart, name='cart'),
+    path('wishlist/', views.wishlist, name='wishlist'),
+    
+    path('add_wishlist/<int:product_id>/', views.add_wishlist, name='add_wishlist'),
+    path('remove_wishlist/<int:product_id>/', views.remove_wishlist, name='remove_wishlist'),
 
+    
     
     path('add_cart', views.add_cart, name='add_cart'),
     
