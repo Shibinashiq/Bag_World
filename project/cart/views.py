@@ -27,7 +27,7 @@ def cart(request):
             return redirect('user:shop')  # Redirect to the shop or another appropriate page
         # eligible_for_coupon = grand_total > 2000
         total_price = cart.aggregate(total=Sum(F('product__product_price') * F('quantity')))['total'] or 0
-        shipping_charge = 10  # Set your shipping charge here
+        shipping_charge = 20  # Set your shipping charge here
         grand_total = total_price + shipping_charge
 
         context = {
@@ -262,6 +262,49 @@ def remove_wishlist(request, product_id):
         item.delete()  # Remove the item from the wishlist
         messages.success(request,'Item Removed ')
     return redirect('cart:wishlist') 
+
+
+
+
+def wishlist_to_cart(request, wishlist_id):
+    if request.user.is_authenticated:
+        # Get the Wishlist item
+        wishlist_item = get_object_or_404(Wishlist, id=wishlist_id, user=request.user)
+
+        # Check if the product is already in the cart
+        if Cart.objects.filter(user=request.user, product_id=wishlist_item.product.id).exists():
+            messages.error(request, 'Product already exists in the cart')
+        else:
+            # Check if the product is available in sufficient quantity
+            if wishlist_item.product.product_quantity >= 1:
+                # Create the product in the cart
+                cart_obj = Cart.objects.create(
+                    user=request.user,
+                    product_id=wishlist_item.product.id,
+                    quantity=1,  # You can modify this if needed
+                    total_price=wishlist_item.product.product_price
+                )
+                cart_obj.save()
+                messages.success(request, 'Product added to cart successfully')
+                return redirect ('cart:cart')
+            else:
+                messages.error(request, 'Product is out of stock')
+
+        # Delete the item from the wishlist
+        wishlist_item.delete()
+    else:
+        messages.error(request, 'Please log in')
+    
+    return redirect('cart:wishlist')
+
+
+
+
+
+
+
+
+
 
 
 

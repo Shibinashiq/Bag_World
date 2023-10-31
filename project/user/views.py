@@ -131,17 +131,7 @@ def shop(request):
 
     return render(request, 'user_temp/shop.html', context)
 
-# def user_address(request):
-#     if request.method == 'POST':
-#     # Retrieve the user's address data, assuming you have a user profile
-#         user_profile = Profile.objects.filter(user=request.user.id)
-#         print(user_profile)
-#         # Prepare the context with the user's address data
-#         context = {
-#             'user_profile': user_profile
-#         }
 
-#     return render(request, 'user_temp/user_profile.html', context)
 
 def user_profile(request):
     if request.method == 'POST':
@@ -169,7 +159,7 @@ def user_profile(request):
                 lastname=last_name,
                 company_name=company_name,
                 country=country,
-                streetaddress=street_address,
+                street_address=street_address,
                 town=town,
                 state=state,
                 phone=phone,
@@ -252,33 +242,62 @@ def edit_address(request, address_id):
 
 
 
-
 def place_order(request):
     if request.method == 'POST':
         user = request.user
         user_name = User.objects.get(username=user)
         address_id = request.POST.get('address_id')
 
-        # Check if the cart is empty
-        cart = Cart.objects.filter(user=request.user)
-        if not cart.exists():
-            messages.error(request, 'Your cart is empty. Please add items to your cart before placing an order.')
-            return redirect('cart:cart')  # Redirect to the cart page or another appropriate page
 
         if address_id is None:
             messages.error(request, 'Address should be provided')
             return redirect('cart:checkout')
+        cart = Cart.objects.filter(user=request.user)
+        address = Profile.objects.get(id=address_id)
+        # product = Product.objects.filter(id=product_id)
+        products_in_order = []  # List to store products in the order
+        total = 0
+        for item in cart:
+            total += item.total_price
+            # Add the product to the list of products in the order
+            products_in_order.append(item.product)
 
-        # Rest of your code for placing the order
-        # ...
 
-        # After placing the order, you can remove the products from the cart
-        cart.delete()  # This will delete all items in the user's cart
+        payment_mode = request.POST.get('payment-method')
+        payment_id = request.POST.get('payment_id')
 
-        return render(request, 'user_temp/order_success.html')
+
+
+
+#     return render(request, 'user_temp/user_profile.html')
+        for item in cart:
+            total += item.total_price
+        print('the total price is the ',total)
+        # Create an order object and save it to the database
+        order = Order.objects.create(
+            user=user_name,
+            payment_mode=payment_mode,
+            payment_id=payment_id,
+            total_price= total,
+            profile = address,
+            # product=product,
+        )
+
+        for item in cart:
+            order.product.add(item.product)
+
+
+        order.save()
+        order.product.set(products_in_order)
+
+        cart.delete()
+
+        # Here, you might want to handle the payment if applicable.
+
+        return redirect( 'user:place_order')
+
 
     return render(request, 'user_temp/order_success.html')
-
 
 
 from django.core.exceptions import PermissionDenied

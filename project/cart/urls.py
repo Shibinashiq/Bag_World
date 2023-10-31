@@ -5,8 +5,8 @@ app_name = 'cart'
 
 urlpatterns = [
     path('cart/', views.cart, name='cart'),
-    path('wishlist/', views.wishlist, name='wishlist'),
     
+    path('wishlist/', views.wishlist, name='wishlist'),
     path('add_wishlist/<int:product_id>/', views.add_wishlist, name='add_wishlist'),
     path('remove_wishlist/<int:product_id>/', views.remove_wishlist, name='remove_wishlist'),
 
@@ -14,6 +14,7 @@ urlpatterns = [
     
     path('add_cart', views.add_cart, name='add_cart'),
     
+    path('wishlist_to_cart/<int:wishlist_id>/', views.wishlist_to_cart, name='wishlist_to_cart'),
     
     path('update_cart',views.update_cart , name='update_cart'),
     
