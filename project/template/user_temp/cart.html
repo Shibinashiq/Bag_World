@@ -233,8 +233,13 @@
                                     </div>
                                     
                                     <div class="col-sm-6 text-sm-end">
-                                        <button type="submit" class="cart-form__btn" href="">Clear Cart</button>
-                                        <button type="submit" class="cart-form__btn" fdprocessedid="kd3zj8">Update Cart</button>
+                                        {% if grand_total > 2000 %}
+                                        <button type="button" class="cart-form__btn" id="get-coupon-button">Get Coupon</button>
+                                        <p id="coupon-code" style="display: none;"></p>
+                                    {% else %}
+                                        <p>You are not eligible for a coupon.</p>
+                                    {% endif %}
+                                        <!-- <button type="submit" class="cart-form__btn" fdprocessedid="kd3zj8">Update Cart</button> -->
                                     </div>
                                 </div>
                             </form>
@@ -267,8 +272,10 @@
                                             </div>
                                             <div class="cart-calculator__item--value">
                                                 <span class="product-price-wrapper">
-                                                    <span class="money">${{grand_total}}</span>
+                                                    <span class="money">${{ grand_total }}</span>
+                                                   
                                                 </span>
+                                                
                                             </div>
                                         </div>
                                     </div>
@@ -277,10 +284,15 @@
                                     Proceed To Checkout
                                 </a>
                             </div>
+                            
                         </div>
+
                     </div>
+                    
                 </div>
             </div>
+        </div>
+        
         <!-- Main Content Wrapper Start -->
 
         <!-- Footer Start-->
@@ -810,6 +822,32 @@ Hasthemes</p>
 
     <!-- Main JS -->
     <script src="{%static 'assets/js/main.js'%}"></script>
+    <script>
+        document.getElementById('get-coupon-button').addEventListener('click', function() {
+            // Make an Ajax request to generate the coupon code
+            fetch("{% url 'cart:generate_coupon' %}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',  // Include the CSRF token
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.coupon_code) {
+                    // Display the coupon code
+                    var couponCodeElement = document.getElementById('coupon-code');
+                    couponCodeElement.textContent = 'Your coupon code is: ' + data.coupon_code;
+                    couponCodeElement.style.display = 'block';  // Show the element
+                } else if (data.error) {
+                    // Handle any errors, e.g., user not authenticated
+                    alert(data.error);
+                }
+            });
+        });
+        </script>
+        
+
     <script> 
         
 

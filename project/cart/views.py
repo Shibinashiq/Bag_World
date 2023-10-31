@@ -1,5 +1,6 @@
 # views.py
 import decimal
+import random
 from user.models import Profile
 from django.db.models import ExpressionWrapper, F, FloatField
 from django.forms import DecimalField, FloatField
@@ -298,27 +299,33 @@ def wishlist_to_cart(request, wishlist_id):
     return redirect('cart:wishlist')
 
 
-
-
-
-
-
-
-
-
-
-
-
 import random
+import string
+from django.http import JsonResponse
 
-# Define the length of the coupon code
-code_length = 4 # You can adjust this to your desired length
 
-# Generate a random coupon code containing numbers only
-def generate_coupon_code(length):
-    coupon_code = ''.join(str(random.randint(0, 9)) for _ in range(length))
-    return coupon_code
+def generate_coupon(request):
+    if request.method == 'POST':
+        if request.user.is_authenticated:
+            # Generate a random 4-digit coupon code
+            coupon_code = ''.join(random.choices(string.digits, k=4))
+            request.session['coupon_code'] = coupon_code
 
-# Generate and print a random coupon code
-coupon = generate_coupon_code(code_length)
-print("Random Coupon Code:", coupon)
+            # Print for debugging
+            print("Coupon code generated:", coupon_code)
+
+            return JsonResponse({'coupon_code': coupon_code})
+        else:
+            # Handle the case where the user is not authenticated
+            return JsonResponse({'error': 'Please log in to get a coupon.'})
+    else:
+        # Handle non-POST requests (e.g., GET requests)
+        return JsonResponse({'error': 'Invalid request method.'})
+
+
+
+
+
+
+
+

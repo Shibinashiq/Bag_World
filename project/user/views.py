@@ -16,6 +16,7 @@ from datetime import datetime, timedelta
 import pyotp
 from django.core.mail import send_mail
 from django.conf import settings
+from django.core.exceptions import PermissionDenied
 # Create your views here.
 
 def home(request):
@@ -300,7 +301,7 @@ def place_order(request):
     return render(request, 'user_temp/order_success.html')
 
 
-from django.core.exceptions import PermissionDenied
+
 
 def cancel_order(request, order_id):
     try:

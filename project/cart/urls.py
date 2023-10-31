@@ -20,6 +20,11 @@ urlpatterns = [
     
     
     path('multiple_address',views.multiple_address, name='multiple_address'),
+    
+    path('generate_coupon/', views.generate_coupon, name='generate_coupon'),
+    
+    
+    
 
   
     # path('decrease_cart/<int:product_id>/', views.decrease_cart, name='decrease_cart'),
