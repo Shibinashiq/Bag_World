@@ -1,0 +1,57 @@
+{% extends 'admin_temp/base.html' %}
+
+{% block content %}
+<div class="card-body">
+    <h4 class="card-title">Order Management</h4>
+    <div class="table-responsive">
+       
+        <table class="table table-striped">
+           
+            <thead>
+                <tr>
+                    <th>Order Id</th>
+                    <th>User Name</th>
+                    <th>Product Name</th>
+                    <th>Product Price</th>
+                    <th>Adress</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders   %}
+                    <tr>
+                        <td>{{ order.id }}</td> <!-- Order ID -->
+                        <td>{{ order.user.username }}</td> <!-- User Name -->
+                        <td>
+                            {% for item in order.product.all %}
+                                {{ item.product_name }}
+                                <br>
+                            {% endfor %}
+                        </td> <!-- Product Name -->
+                        <td>
+                            {% for item in order.product.all %}
+                                ${{ item.product_price }}
+                                <br>
+                            {% endfor %}
+                        </td> <!-- Total Price -->
+                        <td>{{ order.profile.streetaddress }}, {{ order.profile.town }}, {{ order.profile.state }}, {{ order.profile.country }}</td> <!-- Address -->
+                        <td>
+                            {% if not order.is_cancelled %}
+                                <form method="post" action="">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger">Cancel Order</button>
+                                </form>
+                            {% else %}
+                                <span class="badge badge-warning">Order Cancelled</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+      
+        
+    </div>
+</div>
+
+{% endblock %}

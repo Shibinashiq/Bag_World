@@ -16,12 +16,13 @@ urlpatterns = [
     
     path('wishlist_to_cart/<int:wishlist_id>/', views.wishlist_to_cart, name='wishlist_to_cart'),
     
-    path('update_cart',views.update_cart , name='update_cart'),
+    path('cart:update_cart/<str:action>/<int:product_id>/', views.update_cart, name='update_cart'),
     
     
     path('multiple_address',views.multiple_address, name='multiple_address'),
     
     path('generate_coupon/', views.generate_coupon, name='generate_coupon'),
+    path('coupon_check/', views.coupon_check, name='coupon_check'),
     
     
     

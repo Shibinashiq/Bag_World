@@ -3,6 +3,8 @@ import re
 from django.contrib.auth import authenticate,login
 from django.db.models import Q
 from django.shortcuts import redirect, render , get_object_or_404
+
+from user.models import Order
 from .models import Brand, ProductImage
 from .models import Category
 from .models import Product
@@ -429,3 +431,13 @@ def user_unblock(request, user_id):
 
     
     
+    
+    
+def orders(request):
+    user_id = request.user.id  # Get the user's ID
+    orders = Order.objects.filter(user=user_id)  # Filter orders based on the user's ID
+    context={
+        'orders':orders
+    }
+
+    return render(request,'admin_temp/orders.html',context)

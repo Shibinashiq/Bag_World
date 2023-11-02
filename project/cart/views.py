@@ -1,10 +1,12 @@
 # views.py
 import decimal
+import json
 import random
 from user.models import Profile
 from django.db.models import ExpressionWrapper, F, FloatField
 from django.forms import DecimalField, FloatField
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseBadRequest
+
 from django.shortcuts import get_object_or_404, redirect, render
 from .models import Cart, Wishlist
 from django.contrib import messages
@@ -88,70 +90,81 @@ from django.http import JsonResponse
 from django.shortcuts import redirect
 from decimal import Decimal  # Import Decimal for precise decimal calculations
 
-def update_cart(request):
+from decimal import Decimal
+from django.http import JsonResponse
+from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseBadRequest
+from .models import Cart  # Import your Cart model here
+
+def update_cart(request, action, product_id):
+    
     if request.method == 'POST':
-        product_id = request.POST.get('product_id')
-        action = request.POST.get('action')
-        product_qty = int(request.POST.get('quantity'))
-
-        # Initialize sub_total
-        sub_total = 0
-        total=0
-        # Check if the product exists in the user's cart
+        
         cart_item = Cart.objects.filter(user=request.user, product_id=product_id).first()
+        print('iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii')
+        
         if cart_item:
-            if product_qty == 0:
-                # Prevent adding zero quantity items
-                status = 'zero qty not allowed'
-            elif product_qty > cart_item.product.product_quantity:
-                # Check if the requested quantity exceeds available quantity
-                status = 'Requested quantity exceeds available quantity'
+            if action == "increase":
+                cart_item.quantity += 1
+            elif action == "decrease":
+                cart_item.quantity -= 1
+                if cart_item.quantity <= 0:
+                    # Remove the item from the cart if the quantity becomes zero or less
+                    cart_item.delete()
             else:
-                # Update the quantity in the cart
-                cart_item.quantity = product_qty
-                cart_item.save()
+                return HttpResponseBadRequest("Invalid action")
 
-                # Calculate the single item price
-                product_price = cart_item.product.product_price
-                brand_offer = cart_item.product.product_brand.offer
-                product_offer = cart_item.product.offer
+            cart_item.total_price = cart_item.product.product_price * cart_item.quantity
+            cart_item.save()
 
-                if product_offer and brand_offer:
-                    max_discount = max(product_offer.discount_amount, brand_offer.discount_amount)
-                elif product_offer:
-                    max_discount = product_offer.discount_amount
-                elif brand_offer:
-                    max_discount = brand_offer.discount_amount
-                else:
-                    max_discount = 0
+            # Calculate the total for the entire cart
+            cart_items = Cart.objects.filter(user=request.user)
+            cartQnty=cart_item.quantity
+            total = sum(item.total_price for item in cart_items)
 
-                discount = Decimal((max_discount / 100) * product_price)
-                discount_price = product_price - discount
-                sub_total = discount_price * cart_item.quantity
+            status = 'Cart Updated Successfully'
+            # return JsonResponse({'status': status, 'sub_total': cart_item.total_price, 'total': total})
+            
+            response_data = {
+                                'success': True,
+                                'total': total,
+                                'qnty': cartQnty,
+                            }
 
-                # Update total price in the cart
-                cart_items = Cart.objects.filter(product_id=product_id, user=request.user)
-                grand_total = {}
-                for item in cart_items:
-                    if action == 'increment':
-                        item.total_price += Decimal(sub_total)
-                    elif action == 'decrement':
-                        item.total_price -= Decimal(sub_total)
-                    item.save()
-                    grand_total[item.id] = item.total_price
-                max_id = max(grand_total)
-                total = grand_total[max_id]
-
-                status = 'Cart Updated Successfully'
+            return JsonResponse(response_data, status=200)
+            # return JsonResponse({'response':'ok','sub_total': cart_item.total_price})
         else:
-            status = 'No matching product found in cart'
-
-        return JsonResponse({'status': status, 'sub_total': sub_total, 'total': total})
-
+            return HttpResponseBadRequest("Cart item not found")
     else:
-        return redirect('cart')
+        return HttpResponseBadRequest("Invalid request method")
+   
 
+        # if quantity is not None and quantity.isdigit():
+        #     product_qty = int(quantity)
+        #     cart_item = Cart.objects.filter(user=request.user, product_id=product_id).first()
+            
+        #     if cart_item:
+        #         if product_qty == 0:
+        #             status = 'zero qty not allowed'
+        #         elif product_qty > cart_item.product.product_quantity:
+        #             status = 'Requested quantity exceeds available quantity'
+        #         else:
+        #             cart_item.quantity += 1
+        #             cart_item.total_price = cart_item.product.product_price * product_qty
+        #             cart_item.save()
 
+                    # Calculate the total for the entire cart
+                    # cart_items = Cart.objects.filter(user=request.user)
+                    # total = sum(item.total_price for item in cart_items)
+
+                    # status = 'Cart Updated Successfully'
+          
+
+    #         return JsonResponse({'status': status, 'sub_total': cart_item.total_price, 'total': total})
+    #     else:
+    #         return HttpResponseBadRequest("Invalid quantity value")
+    # else:
+    #     return HttpResponseBadRequest("Invalid request method")
 def delete_cart(request,delete_id):
     if request.method == 'POST':
         dele = Cart.objects.filter(id = delete_id)
@@ -312,7 +325,7 @@ def generate_coupon(request):
             request.session['coupon_code'] = coupon_code
 
             # Print for debugging
-            print("Coupon code generated:", coupon_code)
+           
 
             return JsonResponse({'coupon_code': coupon_code})
         else:
@@ -323,9 +336,30 @@ def generate_coupon(request):
         return JsonResponse({'error': 'Invalid request method.'})
 
 
-
-
-
+def coupon_check(request):
+    if request.method == 'POST':
+        print('function is calling')
+        if request.user.is_authenticated:
+            coupon_code = request.session.get('coupon_code')
+            if not coupon_code:
+                messages.error(request, 'Invalid Attempt')
+                return redirect('cart:cart')
+            user_entered = request.POST.get('coupon')
+            if user_entered == coupon_code:
+                messages.success(request, 'Coupon code applied successfully')
+                
+                # Delete the coupon code from the session
+                del request.session['coupon_code']
+                
+                return redirect('cart:checkout')
+            else:
+                messages.error(request, 'Invalid coupon code')
+                return redirect('cart:cart')
+        else:
+            messages.error(request, 'Please log in to apply a coupon.')
+            return redirect('user:user_login')  
+    else:
+        return render(request, 'user_temp/cart.html')
 
 
 

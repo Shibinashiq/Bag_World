@@ -8,6 +8,7 @@
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title>Bag World</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Favicons -->
@@ -24,6 +25,29 @@
 
     <!-- style css -->
     <link rel="stylesheet" href="{%static 'assets/css/main.css'%}">
+
+
+    <style>
+        .quantity-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .decrement-button, .increment-button {
+            border: none;
+            background: none;
+            font-size: 20px; /* Adjust the font size as needed */
+            cursor: pointer;
+        }
+
+        .quantity-input {
+            border: none; /* Remove the border */
+            padding: 5px;
+            width: 50px; /* Adjust the width as needed */
+            text-align: center;
+        }
+    </style>
+
 </head>
 
 <body> 
@@ -159,7 +183,7 @@
                 <div class="container">
                     <div class="row">
                         <div class="col-lg-8 mb-md--50">
-                            <form class="cart-form" action="#" method="POST">
+                            <!-- <form class="cart-form" action="#" method="POST"> -->
                                 {%csrf_token%}
                                 <div class="row g-0">
                                     <div class="col-12">
@@ -203,13 +227,31 @@
                                                                     <span class="money">{{ i.product.product_price}}</span>
                                                                 </span>
                                                             </td>
-                                                            <td class="product-quantity">
-                                                                <div class="quantity">
-                                                                    <input type="number" class="quantity-input" name="product_count" id="qty-1" value="1" min="1" fdprocessedid="169ehu">
-                                                                    <div class="dec qtybutton" id="decrement-button" href="">-</div>
-                                                                    <div class="inc qtybutton" id="increment-button" href="">+</div>
+
+
+                                                            <!-- <div class="quantity">
+                                                                <input type="number" class="quantity-input" name="qty" id="qty-1" value="1" min="1">
+                                                            <div class="dec qtybutton">-</div><div class="inc qtybutton">+</div></div> -->
+
+
+                                                            <td>
+                                                                <div class="quantity-container">
+                                                                    <button class="decrement-button" data-action="decrement" data-product-id="1" onclick="updateQuantity('{{i.product.id}}','decrease')">&#8722;</button>
+                                                                    <input type="number" class="quantity-input" name="product_count" id="product_qty1" value="{{i.quantity}}" min="1" data-product-id="1" fdprocessedid="169ehu" readonly>
+                                                                    <button class="increment-button" data-action="increment" data-product-id="1" onclick="updateQuantity('{{i.product.id}}','increase')">&#43;</button>
                                                                 </div>
                                                             </td>
+                                                            
+                                                            <!-- <td class="product-quantity">
+                                                                <div class="quantity">
+                                                                    <input type="number" class="quantity-input" name="product_count" id="product_qty1" value="1" min="1" data-product-id="1" fdprocessedid="169ehu">
+                                                                    <button class="" data-action="decrement" data-product-id="1" onclick="alert()">-</button>
+                                                                    <button class="" data-action="increment" data-product-id="1">+</button>
+                                                                    
+                                                                </div>
+                                                            </td> -->
+                                                            
+                                                            
                                                             
                                                             <td class="product-total-price">
                                                                 <span class="product-price-wrapper">
@@ -227,8 +269,13 @@
                                 <div class="row g-0 border-top pt--20 mt--20">
                                     <div class="col-sm-6">
                                         <div class="coupon">
-                                            <input type="text" id="coupon" name="coupon" class="cart-form__input" placeholder="Coupon Code" fdprocessedid="ht8yi9">
-                                            <button type="submit" class="cart-form__btn" fdprocessedid="tgsc7">Apply Coupon</button>
+                                            {% if grand_total > 2000 %}
+                                            <form action="{% url 'cart:coupon_check' %}" method="POST">
+                                                {% csrf_token %}
+                                                <input type="text" id="coupon" name="coupon" class="cart-form__input" placeholder="Coupon Code" >
+                                                <button type="submit" class="cart-form__btn" >Apply Coupon</button>
+                                            </form>
+                                            {%endif%}
                                         </div>
                                     </div>
                                     
@@ -242,7 +289,7 @@
                                         <!-- <button type="submit" class="cart-form__btn" fdprocessedid="kd3zj8">Update Cart</button> -->
                                     </div>
                                 </div>
-                            </form>
+                            <!-- </form> -->
                         </div>
                         <div class="col-lg-4">
                             <div class="cart-collaterals">
@@ -822,96 +869,135 @@ Hasthemes</p>
 
     <!-- Main JS -->
     <script src="{%static 'assets/js/main.js'%}"></script>
-    <script>
-        document.getElementById('get-coupon-button').addEventListener('click', function() {
-            // Make an Ajax request to generate the coupon code
-            fetch("{% url 'cart:generate_coupon' %}", {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': '{{ csrf_token }}',  // Include the CSRF token
-                    'Content-Type': 'application/json',
-                },
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.coupon_code) {
-                    // Display the coupon code
-                    var couponCodeElement = document.getElementById('coupon-code');
-                    couponCodeElement.textContent = 'Your coupon code is: ' + data.coupon_code;
-                    couponCodeElement.style.display = 'block';  // Show the element
-                } else if (data.error) {
-                    // Handle any errors, e.g., user not authenticated
-                    alert(data.error);
-                }
-            });
-        });
-        </script>
-        
+    <!-- HTML for your quantity input, decrement, and increment buttons -->
+<!-- <input type="number" id="qty-1" value="1">
+<button id="decrement-button">Decrement</button>
+<button id="increment-button">Increment</button>
+<div id="total-price">Total Price: 0.00</div>
 
-    <script> 
-        
+JavaScript for updating the cart and handling out-of-stock items -->
+<!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
+<!-- HTML for your quantity input, decrement, and increment buttons -->
+<!-- <input type="number" id="qty-1" value="1"> -->
+<!-- <button id="decrement-button">Decrement</button> -->
+<!-- <button id="increment-button">Increment</button> -->
+<!-- <div id="total-price">Total Price: 0.00</div> --> 
 
-
-
-        
-    // Get references to the input field and buttons
- const quantityInput = document.getElementById("qty-1");
-const decrementButton = document.getElementById("decrement-button");
-const incrementButton = document.getElementById("increment-button");
-
-// Add event listeners to the buttons
-decrementButton.addEventListener("click", () => {
-    if (quantityInput.value > 1) {
-        quantityInput.value = parseInt(quantityInput.value) - 1;
-    }
-});
-
-incrementButton.addEventListener("click", () => {
-    quantityInput.value = parseInt(quantityInput.value) + 1;
-});</script> 
+<!-- JavaScript for updating the cart and handling out-of-stock items -->
+<!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
 
 
 
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        $('.qtybutton').off('click').click(function(e) {
-            e.preventDefault();
-            var action = $(this).attr('id') === 'increment-button' ? 'increment' : 'decrement';
-            var productId = $(this).closest('.quantity').find('.quantity-input').data('product-id');
-            var input = $(this).closest('.quantity').find('.quantity-input');
-            var qty = parseInt(input.val(), 10) || 0;
+    $(document).ready(function () {
+        $('#get-coupon-button').click(function () {
+            // Get the CSRF token from the template
+            var csrftoken = $("[name=csrfmiddlewaretoken]").val();
             
-            if (action === 'increment') {
-                qty += 1;
-            } else if (action === 'decrement' && qty > 1) {
-                qty -= 1;
-            }
-            
-            input.val(qty);
-
             $.ajax({
-                method: "POST",
-                
-                
-                url: "{% url 'cart:update_cart' %}", // Replace with the actual URL to update the cart
-                data: {
-                    'product_id': productId,
-                    'quantity': qty,
-                    'action': action,
-                    'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val()
+                url: '/generate_coupon/', // Replace with the actual URL
+                type: 'POST',
+                dataType: 'json',
+                headers: {
+                    'X-CSRFToken': csrftoken // Include the CSRF token in the headers
                 },
-                success: function(response) {
-                    // Handle the response from the server, e.g., update the total price or show a success message.
+                success: function (data) {
+                    if ('coupon_code' in data) {
+                        $('#coupon-code').text(data.coupon_code).show();
+                        $('#get-coupon-button').hide(); // Hide the button
+                    } else {
+                        alert('Error: ' + data.error);
+                    }
                 },
-                error: function(error) {
-                    alert("Error updating cart.");
+                error: function (xhr, status, error) {
+                    console.error(error);
                 }
             });
         });
     });
 </script>
 
+
+
+<<script>
+    function updateQuantity(productId, action) {
+       
+        const url = `/cart:update_cart/${action}/${productId}/`;
+        const csrfToken = getCookie("csrftoken");
+        
+        fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrfToken,
+            },
+
+            
+        
+        })
+        .then((response) => {
+
+            if(response.ok){
+
+                console.log(response.response_data)
+            }
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+           console.log('hhhhhhhhhhhhhhhhhhhhhhhhhhhhhh')
+           window.location.reload()
+
+        })
+        .then((response_data) => {
+           
+            window.location.reload()
+
+            console.log(response_data)
+            
+            if (data && data.success) {
+                const { success, total, qnty } = data;
+           
+                updateCartTotal(sub_total, total);
+            } else {
+                console.error("Invalid or missing data in the response.");
+            }
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+        });
+    }
+
+    // Function to update the cart total
+    function updateCartTotal(subTotal, total) {
+        // Update the UI elements with the new subtotal and total values
+        $("#subTotal").text(subTotal);
+        $("#cartTotal").text(total);
+    }
+
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+            var cookies = document.cookie.split(";");
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === name + "=") {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+
+
+
+        
 
 </body>
 
