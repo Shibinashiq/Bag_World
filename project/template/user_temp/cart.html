@@ -197,11 +197,11 @@
                                                    
                                                         <th>price</th>
                                                         <th>quantity</th>
-                                                        <th>total</th>
+                                                        <th>Product Price</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {% if messages %}
+                                                 {% if messages %}
                                                         <ul class="messages">
                                                             {% for message in messages %}
                                                                  <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
@@ -211,7 +211,7 @@
 
                                                     {% for i in cart %}
                                                           <tr>
-                                                             <td class="product-remove text-start"><a href="#"><i class="flaticon-cross"></i></a></td>
+                                                             <td class="product-remove text-start"><a href="{ url 'cart:delete_cart_item' i.product_id }"><i class="flaticon-cross"></i></a></td>
                                                             <td class="product-thumbnail text-start" >
                                                                 <img src="{{ i.product.product_image.url }}" alt="Product Thumbnail" style="width: 70px; height: 88px;">
                                                             </td>
@@ -270,7 +270,7 @@
                                     <div class="col-sm-6">
                                         <div class="coupon">
                                             {% if grand_total > 2000 %}
-                                            <form action="{% url 'cart:coupon_check' %}" method="POST">
+                                            <form action="{% url 'cart:apply_and_display_coupon' %}" method="POST">
                                                 {% csrf_token %}
                                                 <input type="text" id="coupon" name="coupon" class="cart-form__input" placeholder="Coupon Code" >
                                                 <button type="submit" class="cart-form__btn" >Apply Coupon</button>
@@ -320,10 +320,18 @@
                                             <div class="cart-calculator__item--value">
                                                 <span class="product-price-wrapper">
                                                     <span class="money">${{ grand_total }}</span>
-                                                   
                                                 </span>
-                                                
                                             </div>
+                                            
+                                            {% if request.session.discount_code %}
+                                                <p>Coupon Applied: -{{ request.session.discount_code }}</p>
+                                                <!-- <p>Discounted Total: ${{ request.session.discounted_total }}</p> -->
+                                                <p>Grand Total: ${{request.session.discounted_total }} (after applying coupon)</p>
+                                            {% else %}
+                                            <!--   <p>Grand Total: ${{ request.session.discounted_total }}</p> -->
+
+                                            {% endif %}
+                                            
                                         </div>
                                     </div>
                                 </div>
@@ -536,7 +544,7 @@ Hasthemes</p>
         <!-- OffCanvas Menu Start -->
         <aside class="offcanvas-navigation" id="offcanvasnav">
             <div class="offcanvas-navigation__inner">
-                <a href="#" class="btn-close">
+                <a href="" class="btn-close">
                     <i class="flaticon-cross"></i>
                     <span class="sr-only">Close Offcanvas Navigtion</span>
                 </a>

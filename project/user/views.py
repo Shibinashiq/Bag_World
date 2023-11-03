@@ -160,7 +160,7 @@ def user_profile(request):
                 lastname=last_name,
                 company_name=company_name,
                 country=country,
-                street_address=street_address,
+                streetaddress=street_address,
                 town=town,
                 state=state,
                 phone=phone,

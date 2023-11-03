@@ -101,8 +101,6 @@ def update_cart(request, action, product_id):
     if request.method == 'POST':
         
         cart_item = Cart.objects.filter(user=request.user, product_id=product_id).first()
-        print('iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii')
-        
         if cart_item:
             if action == "increase":
                 cart_item.quantity += 1
@@ -165,9 +163,13 @@ def update_cart(request, action, product_id):
     #         return HttpResponseBadRequest("Invalid quantity value")
     # else:
     #     return HttpResponseBadRequest("Invalid request method")
-def delete_cart(request,delete_id):
+    
+    
+    
+    
+def delete_cart_item(request,product_id):
     if request.method == 'POST':
-        dele = Cart.objects.filter(id = delete_id)
+        dele = Cart.objects.filter(id = product_id)
    
         dele.delete()
         messages.success(request, 'Successfully Removed')
@@ -179,17 +181,34 @@ def delete_cart(request,delete_id):
     
     
     
-    
 def checkout(request):
     cart_items = Cart.objects.filter(user=request.user)
+
+    # Check if the cart is empty
+    if not cart_items.exists():
+        messages.error(request, 'Your cart is empty. Please add items to your cart.')
+        return redirect('user:shop')  # Redirect to the shop page if the cart is empty
+
     user_profile = Profile.objects.filter(user=request.user.id)
+    grand_total = sum(cart_item.total_price for cart_item in cart_items)
+    shipping_cost = 20
+
+    # Check if a discount was applied
+    if 'discounted_total' in request.session:
+        grand_total = request.session['discounted_total']
+    else:
+        grand_total += shipping_cost
+
     context = {
         'cart_items': cart_items,
-        'user_profile':user_profile
-        
+        'user_profile': user_profile,
+        'grand_total': grand_total
     }
 
     return render(request, 'user_temp/checkout.html', context)
+
+
+
 
 
 
@@ -228,7 +247,7 @@ def multiple_address(request):
                     town=town,
                     state=state,
                     phone=phone,
-                    email=email
+                    email=email,
                 )
                 address.save()
         
@@ -318,7 +337,7 @@ from django.http import JsonResponse
 
 
 def generate_coupon(request):
-    if request.method == 'POST':
+    # if request.method == 'POST':
         if request.user.is_authenticated:
             # Generate a random 4-digit coupon code
             coupon_code = ''.join(random.choices(string.digits, k=4))
@@ -331,35 +350,68 @@ def generate_coupon(request):
         else:
             # Handle the case where the user is not authenticated
             return JsonResponse({'error': 'Please log in to get a coupon.'})
-    else:
-        # Handle non-POST requests (e.g., GET requests)
-        return JsonResponse({'error': 'Invalid request method.'})
+    # else:
+    #     # Handle non-POST requests (e.g., GET requests)
+    #     return JsonResponse({'error': 'Invalid request method.'})
 
+# def generate_discount(request):
+#             discount_code = ''.join(random.choices(string.digits, k=3))
+#             print(discount_code,'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+#             request.session['discount_code'] = discount_code
 
-def coupon_check(request):
+#             # Print for debugging
+#             print(discount_code,'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+
+#             return JsonResponse({'coupon_code': discount_code})
+        
+    
+
+from decimal import Decimal
+
+# ...
+import json
+from decimal import Decimal
+
+# ...
+
+from decimal import Decimal
+
+def apply_and_display_coupon(request):
     if request.method == 'POST':
-        print('function is calling')
         if request.user.is_authenticated:
-            coupon_code = request.session.get('coupon_code')
-            if not coupon_code:
-                messages.error(request, 'Invalid Attempt')
-                return redirect('cart:cart')
             user_entered = request.POST.get('coupon')
-            if user_entered == coupon_code:
-                messages.success(request, 'Coupon code applied successfully')
+            coupon_code = request.session.get('coupon_code')
+            if coupon_code and user_entered == coupon_code:
+                # Generate a random 3-digit discount code
+                discount_code = ''.join(random.choices(string.digits, k=3))
+                request.session['discount_code'] = discount_code
+
+                # Calculate the total_price (subtotal) and discount_amount
+                user_cart = Cart.objects.filter(user=request.user)
+                total_price = user_cart.aggregate(total_price=Sum(F('total_price')))['total_price'] or Decimal('0.00')
                 
-                # Delete the coupon code from the session
-                del request.session['coupon_code']
+                discount_amount = Decimal(discount_code)  # Assuming the discount code directly represents the discount amount
+                shipping_coast=20
+                # Calculate the new grand total after applying the discount
+                grand_total = total_price + shipping_coast - discount_amount 
+        
+
+
+                # Convert Decimal to a serializable format (e.g., float)
+                grand_total_serializable = float(grand_total)
+
+                request.session['discounted_total'] = grand_total_serializable
                 
-                return redirect('cart:checkout')
+                
+                messages.success(request, f'Coupon code applied successfully. You received a discount of {discount_amount}.')
+                return redirect('cart:cart')
             else:
                 messages.error(request, 'Invalid coupon code')
                 return redirect('cart:cart')
         else:
             messages.error(request, 'Please log in to apply a coupon.')
-            return redirect('user:user_login')  
+            return redirect('user:user_login')
     else:
         return render(request, 'user_temp/cart.html')
-
 
 

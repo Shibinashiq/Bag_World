@@ -22,7 +22,9 @@ urlpatterns = [
     path('multiple_address',views.multiple_address, name='multiple_address'),
     
     path('generate_coupon/', views.generate_coupon, name='generate_coupon'),
-    path('coupon_check/', views.coupon_check, name='coupon_check'),
+    # path('generate_discount/', views.generate_discount, name='generate_discount'),
+    # path('coupon_check/', views.coupon_check, name='coupon_check'),
+    path('apply_and_display_coupon/', views.apply_and_display_coupon, name='apply_and_display_coupon'),
     
     
     
@@ -31,7 +33,7 @@ urlpatterns = [
     # path('decrease_cart/<int:product_id>/', views.decrease_cart, name='decrease_cart'),
 
   
-    # path('delete_cart_item/<int:product_id>/', views.delete_cart_item, name='delete_cart_item'),
+    path('delete_cart_item/<int:product_id>/', views.delete_cart_item, name='delete_cart_item'),
     
-     path('checkout/', views.checkout, name='checkout'),
+    path('checkout/', views.checkout, name='checkout'),
 ]
