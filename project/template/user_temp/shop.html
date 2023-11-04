@@ -227,12 +227,20 @@
                                                 
                                                 <div class="product__info">
                                                     <h3 class="product__title">
-                                                        <a >{{ pro.product_name }}</a>
+                                                        <a>{{ pro.product_name }}</a>
                                                     </h3>
                                                     <div class="product__price">
-                                                        <span class="money">{{ pro.product_price }}</span>
+                                                        {% if pro.discounted_price is not None %}
+                                                            <span class="money">{{ pro.discounted_price }}</span><br>
+                                                            <del class="line-through money">{{ pro.product_price }}</del>
+                                                        {% else %}
+                                                            <span class="money">{{ pro.product_price }}</span>
+                                                        {% endif %}
                                                         <span class="sign">$</span>
                                                     </div>
+                                                    
+                                                    
+                                                    
                                                     <span class="product__rating">
                                                         <i class="fa fa-star"></i>
                                                         <i class="fa fa-star"></i>
@@ -262,6 +270,7 @@
                                 </div>
                             </div>
                         {% endfor %}
+                        
                         
                             <nav class="pagination-wrap">
                                 <ul class="pagination">

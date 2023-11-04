@@ -30,7 +30,7 @@
                     {% endfor %}
         
                 </ul>
-                {% for i in product %}
+                {% for i in products %}
                     <tr>
                         <td>
                           
@@ -42,7 +42,7 @@
                         <td>{{ i.product_price }}</td>
                         <td>{{ i.product_brand }}</td>
                         <td>{{ i.product_offer }}</td>
-                        <td>{{ i.offer.discount_amount }}</td>
+                        <td>{{ i.product_offer.discount_amount }}</td>
                         <td>{{ i.product_category }}</td>
                         <td>{{ i.product_quantity }}</td>
                         <td>

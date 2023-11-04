@@ -251,17 +251,19 @@ def category_delete(request, cat_id):
 
 @login_required(login_url='admin_side:admin_login')   
 def product(request):
-    product=Product.objects.all()
-    brand=Brand.objects.all()
-    category=Category.objects.all()
-    offer=Offer.objects.all()
-    context={
-        'product':product,
-        'brand' :brand,
-        'category':category,
-        'offer':offer,
+    products = Product.objects.all()  # Query the database to get all products
+    brand = Brand.objects.all()
+    category = Category.objects.all()
+    offer = Offer.objects.all()
+    
+
+    context = {
+        'products': products,  # Pass the products to the template context
+        'brand': brand,
+        'category': category,
+        'offer': offer,
     }
-    return render(request, 'admin_temp\product .html',context)
+    return render(request, 'admin_temp/product .html', context)
 
 @login_required(login_url='admin_side:admin_login')   
 def add_product(request):

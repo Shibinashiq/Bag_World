@@ -126,8 +126,14 @@ def user_logout(request):
 def shop(request):
     # Filter products that are not deleted
     products = Product.objects.filter(is_deleted=False)
+    for product in products:
+            if product.product_offer:
+                product.discounted_price = product.product_price - product.product_offer.discount_amount
+            else:
+                product.discounted_price = None  
     context = {
-        'products': products
+        'products': products,
+        
     }
 
     return render(request, 'user_temp/shop.html', context)
