@@ -5,7 +5,7 @@ from django.db.models import Q
 from django.shortcuts import redirect, render , get_object_or_404
 
 from user.models import Order
-from .models import Brand, ProductImage
+from .models import Brand, Offer, ProductImage
 from .models import Category
 from .models import Product
 from django.contrib import messages
@@ -15,12 +15,12 @@ from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import logout
 
 
-@login_required(login_url='admin_login')  
+@login_required(login_url='admin_side:admin_login')    
 def admin_dashboard(request):
     return render(request,'admin_temp/dashboard.html')
 
 
-
+@login_required(login_url='admin_side:admin_login')   
 def admin_login(request):
     if request.method =='POST':
         username=request.POST.get('username')
@@ -35,6 +35,7 @@ def admin_login(request):
     
     return render(request,'admin_temp/admin_login.html')
 
+@login_required(login_url='admin_side:admin_login')   
 def admin_logout(request):
     logout(request)
     # Redirect to the admin login page after logging out.
@@ -53,7 +54,7 @@ def brand(request):
     }
     return render(request,'admin_temp/brand.html',context)
 
-@login_required(login_url='admin_login')
+@login_required(login_url='admin_side:admin_login')   
 def add_brand(request):
     if request.user.is_superuser:
         if request.method=='POST':
@@ -90,7 +91,7 @@ def add_brand(request):
         return redirect('admin_login')
         
         
-@login_required(login_url='admin_login')       
+@login_required(login_url='admin_side:admin_login')     
 def edit_brand(request, brand_id):
    if request.user.is_superuser:
         if request.method == 'POST':
@@ -133,7 +134,7 @@ def edit_brand(request, brand_id):
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseForbidden
 
-@login_required(login_url='admin_login')   
+@login_required(login_url='admin_side:admin_login')    
 def brand_delete(request, brand_id):
     if request.user.is_superuser:
         brand = get_object_or_404(Brand, id=brand_id)
@@ -149,7 +150,7 @@ def brand_delete(request, brand_id):
 
 
 
-
+@login_required(login_url='admin_side:admin_login')   
 def category(request):
     cat=Category.objects.all()
     context={
@@ -157,7 +158,7 @@ def category(request):
     }
     
     return render(request,'admin_temp/category.html',context)
-@login_required(login_url='admin_login')   
+@login_required(login_url='admin_side:admin_login')    
 def add_category(request):
     if request.user.is_superuser:
         if request.method == 'POST':
@@ -199,7 +200,7 @@ def add_category(request):
     else:
         return redirect('admin_login') 
     
-@login_required(login_url='admin_login')     
+@login_required(login_url='admin_side:admin_login')       
 def edit_category(request, cat_id):
     if request.user.is_superuser:
         if request.method == 'POST':
@@ -234,7 +235,7 @@ def edit_category(request, cat_id):
         return redirect('admin_login') 
     
     
-@login_required(login_url='admin_login')   
+@login_required(login_url='admin_side:admin_login')    
 def category_delete(request, cat_id):
     if request.user.is_superuser:
         category = get_object_or_404(Category, id=cat_id)
@@ -248,20 +249,21 @@ def category_delete(request, cat_id):
         return redirect('admin_login')
 
 
-
-@login_required(login_url='admin_login')  
+@login_required(login_url='admin_side:admin_login')   
 def product(request):
     product=Product.objects.all()
     brand=Brand.objects.all()
     category=Category.objects.all()
+    offer=Offer.objects.all()
     context={
         'product':product,
         'brand' :brand,
         'category':category,
+        'offer':offer,
     }
     return render(request, 'admin_temp\product .html',context)
 
-@login_required(login_url='admin_login')  
+@login_required(login_url='admin_side:admin_login')   
 def add_product(request):
     if request.user.is_superuser:
         if request.method == 'POST':
@@ -270,7 +272,7 @@ def add_product(request):
             product_brand = request.POST.get('product_brand')
             product_offer = request.POST.get('product_offer')
             product_category = request.POST.get('product_category')
-            print('the product image is the', product_images)
+           
             try:
                 product_price = Decimal(request.POST.get('product_price'))
                 product_quantity = Decimal(request.POST.get('product_quantity'))
@@ -292,13 +294,13 @@ def add_product(request):
             else:
                 brand, created = Brand.objects.get_or_create(brand_name=product_brand)
                 category, created = Category.objects.get_or_create(category_name=product_category)
-
+                offer,created=Offer.objects.get_or_create(offer_name=product_offer)
                 new_product = Product(
                         product_image=product_images[0],
                         product_name=product_name,
                         product_price=product_price,
                         product_brand=brand,
-                        product_offer=product_offer,
+                        product_offer=offer,
                         product_category=category,
                         product_quantity=product_quantity
                     )
@@ -316,16 +318,19 @@ def add_product(request):
     
         brand = Brand.objects.all()
         category = Category.objects.all()
+        offer=Offer.objects.all()
         context = {
             'brand': brand,
             'category': category,
+            'offer':offer,
         }
         return render(request, 'admin_temp/add_product.html', context)
     else:
         return redirect('admin_login') 
     
-@login_required(login_url='admin_login')   
-def edit_product(request,product_id):
+    
+@login_required(login_url='admin_side:admin_login')    
+def edit_product(request, product_id):
     if request.user.is_superuser:
         if request.method == 'POST':
             product_image = request.FILES.get('product_image')
@@ -333,7 +338,7 @@ def edit_product(request,product_id):
             product_brand = request.POST.get('product_brand')
             product_offer = request.POST.get('product_offer')
             product_category = request.POST.get('product_category')
-            pro=Product.objects.get(id=product_id)
+            pro = Product.objects.get(id=product_id)
 
             try:
                 product_price = Decimal(request.POST.get('product_price'))
@@ -341,16 +346,16 @@ def edit_product(request,product_id):
             except InvalidOperation:
                 messages.error(request, 'Invalid Attempt. Enter correct values.')
                 return redirect('admin_side:product')
-            if product_price or product_quantity <= 0:
-                messages.error(request, 'Product price must be greater than zero.')
+            if product_price <= 0 or product_quantity <= 0:
+                messages.error(request, 'Product price and quantity must be greater than zero.')
                 return redirect('admin_side:product')
-            
+
             if not re.search(r'[a-zA-Z]', product_name):
-                    messages.error(request, 'product name Name must contain both letters and not only numbers. Please try again.')
-                    return redirect('admin_side:product') 
+                messages.error(request, 'Product name must contain both letters and not only numbers. Please try again.')
+                return redirect('admin_side:product')
 
             # Check for non-empty fields
-            if not (product_image and product_name and product_brand and product_offer and product_category and product_price and product_quantity):
+            if not (product_name and product_brand and product_offer and product_category and product_price and product_quantity):
                 messages.error(request, 'All fields are required. Please fill them in.')
                 return redirect('admin_side:product')
 
@@ -358,32 +363,40 @@ def edit_product(request,product_id):
             if Product.objects.filter(Q(product_name__iexact=product_name) & ~Q(id=product_id)).exists():
                 messages.error(request, 'A product with this name already exists. Please choose a unique name.')
                 return redirect('admin_side:product')
-            
-            brand,created=Brand.objects.get_or_create(brand_name=product_brand)
-            category,created=Category.objects.get_or_create(category_name=product_category)
-                    
-            pro.product_name=product_name
-            pro.product_price=product_price
-            pro.product_brand=product_brand
-            pro.product_offer=product_offer
-            pro.product_category=product_category
-            pro.product_quantity=product_quantity
+
+            brand, created = Brand.objects.get_or_create(brand_name=product_brand)
+            category, created = Category.objects.get_or_create(category_name=product_category)
+            offer, created = Offer.objects.get_or_create(offer_name=product_offer)
+
+            pro.product_name = product_name
+            pro.product_price = product_price
+            pro.product_brand = brand
+            pro.product_offer = offer
+            pro.product_category = category
+            pro.product_quantity = product_quantity
             if product_image:
-                pro.product_image=product_image
+                pro.product_image = product_image
             pro.save()
-        
+
             return redirect('admin_side:product')
-        
+        product = Product.objects.all()
         brand = Brand.objects.all()
         category = Category.objects.all()
+        offer = Offer.objects.all()
         context = {
             'brand': brand,
             'category': category,
+            'offer': offer,
+            'product': product
         }
-        return render(request,'admin_temp\edit_product.html',context)
+        return render(request, 'admin_temp\edit_product.html', context)
     else:
-        return redirect('admin_login') 
-@login_required(login_url='admin_login')   
+        return redirect('admin_login')
+
+
+       
+    
+@login_required(login_url='admin_side:admin_login')     
 def product_delete(request, product_id):
     if request.user.is_superuser:
         product = get_object_or_404(Product, id=product_id)
@@ -395,7 +408,7 @@ def product_delete(request, product_id):
     else:
         return redirect('admin_login') 
     
-@login_required(login_url='admin_login')   
+@login_required(login_url='admin_side:admin_login')    
 def product_undelete(request, product_id):
     if request.user.is_superuser:
         product = get_object_or_404(Product, id=product_id)
@@ -407,6 +420,7 @@ def product_undelete(request, product_id):
     else:
         return redirect('admin_login') 
     
+@login_required(login_url='admin_side:admin_login')     
 def admin_user(request):
     register_details = User.objects.all()
     context = {
@@ -414,7 +428,7 @@ def admin_user(request):
     }
     return render(request, 'admin_temp/admin_user.html', context)
 
-
+@login_required(login_url='admin_side:admin_login')    
 def user_block(request, user_id):
     user = User.objects.get(id=user_id)
     user.is_active = False
@@ -422,6 +436,7 @@ def user_block(request, user_id):
     messages.success(request, f'User {user.username} is Blocked ')
     return redirect('admin_side:admin_user')
 
+@login_required(login_url='admin_side:admin_login')   
 def user_unblock(request, user_id):
     user = User.objects.get(id=user_id)
     user.is_active = True
@@ -432,7 +447,7 @@ def user_unblock(request, user_id):
     
     
     
-    
+@login_required(login_url='admin_side:admin_login')          
 def orders(request):
     user_id = request.user.id  # Get the user's ID
     orders = Order.objects.filter(user=user_id)  # Filter orders based on the user's ID
@@ -441,3 +456,83 @@ def orders(request):
     }
 
     return render(request,'admin_temp/orders.html',context)
+
+@login_required(login_url='admin_side:admin_login')   
+def offer(request):
+    off=Offer.objects.all()
+    context={
+        'off':off
+    }
+    return render(request,'admin_temp/offer.html',context)
+
+
+@login_required(login_url='admin_side:admin_login')   
+def add_offer(request):
+    if request.method == 'POST':
+        offer_name = request.POST.get('offer_name')
+        discount_amount = request.POST.get('discount_amount')
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+       
+        # Perform your custom validation here
+        if not offer_name or not discount_amount or not start_date or not end_date:
+            messages.error(request, 'Please fill in all required fields.')
+        else:
+            try:
+                discount_amount = int(discount_amount)
+                # Perform additional validation if needed
+                if discount_amount < 0:
+                    messages.error(request, 'Discount amount must be a non-negative integer.')
+                else:
+                    new_offer = Offer(
+                        offer_name=offer_name,
+                        discount_amount=discount_amount,
+                        start_date=start_date,
+                        end_date=end_date,
+                    )
+                    new_offer.save()
+                    messages.success(request, 'Offer added successfully!')
+                    return redirect('admin_side:offer')
+            except ValueError:
+                messages.error(request, 'Discount amount must be a valid integer.')
+
+    return render(request, 'admin_temp/add_offer.html')
+   
+   
+   
+@login_required(login_url='admin_side:admin_login')     
+def edit_offer(request, offer_id):
+    if request.method == 'POST':
+        offer_name = request.POST.get('offer_name')
+        discount_amount = request.POST.get('discount_amount')
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+        
+        # Perform your custom validation here
+        if not offer_name or not discount_amount or not start_date or not end_date:
+            messages.error(request, 'Please fill in all required fields.')
+        else:
+            try:
+                discount_amount = int(discount_amount)
+                # Perform additional validation if needed
+                if discount_amount < 0:
+                    messages.error(request, 'Discount amount must be a non-negative integer.')
+                else:
+                    offer = Offer.objects.get(id=offer_id)
+                    offer.offer_name = offer_name
+                    offer.discount_amount = discount_amount
+                    offer.start_date = start_date
+                    offer.end_date = end_date
+                    offer.save()
+                    messages.success(request, 'Offer updated successfully!')
+                    return redirect('admin_side:offer')
+            except ValueError:
+                messages.error(request, 'Discount amount must be a valid integer.')
+
+    else:
+        offer = Offer.objects.get(id=offer_id)
+        return render(request, 'admin_temp/edit_offer.html', {'offer': offer})
+
+    return render(request, 'admin_temp/edit_offer.html')
+
+

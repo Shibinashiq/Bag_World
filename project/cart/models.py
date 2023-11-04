@@ -23,4 +23,4 @@ class Wishlist(models.Model):
 class Coupon(models.Model):
     code = models.CharField(max_length=10, unique=True)
     discount = models.PositiveSmallIntegerField()
-    
+

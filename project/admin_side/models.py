@@ -1,4 +1,5 @@
 from django.db import models
+from datetime import datetime 
 
 
 class Brand(models.Model):
@@ -20,13 +21,21 @@ class Category(models.Model):
     def __str__(self):
         return self.category_name  # Define a string representation for the model
 
-
-class Product(models.Model):
+class Offer(models.Model):
+    offer_name = models.CharField(max_length=50, null=True)
+    discount_amount = models.BigIntegerField()
+    start_date = models.DateField(default=datetime.now)  # Use datetime from the imported module
+    end_date = models.DateField(default=datetime.now)  # Use datetime from the imported module
+    is_available = models.BooleanField(default=True)
+    def __str__(self):
+            return self.offer_name
+        
+class Product(models.Model):   
     product_image = models.ImageField(upload_to='product_image/' , null=True)
     product_name = models.CharField(max_length=255 , null=True)  # Changed to CharField for product name
     product_price = models.DecimalField(max_digits=10, decimal_places=2, null=True)  # Changed to DecimalField for product price
     product_brand = models.ForeignKey(Brand, on_delete=models.CASCADE)  # Changed to CharField for product brand
-    product_offer = models.CharField(max_length=25, null=True)
+    product_offer = models.ForeignKey(Offer,on_delete=models.CASCADE, null=True,blank=True)
     product_category = models.ForeignKey(Category, on_delete=models.CASCADE)
     product_quantity = models.PositiveIntegerField(null=True)  # Changed to PositiveIntegerField for quantity
     is_deleted = models.BooleanField(default=False)
@@ -36,3 +45,7 @@ class Product(models.Model):
 class ProductImage(models.Model):
     image=models.ImageField(upload_to='product_image/',null=True) 
     product=models.ForeignKey(Product,on_delete=models.CASCADE)
+    
+from django.db import models
+from datetime import datetime
+

@@ -33,9 +33,16 @@
                         </select>
                         
                     </div>
+                   
                     <div class="form-group">
-                        <label for="product_offer">Offer</label>
-                        <input type="text" class="form-control" id="product_offer" name="product_offer">
+                        <label for="product_category">offer</label>
+                        <select class="form-control" id="product_offer" name="product_offer">
+                          
+                            {% for i in offer%}
+                            <option value="{{ i.offer_name }}">{{ i.offer_name }}</option>
+                            {% endfor %}
+                        </select>
+                        
                     </div>
                     <div class="form-group">
                         <label for="product_category">Category</label>
