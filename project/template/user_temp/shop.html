@@ -231,12 +231,15 @@
                                                     </h3>
                                                     <div class="product__price">
                                                         {% if pro.discounted_price is not None %}
-                                                            <span class="money">{{ pro.discounted_price }}</span><br>
-                                                            <del class="line-through money">{{ pro.product_price }}</del>
+                                                            <span class="money">{{ pro.discounted_price }}</span>
+                                                            <span class="sign">$</span>    
+                                                            <br> 
+                                                            
+                                                            <del class="line-through money" style="font-size: 85%;">{{ pro.product_price }}</del>
                                                         {% else %}
-                                                            <span class="money">{{ pro.product_price }}</span>
+                                                            <!-- <span class="money">{{ pro.product_price }}</span> -->
                                                         {% endif %}
-                                                        <span class="sign">$</span>
+                                                        <!-- <span class="sign">$</span> -->
                                                     </div>
                                                     
                                                     

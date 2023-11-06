@@ -274,6 +274,14 @@ def add_product(request):
             product_brand = request.POST.get('product_brand')
             product_offer = request.POST.get('product_offer')
             product_category = request.POST.get('product_category')
+            offer_name = request.POST.get('product_offer')
+            if offer_name:
+                # Offer name provided, check if it exists or create a new one
+                offer, created = Offer.objects.get_or_create(offer_name=offer_name)
+            else:
+                # No offer selected or entered
+                offer = None
+
            
             try:
                 product_price = Decimal(request.POST.get('product_price'))

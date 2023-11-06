@@ -1,24 +1,14 @@
-# views.py
-import decimal
-import json
 import random
 from user.models import Profile
-from django.db.models import ExpressionWrapper, F, FloatField
-from django.forms import DecimalField, FloatField
+from django.db.models import  F
 from django.http import JsonResponse, HttpResponseBadRequest
+from django.db.models import Sum
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from .models import Product, Cart,Wishlist
+from decimal import Decimal
 
-from django.shortcuts import get_object_or_404, redirect, render
-from .models import Cart, Wishlist
-from django.contrib import messages
-from admin_side.models import  Product, ProductImage
-from django.db.models import Sum
-from django.core.exceptions import ObjectDoesNotExist
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from .models import Product, Cart
-from django.db.models import F, Sum
-from django.db.models.functions import Coalesce
-from django.db.models import Sum
+
 
 def cart(request):
     if request.user.is_authenticated:
@@ -86,15 +76,7 @@ def add_cart(request):
 
     return render(request, 'user_temp/cart.html')
 
-from django.http import JsonResponse
-from django.shortcuts import redirect
-from decimal import Decimal  # Import Decimal for precise decimal calculations
 
-from decimal import Decimal
-from django.http import JsonResponse
-from django.http import JsonResponse
-from django.http import JsonResponse, HttpResponseBadRequest
-from .models import Cart  # Import your Cart model here
 
 def update_cart(request, action, product_id):
     
@@ -121,7 +103,7 @@ def update_cart(request, action, product_id):
             total = sum(item.total_price for item in cart_items)
 
             status = 'Cart Updated Successfully'
-            # return JsonResponse({'status': status, 'sub_total': cart_item.total_price, 'total': total})
+           
             
             response_data = {
                                 'success': True,
@@ -130,40 +112,14 @@ def update_cart(request, action, product_id):
                             }
 
             return JsonResponse(response_data, status=200)
-            # return JsonResponse({'response':'ok','sub_total': cart_item.total_price})
+           
         else:
             return HttpResponseBadRequest("Cart item not found")
     else:
         return HttpResponseBadRequest("Invalid request method")
    
 
-        # if quantity is not None and quantity.isdigit():
-        #     product_qty = int(quantity)
-        #     cart_item = Cart.objects.filter(user=request.user, product_id=product_id).first()
-            
-        #     if cart_item:
-        #         if product_qty == 0:
-        #             status = 'zero qty not allowed'
-        #         elif product_qty > cart_item.product.product_quantity:
-        #             status = 'Requested quantity exceeds available quantity'
-        #         else:
-        #             cart_item.quantity += 1
-        #             cart_item.total_price = cart_item.product.product_price * product_qty
-        #             cart_item.save()
-
-                    # Calculate the total for the entire cart
-                    # cart_items = Cart.objects.filter(user=request.user)
-                    # total = sum(item.total_price for item in cart_items)
-
-                    # status = 'Cart Updated Successfully'
-          
-
-    #         return JsonResponse({'status': status, 'sub_total': cart_item.total_price, 'total': total})
-    #     else:
-    #         return HttpResponseBadRequest("Invalid quantity value")
-    # else:
-    #     return HttpResponseBadRequest("Invalid request method")
-    
+     
     
     
     
@@ -350,20 +306,7 @@ def generate_coupon(request):
         else:
             # Handle the case where the user is not authenticated
             return JsonResponse({'error': 'Please log in to get a coupon.'})
-    # else:
-    #     # Handle non-POST requests (e.g., GET requests)
-    #     return JsonResponse({'error': 'Invalid request method.'})
-
-# def generate_discount(request):
-#             discount_code = ''.join(random.choices(string.digits, k=3))
-#             print(discount_code,'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
-#             request.session['discount_code'] = discount_code
-
-#             # Print for debugging
-#             print(discount_code,'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
-
-#             return JsonResponse({'coupon_code': discount_code})
-        
+   
     
 
 from decimal import Decimal
