@@ -174,7 +174,7 @@ def user_profile(request):
             )
             address.save()
             messages.success(request, 'Address Added Successfully ')
-            return redirect('user:user_profile')  # Redirect to a success page
+              # Redirect to a success page
 
     # Retrieve the user's address data, assuming you have a user profile
     user_profile = Profile.objects.filter(user=request.user.id)
@@ -187,14 +187,14 @@ def user_profile(request):
         # Get the products associated with the current order
         products = order.product.all()
         
-        # Create a dictionary to store order details
+      # order details
         order_detail = {
             'order': order,
             'products': products,
         }
 
         order_details.append(order_detail)
-    # Prepare the context with the user's address data and order history
+    # context with the user's address data and order history
     context = {
         'user_profile': user_profile,
         'user_order': user_order

@@ -343,7 +343,7 @@ def add_product(request):
 def edit_product(request, product_id):
     if request.user.is_superuser:
         if request.method == 'POST':
-            product_image = request.FILES.get('product_image')
+            product_images = request.FILES.getlist('product_images')
             product_name = request.POST.get('product_name')
             product_brand = request.POST.get('product_brand')
             product_offer = request.POST.get('product_offer')
@@ -384,8 +384,10 @@ def edit_product(request, product_id):
             pro.product_offer = offer
             pro.product_category = category
             pro.product_quantity = product_quantity
-            if product_image:
-                pro.product_image = product_image
+            if product_images:
+              for img in product_images:
+                photo = ProductImage.objects.create(product=pro, image=img)
+            photo.save()
             pro.save()
 
             return redirect('admin_side:product')

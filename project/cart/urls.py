@@ -19,7 +19,7 @@ urlpatterns = [
     path('cart:update_cart/<str:action>/<int:product_id>/', views.update_cart, name='update_cart'),
     
     
-    path('multiple_address',views.multiple_address, name='multiple_address'),
+    # path('multiple_address',views.multiple_address, name='multiple_address'),
     
     path('generate_coupon/', views.generate_coupon, name='generate_coupon'),
     # path('generate_discount/', views.generate_discount, name='generate_discount'),
