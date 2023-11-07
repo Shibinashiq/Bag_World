@@ -255,6 +255,7 @@ def product(request):
     brand = Brand.objects.all()
     category = Category.objects.all()
     offer = Offer.objects.all()
+    coupon=Coupon.objects.all()
     
 
     context = {
@@ -262,10 +263,11 @@ def product(request):
         'brand': brand,
         'category': category,
         'offer': offer,
+        'coupon':coupon
     }
     return render(request, 'admin_temp/product .html', context)
 
-@login_required(login_url='admin_side:admin_login')   
+@login_required(login_url='admin_side:admin_login')
 def add_product(request):
     if request.user.is_superuser:
         if request.method == 'POST':
@@ -273,6 +275,7 @@ def add_product(request):
             product_name = request.POST.get('product_name')
             product_brand = request.POST.get('product_brand')
             product_offer = request.POST.get('product_offer')
+            product_coupon = request.POST.get('product_coupon')
             product_category = request.POST.get('product_category')
             offer_name = request.POST.get('product_offer')
             if offer_name:
@@ -282,63 +285,67 @@ def add_product(request):
                 # No offer selected or entered
                 offer = None
 
-           
+            # Handle the coupon value
+            if product_coupon:
+                coupon, created = Coupon.objects.get_or_create(coupon_code=product_coupon)
+            else:
+                # No Coupon selected
+                coupon = None
+
             try:
                 product_price = Decimal(request.POST.get('product_price'))
                 product_quantity = Decimal(request.POST.get('product_quantity'))
             except InvalidOperation:
                 messages.error(request, 'Invalid Attempt. Enter correct values.')
                 return redirect('admin_side:product')
-                
+
             if not re.search(r'[a-zA-Z]', product_name):
                 messages.error(request, 'Product name must contain both letters and not only numbers. Please try again.')
-                return redirect('admin_side:product') 
-                
+                return redirect('admin_side:product')
+
             if not (product_name and product_brand and product_category and product_price and product_quantity):
                 messages.error(request, 'All required fields must be filled in.')
                 return redirect('admin_side:product')
 
-            
             if Product.objects.filter(product_name__iexact=product_name).exists():
                 messages.error(request, 'A product with this name already exists. Please choose a unique name.')
                 return redirect('admin_side:product')
             else:
                 brand, created = Brand.objects.get_or_create(brand_name=product_brand)
                 category, created = Category.objects.get_or_create(category_name=product_category)
-                offer,created=Offer.objects.get_or_create(offer_name=product_offer)
                 new_product = Product(
-                        product_image=product_images[0],
-                        product_name=product_name,
-                        product_price=product_price,
-                        product_brand=brand,
-                        product_offer=offer,
-                        product_category=category,
-                        product_quantity=product_quantity
-                    )
+                    product_image=product_images[0],
+                    product_name=product_name,
+                    product_price=product_price,
+                    product_brand=brand,
+                    product_offer=offer,
+                    product_category=category,
+                    product_quantity=product_quantity,
+                    product_coupon=coupon
+                )
 
                 new_product.save()
 
-                
-
                 for img in product_images:
-                        photo = ProductImage.objects.create(product=new_product, image=img)
-                        photo.save()
+                    photo = ProductImage.objects.create(product=new_product, image=img)
+                    photo.save()
 
                 return redirect('admin_side:product')
 
-    
         brand = Brand.objects.all()
         category = Category.objects.all()
-        offer=Offer.objects.all()
+        offer = Offer.objects.all()
+        coupon = Coupon.objects.all()
         context = {
             'brand': brand,
             'category': category,
-            'offer':offer,
+            'offer': offer,
+            'coupon': coupon
         }
         return render(request, 'admin_temp/add_product.html', context)
     else:
-        return redirect('admin_login') 
-    
+        return redirect('admin_login')
+
     
 @login_required(login_url='admin_side:admin_login')    
 def edit_product(request, product_id):
@@ -348,6 +355,7 @@ def edit_product(request, product_id):
             product_name = request.POST.get('product_name')
             product_brand = request.POST.get('product_brand')
             product_offer = request.POST.get('product_offer')
+            product_coupon=request.POST.get('product_coupon')
             product_category = request.POST.get('product_category')
             pro = Product.objects.get(id=product_id)
 
@@ -366,7 +374,7 @@ def edit_product(request, product_id):
                 return redirect('admin_side:product')
 
             # Check for non-empty fields
-            if not (product_name and product_brand and product_offer and product_category and product_price and product_quantity):
+            if not (product_name and product_brand and product_offer and product_coupon and product_category and product_price and product_quantity):
                 messages.error(request, 'All fields are required. Please fill them in.')
                 return redirect('admin_side:product')
 
@@ -378,6 +386,7 @@ def edit_product(request, product_id):
             brand, created = Brand.objects.get_or_create(brand_name=product_brand)
             category, created = Category.objects.get_or_create(category_name=product_category)
             offer, created = Offer.objects.get_or_create(offer_name=product_offer)
+            coupon,created=Coupon.objects.get_or_create(coupon_code=product_coupon)
 
             pro.product_name = product_name
             pro.product_price = product_price
@@ -385,6 +394,7 @@ def edit_product(request, product_id):
             pro.product_offer = offer
             pro.product_category = category
             pro.product_quantity = product_quantity
+            pro.product_coupon=coupon
             if product_images:
               for img in product_images:
                 photo = ProductImage.objects.create(product=pro, image=img)
@@ -396,11 +406,13 @@ def edit_product(request, product_id):
         brand = Brand.objects.all()
         category = Category.objects.all()
         offer = Offer.objects.all()
+        coupon=Coupon.objects.all()
         context = {
             'brand': brand,
             'category': category,
             'offer': offer,
-            'product': product
+            'product': product,
+            'coupon':coupon
         }
         return render(request, 'admin_temp\edit_product.html', context)
     else:

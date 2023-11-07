@@ -17,6 +17,8 @@
                     <th>Brand</th>
                     <th>Offer</th>
                     <th>Offer Price</th>
+                    <th>Coupon</th>
+                    <th>Coupon Price</th>
                     <th>Category</th>
                     <th>Quantity</th>
                     <th>Action</th>
@@ -43,6 +45,8 @@
                         <td>{{ i.product_brand }}</td>
                         <td>{{ i.product_offer }}</td>
                         <td>{{ i.product_offer.discount_amount }}</td>
+                        <td>{{ i.product_coupon }}</td>
+                        <td>{{ i.product_coupon.discount }}</td>
                         <td>{{ i.product_category }}</td>
                         <td>{{ i.product_quantity }}</td>
                         <td>
