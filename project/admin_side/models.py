@@ -1,6 +1,6 @@
 from django.db import models
-from datetime import datetime 
-
+from datetime import datetime
+from django.utils import timezone
 
 class Brand(models.Model):
     brand_name = models.CharField(max_length=100)
@@ -20,13 +20,14 @@ class Category(models.Model):
 
     def __str__(self):
         return self.category_name  # Define a string representation for the model
+    
 
 class Offer(models.Model):
     offer_name = models.CharField(max_length=50, null=True)
     discount_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     start_date = models.DateField(default=datetime.now)  # Use datetime from the imported module
     end_date = models.DateField(default=datetime.now)  # Use datetime from the imported module
-    is_available = models.BooleanField(default=True)
+    is_deleted = models.BooleanField(default=False)
     def __str__(self):
             return self.offer_name
         
@@ -46,6 +47,15 @@ class ProductImage(models.Model):
     image=models.ImageField(upload_to='product_image/',null=True) 
     product=models.ForeignKey(Product,on_delete=models.CASCADE)
     
-from django.db import models
-from datetime import datetime
+class Coupon(models.Model):
+    coupon_code = models.CharField(max_length=50)
+    discount = models.PositiveIntegerField()
+    min_price = models.IntegerField()
+    is_deleted = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.coupon_name
+
+
+
 

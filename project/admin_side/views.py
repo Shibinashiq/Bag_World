@@ -5,7 +5,7 @@ from django.db.models import Q
 from django.shortcuts import redirect, render , get_object_or_404
 
 from user.models import Order
-from .models import Brand, Offer, ProductImage
+from .models import Brand, Coupon, Offer, ProductImage
 from .models import Category
 from .models import Product
 from django.contrib import messages
@@ -511,41 +511,135 @@ def add_offer(request):
 
     return render(request, 'admin_temp/add_offer.html')
    
-   
-   
-@login_required(login_url='admin_side:admin_login')     
+@login_required(login_url='admin_side:admin_login')
 def edit_offer(request, offer_id):
+    offer = Offer.objects.get(id=offer_id)
+    
     if request.method == 'POST':
         offer_name = request.POST.get('offer_name')
         discount_amount = request.POST.get('discount_amount')
         start_date = request.POST.get('start_date')
         end_date = request.POST.get('end_date')
         
-        # Perform your custom validation here
-        if not offer_name or not discount_amount or not start_date or not end_date:
-            messages.error(request, 'Please fill in all required fields.')
-        else:
-            try:
-                discount_amount = int(discount_amount)
-                # Perform additional validation if needed
-                if discount_amount < 0:
-                    messages.error(request, 'Discount amount must be a non-negative integer.')
-                else:
-                    offer = Offer.objects.get(id=offer_id)
-                    offer.offer_name = offer_name
-                    offer.discount_amount = discount_amount
-                    offer.start_date = start_date
-                    offer.end_date = end_date
-                    offer.save()
-                    messages.success(request, 'Offer updated successfully!')
-                    return redirect('admin_side:offer')
-            except ValueError:
-                messages.error(request, 'Discount amount must be a valid integer.')
+        # Update the offer data without any validation
+        offer.offer_name = offer_name
+        offer.discount_amount = discount_amount
+        offer.start_date = start_date
+        offer.end_date = end_date
+        offer.save()
+        messages.success(request, 'Offer updated successfully!')
+        return redirect('admin_side:offer')
 
+    return render(request, 'admin_temp/edit_offer.html', {'i': offer})
+
+@login_required(login_url='admin_side:admin_login')
+def offer_delete(request, offer_id):
+    if request.user.is_superuser:
+        offer = get_object_or_404(Offer, id=offer_id)
+        # Assuming you have a field 'is_deleted' in your Offer model
+        if not offer.is_deleted:
+            offer.is_deleted = True
+            offer.save()
+            messages.error(request, 'Offer deleted successfully.')
+        return redirect('admin_side:offer')
     else:
-        offer = Offer.objects.get(id=offer_id)
-        return render(request, 'admin_temp/edit_offer.html', {'offer': offer})
+        return redirect('admin_login')
 
-    return render(request, 'admin_temp/edit_offer.html')
+@login_required(login_url='admin_side:admin_login')
+def offer_undelete(request, offer_id):
+    if request.user.is_superuser:
+        offer = get_object_or_404(Offer, id=offer_id)
+        
+        if offer.is_deleted:
+            offer.is_deleted = False
+            offer.save()
+            messages.success(request, 'Offer undeleted successfully.')
+        return redirect('admin_side:offer')
+    else:
+        return redirect('admin_login')
 
 
+
+
+@login_required(login_url='admin_side:admin_login')   
+def coupon(request):
+    coupon=Coupon.objects.all()
+    context={
+        'coupon':coupon
+    }
+    return render(request,'admin_temp/coupon.html',context)
+
+
+@login_required(login_url='admin_side:admin_login')   
+def add_coupon(request):
+    if request.method == 'POST':
+        coupon_code = request.POST.get('coupon_code')
+        discount = request.POST.get('discount')
+        min_price = request.POST.get('min_price')
+        
+        #  validation for coupon_code, discount, and min_price here
+        if not coupon_code or not discount or not min_price:
+            messages.error(request, 'All fields are required.')
+        elif not discount.isdigit() or not min_price.isdigit():
+            messages.error(request, 'Discount and minimum price should be numeric.')
+        else:
+            new_coupon = Coupon(
+                coupon_code=coupon_code,
+                discount=discount,
+                min_price=min_price
+            )
+            new_coupon.save()
+            messages.success(request, 'Coupon added successfully.')
+            return redirect('admin_side:coupon')
+    
+    return render(request, 'admin_temp/add_coupon.html')
+
+
+@login_required(login_url='admin_side:admin_login')   
+def edit_coupon(request, coupon_id):
+    coupon = get_object_or_404(Coupon, id=coupon_id)
+    
+    if request.method == "POST":
+        coupon_code = request.POST.get('coupon_code')
+        discount = request.POST.get('discount')
+        min_price = request.POST.get('min_price')
+        
+        # Add validation for coupon_code, discount, and min_price here
+        if not coupon_code or not discount or not min_price:
+            messages.error(request, 'All fields are required.')
+        elif not discount.isdigit() or not min_price.isdigit():
+            messages.error(request, 'Discount and minimum price should be numeric.')
+        else:
+            coupon.coupon_code = coupon_code
+            coupon.discount = discount
+            coupon.min_price = min_price
+            coupon.save()
+            messages.success(request, 'Coupon updated successfully.')
+            return redirect('admin_side:coupon')
+    
+    return render(request, 'admin_temp/edit_coupon.html', {'i': coupon})
+
+
+
+@login_required(login_url='admin_side:admin_login')
+def coupon_delete(request, coupon_id):
+    if request.user.is_superuser:
+        coupon = get_object_or_404(Coupon, id=coupon_id)
+        if not coupon.is_deleted:
+            coupon.is_deleted = True
+            coupon.save()
+            messages.error(request,'Deleted successfully')
+        return redirect('admin_side:coupon')
+    else:
+        return redirect('admin_login') 
+    
+def coupon_undelete(request,coupon_id):
+    if request.user.is_superuser:
+        coupon = get_object_or_404(Coupon, id=coupon_id)
+        if coupon.is_deleted:
+            coupon.is_deleted = False
+            coupon.save()
+            messages.error(request,'Un Deleted successfully')
+        return redirect('admin_side:coupon')
+    else:
+        return redirect('admin_login') 

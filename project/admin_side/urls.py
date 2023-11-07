@@ -35,7 +35,16 @@ urlpatterns = [
     path('offer',views.offer,name='offer'),
     path('add_offer',views.add_offer,name='add_offer'),
     path('edit_offer/<int:offer_id>/',views.edit_offer,name='edit_offer'), 
-     
-     
+    path('offer_delete/<int:offer_id>/', views.offer_delete, name='offer_delete'),
+    path('offer_undelete/<int:offer_id>/', views.offer_undelete, name='offer_undelete'),
+
+    
+    
+    path('coupon',views.coupon,name='coupon'),
+    path('add_coupon',views.add_coupon,name='add_coupon'),
+    path('edit_coupon/<int:coupon_id>/',views.edit_coupon,name='edit_coupon'), 
+    path('coupon_delete/<int:coupon_id>/',views.coupon_delete,name='coupon_delete'),
+    path('coupon_undelete/<int:coupon_id>/',views.coupon_undelete,name='coupon_undelete'),
+    
 
 ]

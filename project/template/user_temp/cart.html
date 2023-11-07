@@ -321,14 +321,14 @@
                                                 </span>
                                             </div>
                                             
-                                            {% if request.session.discount_code %}
+                                            <!-- {% if request.session.discount_code %}
                                                 <p>Coupon Applied: -{{ request.session.discount_code }}</p>
-                                                <!-- <p>Discounted Total: ${{ request.session.discounted_total }}</p> -->
-                                                <p>Grand Total: ${{request.session.discounted_total }} (after applying coupon)</p>
-                                            {% else %}
+                                                <p>Discounted Total: ${{ request.session.discounted_total }}</p> -->
+                                                <!-- <p>Grand Total: ${{request.session.discounted_total }} (after applying coupon)</p>
+                                            {% else %} -->
                                             <!--   <p>Grand Total: ${{ request.session.discounted_total }}</p> -->
 
-                                            {% endif %}
+                                            <!-- {% endif %} -->
                                             
                                         </div>
                                     </div>
@@ -899,7 +899,7 @@ JavaScript for updating the cart and handling out-of-stock items -->
 
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
+<!-- <script>
     $(document).ready(function () {
         $('#get-coupon-button').click(function () {
             // Get the CSRF token from the template
@@ -926,7 +926,7 @@ JavaScript for updating the cart and handling out-of-stock items -->
             });
         });
     });
-</script>
+</script> -->
 
 
 
