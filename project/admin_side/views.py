@@ -294,9 +294,10 @@ def add_product(request):
                 messages.error(request, 'Product name must contain both letters and not only numbers. Please try again.')
                 return redirect('admin_side:product') 
                 
-            if not (product_name and product_brand and product_offer and product_category and product_price and product_quantity):
-                messages.error(request, 'All fields are required. Please fill them in')
+            if not (product_name and product_brand and product_category and product_price and product_quantity):
+                messages.error(request, 'All required fields must be filled in.')
                 return redirect('admin_side:product')
+
             
             if Product.objects.filter(product_name__iexact=product_name).exists():
                 messages.error(request, 'A product with this name already exists. Please choose a unique name.')

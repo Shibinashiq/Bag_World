@@ -37,12 +37,14 @@
                     <div class="form-group">
                         <label for="product_offer">Offer</label>
                         <select class="form-control" id="product_offer" name="product_offer">
-                            <option value="">Select an offer or leave empty</option>
+                           
+                            <option value="no_offer">No Offer</option> <!-- Add this line -->
                             {% for i in offer %}
                             <option value="{{ i.offer_name }}">{{ i.offer_name }}</option>
                             {% endfor %}
                         </select>
                     </div>
+                    
                     
                     <div class="form-group">
                         <label for="product_category">Category</label>

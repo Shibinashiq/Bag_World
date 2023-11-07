@@ -23,7 +23,7 @@ class Category(models.Model):
 
 class Offer(models.Model):
     offer_name = models.CharField(max_length=50, null=True)
-    discount_amount = models.BigIntegerField()
+    discount_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     start_date = models.DateField(default=datetime.now)  # Use datetime from the imported module
     end_date = models.DateField(default=datetime.now)  # Use datetime from the imported module
     is_available = models.BooleanField(default=True)
