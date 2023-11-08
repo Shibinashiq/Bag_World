@@ -253,7 +253,11 @@
                                                             
                                                             <td class="product-total-price">
                                                                 <span class="product-price-wrapper">
+                                                                    {%if i.offer_price%}
+                                                                    <span class="money">{{ i.offer_price}}</span>
+                                                                    {%else%}
                                                                     <span class="money">{{ i.product.product_price}}</span>
+                                                                    {%endif%}
                                                                 </span>
                                                             </td>
                                                         </tr>
@@ -268,7 +272,7 @@
                                     <div class="col-sm-6">
                                         <div class="coupon">
                                             {% if grand_total > 2000 %}
-                                            <form action="{% url 'cart:apply_and_display_coupon' %}" method="POST">
+                                            <form action="" method="POST">
                                                 {% csrf_token %}
                                                 <input type="text" id="coupon" name="coupon" class="cart-form__input" placeholder="Coupon Code" >
                                                 <button type="submit" class="cart-form__btn" >Apply Coupon</button>

@@ -38,7 +38,7 @@ class Coupon(models.Model):
     is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.coupon_name
+        return self.coupon_code
         
 class Product(models.Model):   
     product_image = models.ImageField(upload_to='product_image/' , null=True)

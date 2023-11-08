@@ -123,20 +123,26 @@ def user_logout(request):
         logout(request)
     return redirect('user:home')
 
+from datetime import date
+
 def shop(request):
     # Filter products that are not deleted
     products = Product.objects.filter(is_deleted=False)
     for product in products:
-            if product.product_offer:
+        if product.product_offer:
+            if product.product_offer.end_date >= date.today():
                 product.discounted_price = product.product_price - product.product_offer.discount_amount
             else:
-                product.discounted_price = None  
+                product.discounted_price = None
+        else:
+            product.discounted_price = None
+
     context = {
         'products': products,
-        
     }
 
     return render(request, 'user_temp/shop.html', context)
+
 
 
 
@@ -173,80 +179,40 @@ def user_profile(request):
                 email=email
             )
             address.save()
-            messages.success(request, 'Address Added Successfully ')
-              # Redirect to a success page
+            messages.success(request, 'Address Added Successfully')
+            # Redirect to a success page
 
-    # Retrieve the user's address data, assuming you have a user profile
+    # Retrieve the user's address data
     user_profile = Profile.objects.filter(user=request.user.id)
 
     # Call the order_history function to get user order history
-    user_order= Order.objects.filter(user=request.user).order_by('-created_at')
+    user_order = Order.objects.filter(user=request.user).order_by('-created_at')
     order_details = []
 
     for order in user_order:
         # Get the products associated with the current order
         products = order.product.all()
-        
-      # order details
+
+        # Check if any product in this order has an offer
+        has_offer = any(product.product_offer is not None for product in products)
+
+        # order details
         order_detail = {
             'order': order,
             'products': products,
+            'has_offer': has_offer,
         }
 
         order_details.append(order_detail)
+
     # context with the user's address data and order history
     context = {
         'user_profile': user_profile,
-        'user_order': user_order
+        'user_order': user_order,
+        'order_details': order_details,
     }
 
     return render(request, 'user_temp/user_profile.html', context)
-
-
-def edit_address(request, address_id):
-    
-    edit = get_object_or_404(Profile, id=address_id, user=request.user)
-
-    if request.method == 'POST':
-        # Handle address update
-        first_name = request.POST.get('first_name')
-        last_name = request.POST.get('last_name')
-        company_name = request.POST.get('company_name')
-        country = request.POST.get('country')
-        street_address = request.POST.get('street_address')
-        town = request.POST.get('town')
-        state = request.POST.get('state')
-        phone = request.POST.get('phone')
-        email = request.POST.get('email')
-
-        # Validations
-        if not first_name or not last_name or not email:
-            messages.error(request, 'Please fill in required fields (First Name, Last Name, Email)')
-            return redirect('edit_address', address_id=address_id)
-
-        if len(phone) < 10:
-            messages.error(request, 'Phone number must be at least 10 digits long')
-            return redirect('edit_address', address_id=address_id)
-
-        # Update the address fields
-        edit.first_name = first_name
-        edit.last_name = last_name
-        edit.company_name = company_name
-        edit.country = country
-        edit.streetaddress = street_address
-        edit.town = town
-        edit.state = state
-        edit.phone = phone
-        edit.email = email
-        edit.save()
-        messages.success(request, 'Address Edited Successfully')
-
-        # Redirect to a success page or another appropriate page
-        return render(request, 'user_temp/userprofile.html')
-
-    context = {'edit_address': edit}
-    return render(request, 'user_temp/user_profile.html', context)
-
 
 
 def place_order(request):
@@ -255,44 +221,41 @@ def place_order(request):
         user_name = User.objects.get(username=user)
         address_id = request.POST.get('address_id')
 
-
         if address_id is None:
             messages.error(request, 'Address should be provided')
             return redirect('cart:checkout')
+
         cart = Cart.objects.filter(user=request.user)
         address = Profile.objects.get(id=address_id)
-        # product = Product.objects.filter(id=product_id)
         products_in_order = []  # List to store products in the order
         total = 0
+
         for item in cart:
             total += item.total_price
             # Add the product to the list of products in the order
             products_in_order.append(item.product)
 
-
         payment_mode = request.POST.get('payment-method')
         payment_id = request.POST.get('payment_id')
 
+        # Calculate the shipping cost (You can adjust this based on your requirements)
+        shipping_cost = 20
 
+        # Add the shipping cost to the total only once
+        total += shipping_cost
 
-
-#     return render(request, 'user_temp/user_profile.html')
-        for item in cart:
-            total += item.total_price
-        print('the total price is the ',total)
         # Create an order object and save it to the database
         order = Order.objects.create(
             user=user_name,
             payment_mode=payment_mode,
             payment_id=payment_id,
-            total_price= total,
-            profile = address,
-            # product=product,
+            total_price=total,
+            profile=address,
+            shipping_cost=shipping_cost  # Save the shipping cost in the order
         )
 
         for item in cart:
             order.product.add(item.product)
-
 
         order.save()
         order.product.set(products_in_order)
@@ -301,11 +264,9 @@ def place_order(request):
 
         # Here, you might want to handle the payment if applicable.
 
-        return redirect( 'user:place_order')
-
+        return redirect('user:place_order')
 
     return render(request, 'user_temp/order_success.html')
-
 
 
 

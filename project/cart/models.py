@@ -11,6 +11,7 @@ class Cart(models.Model):
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
     created_at = models.DateField( auto_now_add=True)
     quantity = models.PositiveIntegerField()
+    offer_price = models.DecimalField(max_digits=10, decimal_places=2, null=True)
 
     def __str__(self):
         return self.user.username   

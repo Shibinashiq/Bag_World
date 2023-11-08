@@ -2,7 +2,8 @@ import random
 from user.models import Profile
 from django.db.models import  F
 from django.http import JsonResponse, HttpResponseBadRequest
-from django.db.models import Sum
+from django.db.models import Sum,ExpressionWrapper,DecimalField
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .models import Product, Cart,Wishlist
@@ -14,13 +15,27 @@ def cart(request):
     if request.user.is_authenticated:
         cart = Cart.objects.filter(user=request.user).order_by('id')
 
-        # Check if the cart is empty
         if not cart.exists():
             messages.error(request, 'Your cart is empty. Please add items to your cart.')
-            return redirect('user:shop')  # Redirect to the shop or another appropriate page
-        # eligible_for_coupon = grand_total > 2000
-        total_price = cart.aggregate(total=Sum(F('product__product_price') * F('quantity')))['total'] or 0
-        shipping_charge = 20  # Set your shipping charge here
+            return redirect('user:shop') 
+
+        total_price = Decimal(0)  
+        shipping_charge = 20  
+        for i in cart:
+            if i.offer_price is not None:
+                A=i.offer_price*i.quantity
+            else:
+                A=i.product.product_price*i.quantity
+            total_price+=A
+
+        # for item in cart:
+        #     if item.offer_price is not None:
+        #         item_total_price = item.offer_price * item.quantity
+        #     else:
+        #         item_total_price = item.product.product_price * item.quantity
+
+        #     total_price += item_total_price
+
         grand_total = total_price + shipping_charge
 
         context = {
@@ -28,19 +43,20 @@ def cart(request):
             'shipping_charge': shipping_charge,
             'grand_total': grand_total,
             'total_price': total_price,
-            
         }
 
         return render(request, 'user_temp/cart.html', context)
     else:
         messages.error(request, 'Please Login')
         return redirect('user:user_login')
+    
+    
+from datetime import datetime  # Import datetime module
+from datetime import date
 
 def add_cart(request):
-  
     if request.method == 'POST':
         if request.user.is_authenticated:
-
             pro_id = request.POST.get('product_id')
             quantity = int(request.POST.get('product_count'))
 
@@ -57,23 +73,41 @@ def add_cart(request):
                 return redirect('cart:cart')
             else:
                 product_qty = quantity
-
-                # Create the product in the cart
-                if check_product.product_quantity >= int(product_qty):
-                    product_price = check_product.product_price
-                    total_price = product_price * product_qty
-
-                    cart_obj = Cart.objects.create(user=request.user, product_id=pro_id, quantity=product_qty, total_price=total_price)
-                    cart_obj.save()
-                    messages.success(request, 'Product Added Successfully')
-                    return redirect('cart:cart')
+            
+            # Calculate the offer_price if the product has an offer
+            if check_product.product_offer is not None:
+                if check_product.product_offer.end_date >= date.today():
+                    offer_price = check_product.product_price - check_product.product_offer.discount_amount
                 else:
-                    messages.error(request, 'Only a few quantities available')
-                    return redirect('user:shop')
+                    offer_price = None  # Offer has expired
+            else:
+                offer_price = None  # No offer
+
+            # Calculate the total price
+            if offer_price is not None:
+                total_price = offer_price * product_qty
+            else:
+                total_price = check_product.product_price * product_qty
+
+            # Create the product in the cart
+            if check_product.product_quantity >= int(product_qty):
+                cart_obj = Cart.objects.create(
+                    user=request.user,
+                    product_id=pro_id,
+                    quantity=product_qty,
+                    total_price=total_price,
+                    offer_price=offer_price
+                )
+                cart_obj.save()
+                messages.success(request, 'Product Added Successfully')
+                return redirect('cart:cart')
+            else:
+                messages.error(request, 'Only a few quantities available')
+                return redirect('user:shop')
         else:
             messages.error(request, 'Please log in')
             return redirect('user:user_login')
-
+           
     return render(request, 'user_temp/cart.html')
 
 
@@ -146,14 +180,18 @@ def checkout(request):
         return redirect('user:shop')  # Redirect to the shop page if the cart is empty
 
     user_profile = Profile.objects.filter(user=request.user.id)
-    grand_total = sum(cart_item.total_price for cart_item in cart_items)
+    grand_total = 0
     shipping_cost = 20
+    for cart_item in cart_items:
+            if cart_item.offer_price is not None:
+                item_total = cart_item.offer_price * cart_item.quantity
+            else:
+                item_total = cart_item.product.product_price * cart_item.quantity
+            grand_total += item_total
 
-    # Check if a discount was applied
-    if 'discounted_total' in request.session:
-        grand_total = request.session['discounted_total']
-    else:
-        grand_total += shipping_cost
+    # Add shipping cost to the grand total
+    grand_total += shipping_cost
+    
 
     context = {
         'cart_items': cart_items,
@@ -287,74 +325,74 @@ def wishlist_to_cart(request, wishlist_id):
     return redirect('cart:wishlist')
 
 
-import random
-import string
-from django.http import JsonResponse
+# import random
+# import string
+# from django.http import JsonResponse
 
 
-def generate_coupon(request):
-    # if request.method == 'POST':
-        if request.user.is_authenticated:
-            # Generate a random 4-digit coupon code
-            coupon_code = ''.join(random.choices(string.digits, k=4))
-            request.session['coupon_code'] = coupon_code
+# def generate_coupon(request):
+#     # if request.method == 'POST':
+#         if request.user.is_authenticated:
+#             # Generate a random 4-digit coupon code
+#             coupon_code = ''.join(random.choices(string.digits, k=4))
+#             request.session['coupon_code'] = coupon_code
 
-            # Print for debugging
+#             # Print for debugging
            
 
-            return JsonResponse({'coupon_code': coupon_code})
-        else:
-            # Handle the case where the user is not authenticated
-            return JsonResponse({'error': 'Please log in to get a coupon.'})
+#             return JsonResponse({'coupon_code': coupon_code})
+#         else:
+#             # Handle the case where the user is not authenticated
+#             return JsonResponse({'error': 'Please log in to get a coupon.'})
    
     
 
-from decimal import Decimal
+# from decimal import Decimal
 
-# ...
-import json
-from decimal import Decimal
+# # ...
+# import json
+# from decimal import Decimal
 
-# ...
+# # ...
 
-from decimal import Decimal
+# from decimal import Decimal
 
-def apply_and_display_coupon(request):
-    if request.method == 'POST':
-        if request.user.is_authenticated:
-            user_entered = request.POST.get('coupon')
-            coupon_code = request.session.get('coupon_code')
-            if coupon_code and user_entered == coupon_code:
-                # Generate a random 3-digit discount code
-                discount_code = ''.join(random.choices(string.digits, k=3))
-                request.session['discount_code'] = discount_code
+# def apply_and_display_coupon(request):
+#     if request.method == 'POST':
+#         if request.user.is_authenticated:
+#             user_entered = request.POST.get('coupon')
+#             coupon_code = request.session.get('coupon_code')
+#             if coupon_code and user_entered == coupon_code:
+#                 # Generate a random 3-digit discount code
+#                 discount_code = ''.join(random.choices(string.digits, k=3))
+#                 request.session['discount_code'] = discount_code
 
-                # Calculate the total_price (subtotal) and discount_amount
-                user_cart = Cart.objects.filter(user=request.user)
-                total_price = user_cart.aggregate(total_price=Sum(F('total_price')))['total_price'] or Decimal('0.00')
+#                 # Calculate the total_price (subtotal) and discount_amount
+#                 user_cart = Cart.objects.filter(user=request.user)
+#                 total_price = user_cart.aggregate(total_price=Sum(F('total_price')))['total_price'] or Decimal('0.00')
                 
-                discount_amount = Decimal(discount_code)  # Assuming the discount code directly represents the discount amount
-                shipping_coast=20
-                # Calculate the new grand total after applying the discount
-                grand_total = total_price + shipping_coast - discount_amount 
+#                 discount_amount = Decimal(discount_code)  # Assuming the discount code directly represents the discount amount
+#                 shipping_coast=20
+#                 # Calculate the new grand total after applying the discount
+#                 grand_total = total_price + shipping_coast - discount_amount 
         
 
 
-                # Convert Decimal to a serializable format (e.g., float)
-                grand_total_serializable = float(grand_total)
+#                 # Convert Decimal to a serializable format (e.g., float)
+#                 grand_total_serializable = float(grand_total)
 
-                request.session['discounted_total'] = grand_total_serializable
+#                 request.session['discounted_total'] = grand_total_serializable
                 
                 
-                messages.success(request, f'Coupon code applied successfully. You received a discount of {discount_amount}.')
-                return redirect('cart:cart')
-            else:
-                messages.error(request, 'Invalid coupon code')
-                return redirect('cart:cart')
-        else:
-            messages.error(request, 'Please log in to apply a coupon.')
-            return redirect('user:user_login')
-    else:
-        return render(request, 'user_temp/cart.html')
+#                 messages.success(request, f'Coupon code applied successfully. You received a discount of {discount_amount}.')
+#                 return redirect('cart:cart')
+#             else:
+#                 messages.error(request, 'Invalid coupon code')
+#                 return redirect('cart:cart')
+#         else:
+#             messages.error(request, 'Please log in to apply a coupon.')
+#             return redirect('user:user_login')
+#     else:
+#         return render(request, 'user_temp/cart.html')
 
 

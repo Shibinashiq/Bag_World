@@ -36,6 +36,7 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True,null=True,blank=True)
     update_at = models.DateTimeField(auto_now=True,null=True,blank=True)
     is_cancelled = models.BooleanField(default=False)
+    shipping_cost = models.DecimalField(max_digits=10, decimal_places=2,default=True,null=True)
     ordertatus= {
         ('Pending','Pending'),
         ('Processing','Processing'),

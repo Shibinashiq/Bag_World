@@ -15,7 +15,7 @@ urlpatterns = [
     
     
     path('user_profile/', views.user_profile, name='user_profile'),
-    path('edit_address/<int:address_id>/', views.edit_address, name='edit_address'),
+    # path('edit_address/<int:address_id>/', views.edit_address, name='edit_address'),
     path('place_order/', views.place_order, name='place_order'),
     
     

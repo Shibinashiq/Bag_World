@@ -213,7 +213,7 @@
                                                             <th>Order ID</th>
                                                             <th>User Name</th>
                                                             <th>Product Name</th>
-                                                            <th>Product Price</th>
+                                                            <th>TotalPrice</th>
                                                             <th>Address</th>
                                                             <th>Action</th>
                                                         </tr>
@@ -230,10 +230,7 @@
                                                                     {% endfor %}
                                                                 </td> <!-- Product Name -->
                                                                 <td>
-                                                                    {% for item in order.product.all %}
-                                                                        ${{ item.product_price }}
-                                                                        <br>
-                                                                    {% endfor %}
+                                                                   {{order.total_price}}
                                                                 </td> <!-- Total Price -->
                                                                 <td>{{ order.profile.streetaddress }}, {{ order.profile.town }}, {{ order.profile.state }}, {{ order.profile.country }}</td> <!-- Address -->
                                                                 <td>

@@ -12,7 +12,7 @@
                     <th>Order Id</th>
                     <th>User Name</th>
                     <th>Product Name</th>
-                    <th>Product Price</th>
+                    <th>Total Price</th>
                     <th>Adress</th>
                     <th>Action</th>
                 </tr>
@@ -26,13 +26,13 @@
                             {% for item in order.product.all %}
                                 {{ item.product_name }}
                                 <br>
+                                <br>
                             {% endfor %}
                         </td> <!-- Product Name -->
                         <td>
-                            {% for item in order.product.all %}
-                                ${{ item.product_price }}
-                                <br>
-                            {% endfor %}
+                            
+                               {{ order.total_price}} $
+                         
                         </td> <!-- Total Price -->
                         <td>{{ order.profile.streetaddress }}, {{ order.profile.town }}, {{ order.profile.state }}, {{ order.profile.country }}</td> <!-- Address -->
                         <td>

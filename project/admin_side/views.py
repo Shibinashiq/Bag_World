@@ -251,11 +251,11 @@ def category_delete(request, cat_id):
 
 @login_required(login_url='admin_side:admin_login')   
 def product(request):
-    products = Product.objects.all()  # Query the database to get all products
-    brand = Brand.objects.all()
-    category = Category.objects.all()
-    offer = Offer.objects.all()
-    coupon=Coupon.objects.all()
+    products = Product.objects.filter(is_deleted=False)
+    # brand = Brand.objects.all()
+    # category = Category.objects.all()
+    # offer = Offer.objects.filter(is_deleted=False)
+    # coupon=Coupon.objects.filter(is_deleted=False)
     
 
     context = {
@@ -334,8 +334,8 @@ def add_product(request):
 
         brand = Brand.objects.all()
         category = Category.objects.all()
-        offer = Offer.objects.all()
-        coupon = Coupon.objects.all()
+        offer = Offer.objects.filter(is_deleted=False)
+        coupon = Coupon.objects.filter(is_deleted=False)
         context = {
             'brand': brand,
             'category': category,
@@ -476,6 +476,7 @@ def user_unblock(request, user_id):
 def orders(request):
     user_id = request.user.id  # Get the user's ID
     orders = Order.objects.filter(user=user_id)  # Filter orders based on the user's ID
+    
     context={
         'orders':orders
     }
