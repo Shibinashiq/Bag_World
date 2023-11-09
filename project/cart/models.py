@@ -21,7 +21,4 @@ class Wishlist(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     created_at = models.DateTimeField(  auto_now_add= True)
     
-class Coupon(models.Model):
-    code = models.CharField(max_length=10, unique=True)
-    discount = models.PositiveSmallIntegerField()
 

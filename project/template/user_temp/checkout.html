@@ -175,19 +175,28 @@
                         <div class="col-12">
                             <!-- User Action Start -->
                             <div class="user-actions user-actions__coupon">
-                                <div class="message-box mb--30">
-                                    <p><i class="fa fa-exclamation-circle"></i> Forget to enter coupon ? <a class="expand-btn" href="#coupon_info"> Click Here To Enter Your Code.</a></p>
-                                </div>
-                                <div id="coupon_info" class="user-actions__form hide-in-default">
-                                    <form action="" class="form">
-                                        <p>Forget to enter coupon, please apply it below.</p>
-                                        <div class="form__group d-sm-flex">
-                                            <input type="text" name="coupon" id="coupon" class="form__input mr--20 mr-xs--0" placeholder="Coupon Code">
-                                            <button type="submit" class="btn btn-size-sm">Apply Coupon</button>
-                                        </div>
-                                    </form>
-                                </div>
+                                {% if grand_total > 2000 %}
+                                    <div class="message-box mb--30">
+                                        <p><i class="fa fa-exclamation-circle"></i> <a class="expand-btn" href="#coupon_info"> Your eligible for a coupon and you can see it now</a></p>
+                                    </div>
+                                    <div id="coupon_info" class="user-actions__form hide-in-default">
+                            
+                                        <!-- Display coupon information here -->
+                                        <h3>Available Coupons:</h3>
+                                        <ul>
+                                            {% for coupon in available_coupons %}
+                                                <li>Coupon Code: {{ coupon.coupon_code }}</li>
+                                                <li>Discount Amount: {{ coupon.discount }}</li>
+                                                <br>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                {% else %}
+                                    <p>You are not eligible for a coupon at this time.</p>
+                                {% endif %}
                             </div>
+                            
+                            
                             <!-- User Action End -->
                         </div>
                     </div> 
@@ -316,7 +325,7 @@
                                             <tr class="shipping">
                                                 <th>Shipping</th>
                                                 <td class="text-end">
-                                                    <span>Flat Rate; $20.00</span>
+                                                    <span>Flat Rate: $20.00</span>
                                                 </td>
                                             </tr>
                                             <tr class="order-total">
@@ -325,6 +334,7 @@
                                             </tr>
                                         </tfoot>
                                     </table>
+                                  
                                     
                                 <div class="checkout-payment">
                                     <form action="{% url 'user:place_order' %}" class="payment-form" method="POST">
@@ -354,17 +364,7 @@
                                                 <p>Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order will not be shipped until the funds have cleared in our account.</p>
                                             </div>
                                         </div>
-                                        <div class="payment-group mb--10">
-                                            <div class="payment-radio">
-                                                <input type="radio" value="cheque" name="payment-method" id="cheque">
-                                                <label class="payment-label" for="cheque">
-                                                    cheque payments
-                                                </label>
-                                            </div>
-                                            <div class="payment-info cheque hide-in-default" data-method="cheque">
-                                                <p>Please send a check to Store Name, Store Street, Store Town, Store State / County, Store Postcode.</p>
-                                            </div>
-                                        </div>
+                                       
                                         <div class="payment-group mb--10">
                                             <div class="payment-radio">
                                                 <input type="radio" value="cash" name="payment-method" id="cash">
@@ -379,7 +379,21 @@
                                         <div class="payment-group mt--20">
                                             <input type="hidden" name="product_id" value="{{ product_id }}">
                                             <p class="mb--15">Your personal data will be used to process your order, support your experience throughout this website, and for other purposes described in our privacy policy.</p>
-                                           <button  type="submit" class="btn btn-success">Place Order</button>
+                                           <!-- <button  type="submit" class="btn btn-success">Place Order</button> -->
+                                        </div>
+
+                                        <div class="payment-group mt--20">
+                                            <input type="hidden" name="product_id" value="{{ product_id }}">
+                                            <p class="mb--15">Your personal data will be used to process your order, support your experience throughout this website, and for other purposes described in our privacy policy.</p>
+                                            {% if grand_total >= 2000 %}
+                                            <div class="coupon-div">
+                                                <label for="coupon">Enter Coupon:</label>
+                                                <input type="text" name="coupon" id="coupon" placeholder="Coupon Code">
+                                            </div>
+                                        {% endif %}
+                                        <br>
+                                
+                                            <button type="submit" class="btn btn-success">Place Order</button>
                                         </div>
                                     </form>
                                 </div>

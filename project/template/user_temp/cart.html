@@ -270,24 +270,11 @@
                                 </div>
                                 <div class="row g-0 border-top pt--20 mt--20">
                                     <div class="col-sm-6">
-                                        <div class="coupon">
-                                            {% if grand_total > 2000 %}
-                                            <form action="" method="POST">
-                                                {% csrf_token %}
-                                                <input type="text" id="coupon" name="coupon" class="cart-form__input" placeholder="Coupon Code" >
-                                                <button type="submit" class="cart-form__btn" >Apply Coupon</button>
-                                            </form>
-                                            {%endif%}
-                                        </div>
+                                       
                                     </div>
                                     
                                     <div class="col-sm-6 text-sm-end">
-                                        {% if grand_total > 2000 %}
-                                        <button type="button" class="cart-form__btn" id="get-coupon-button">Get Coupon</button>
-                                        <p id="coupon-code" style="display: none;"></p>
-                                    {% else %}
-                                        <p>You are not eligible for a coupon.</p>
-                                    {% endif %}
+                                      
                                        
                                     </div>
                                 </div>
@@ -934,7 +921,7 @@ JavaScript for updating the cart and handling out-of-stock items -->
 
 
 
-<<script>
+<script>
     function updateQuantity(productId, action) {
        
         const url = `/cart:update_cart/${action}/${productId}/`;

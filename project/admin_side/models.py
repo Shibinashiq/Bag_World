@@ -34,7 +34,6 @@ class Offer(models.Model):
 class Coupon(models.Model):
     coupon_code = models.CharField(max_length=50)
     discount = models.PositiveIntegerField()
-    min_price = models.IntegerField()
     is_deleted = models.BooleanField(default=False)
 
     def __str__(self):

@@ -1,14 +1,13 @@
-import random
+from admin_side.models import Coupon
 from user.models import Profile
 from django.db.models import  F
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.db.models import Sum,ExpressionWrapper,DecimalField
-
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .models import Product, Cart,Wishlist
 from decimal import Decimal
-
+from datetime import date
 
 
 def cart(request):
@@ -28,14 +27,6 @@ def cart(request):
                 A=i.product.product_price*i.quantity
             total_price+=A
 
-        # for item in cart:
-        #     if item.offer_price is not None:
-        #         item_total_price = item.offer_price * item.quantity
-        #     else:
-        #         item_total_price = item.product.product_price * item.quantity
-
-        #     total_price += item_total_price
-
         grand_total = total_price + shipping_charge
 
         context = {
@@ -51,8 +42,8 @@ def cart(request):
         return redirect('user:user_login')
     
     
-from datetime import datetime  # Import datetime module
-from datetime import date
+  # Import datetime module
+
 
 def add_cart(request):
     if request.method == 'POST':
@@ -173,6 +164,7 @@ def delete_cart_item(request,product_id):
     
 def checkout(request):
     cart_items = Cart.objects.filter(user=request.user)
+    
 
     # Check if the cart is empty
     if not cart_items.exists():
@@ -191,12 +183,13 @@ def checkout(request):
 
     # Add shipping cost to the grand total
     grand_total += shipping_cost
-    
+    available_coupons = Coupon.objects.filter(is_deleted=False)
 
     context = {
         'cart_items': cart_items,
         'user_profile': user_profile,
-        'grand_total': grand_total
+        'grand_total': grand_total,
+        'available_coupons':available_coupons
     }
 
     return render(request, 'user_temp/checkout.html', context)

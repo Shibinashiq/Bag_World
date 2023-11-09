@@ -10,7 +10,7 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate,login
 from django.views.decorators.cache import never_cache
 from django.contrib.auth import login,logout
-from admin_side.models import Product, ProductImage
+from admin_side.models import Coupon, Product, ProductImage
 from .utils import send_otp
 from datetime import datetime, timedelta
 import pyotp
@@ -243,6 +243,19 @@ def place_order(request):
 
         # Add the shipping cost to the total only once
         total += shipping_cost
+        coupon_code = request.POST.get('coupon')
+
+        # Check if the coupon code is valid
+        try:
+            coupon = Coupon.objects.get(coupon_code=coupon_code, is_deleted=False)
+            print(coupon.discount)
+            # Apply the coupon discount to the total price
+            total -= coupon.discount
+            print(coupon.discount)
+            print(total)
+        except Coupon.DoesNotExist:
+            messages.error(request, 'Coupon is not valid.')  # Display error message
+            return redirect('cart:checkout')
 
         # Create an order object and save it to the database
         order = Order.objects.create(
@@ -253,6 +266,7 @@ def place_order(request):
             profile=address,
             shipping_cost=shipping_cost  # Save the shipping cost in the order
         )
+        print(order.total_price)
 
         for item in cart:
             order.product.add(item.product)
