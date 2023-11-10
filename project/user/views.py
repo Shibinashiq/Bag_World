@@ -213,8 +213,6 @@ def user_profile(request):
     }
 
     return render(request, 'user_temp/user_profile.html', context)
-
-
 def place_order(request):
     if request.method == 'POST':
         user = request.user
@@ -243,19 +241,26 @@ def place_order(request):
 
         # Add the shipping cost to the total only once
         total += shipping_cost
-        coupon_code = request.POST.get('coupon')
 
-        # Check if the coupon code is valid
-        try:
-            coupon = Coupon.objects.get(coupon_code=coupon_code, is_deleted=False)
-            print(coupon.discount)
-            # Apply the coupon discount to the total price
-            total -= coupon.discount
-            print(coupon.discount)
-            print(total)
-        except Coupon.DoesNotExist:
-            messages.error(request, 'Coupon is not valid.')  # Display error message
-            return redirect('cart:checkout')
+        # Initialize coupon_code with an empty string
+        coupon_code = ''
+
+        # Check if the total price is greater than or equal to 2000 to show the coupon field
+        if total >= 2000:
+            coupon_code = request.POST.get('coupon')
+
+            # Check if the coupon code is valid
+            if coupon_code:
+                try:
+                    coupon = Coupon.objects.get(coupon_code=coupon_code, is_deleted=False)
+                    # Apply the coupon discount to the total price
+                    total -= coupon.discount
+                except Coupon.DoesNotExist:
+                    messages.error(request, 'Coupon is not valid.')  # Display error message
+                    return redirect('cart:checkout')
+            else:
+                # No coupon code provided, continue without applying any discount
+                pass
 
         # Create an order object and save it to the database
         order = Order.objects.create(
@@ -266,7 +271,6 @@ def place_order(request):
             profile=address,
             shipping_cost=shipping_cost  # Save the shipping cost in the order
         )
-        print(order.total_price)
 
         for item in cart:
             order.product.add(item.product)
@@ -281,6 +285,8 @@ def place_order(request):
         return redirect('user:place_order')
 
     return render(request, 'user_temp/order_success.html')
+
+
 
 
 
