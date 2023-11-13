@@ -145,3 +145,8 @@ STATICFILES_DIRS = [
 # Media files (user-uploaded files)
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = '/media/'
+
+
+razor_pay_key_id='rzp_test_WHOEXgrD9IAr4I'
+
+key_secret='O117d4GaHwwPIB10RVyIcTqu'

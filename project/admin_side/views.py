@@ -1,4 +1,4 @@
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal, DecimalException, InvalidOperation
 import re
 from django.contrib.auth import authenticate,login
 from django.db.models import Q
@@ -20,7 +20,7 @@ def admin_dashboard(request):
     return render(request,'admin_temp/dashboard.html')
 
 
-@login_required(login_url='admin_side:admin_login')   
+
 def admin_login(request):
     if request.method =='POST':
         username=request.POST.get('username')
@@ -275,7 +275,7 @@ def add_product(request):
             product_name = request.POST.get('product_name')
             product_brand = request.POST.get('product_brand')
             product_offer = request.POST.get('product_offer')
-            product_coupon = request.POST.get('product_coupon')
+           
             product_category = request.POST.get('product_category')
             offer_name = request.POST.get('product_offer')
             if offer_name:
@@ -286,11 +286,7 @@ def add_product(request):
                 offer = None
 
             # Handle the coupon value
-            if product_coupon:
-                coupon, created = Coupon.objects.get_or_create(coupon_code=product_coupon)
-            else:
-                # No Coupon selected
-                coupon = None
+            
 
             try:
                 product_price = Decimal(request.POST.get('product_price'))
@@ -321,7 +317,7 @@ def add_product(request):
                     product_offer=offer,
                     product_category=category,
                     product_quantity=product_quantity,
-                    product_coupon=coupon
+                    
                 )
 
                 new_product.save()
@@ -345,105 +341,102 @@ def add_product(request):
         return render(request, 'admin_temp/add_product.html', context)
     else:
         return redirect('admin_login')
-
+    
     
 @login_required(login_url='admin_side:admin_login')    
 def edit_product(request, product_id):
     if request.user.is_superuser:
+        pro = get_object_or_404(Product, id=product_id)
+
         if request.method == 'POST':
             product_images = request.FILES.getlist('product_images')
             product_name = request.POST.get('product_name')
             product_brand = request.POST.get('product_brand')
             product_offer = request.POST.get('product_offer')
-            product_coupon=request.POST.get('product_coupon')
             product_category = request.POST.get('product_category')
-            pro = Product.objects.get(id=product_id)
 
             try:
                 product_price = Decimal(request.POST.get('product_price'))
                 product_quantity = Decimal(request.POST.get('product_quantity'))
-            except InvalidOperation:
-                messages.error(request, 'Invalid Attempt. Enter correct values.')
+            except (InvalidOperation, DecimalException, ValueError):
+                messages.error(request, 'Invalid values for price or quantity. Please enter valid numeric values.')
                 return redirect('admin_side:product')
+
             if product_price <= 0 or product_quantity <= 0:
-                messages.error(request, 'Product price and quantity must be greater than zero.')
-                return redirect('admin_side:product')
-
-            if not re.search(r'[a-zA-Z]', product_name):
-                messages.error(request, 'Product name must contain both letters and not only numbers. Please try again.')
-                return redirect('admin_side:product')
-
-            # Check for non-empty fields
-            if not (product_name and product_brand and product_offer and product_coupon and product_category and product_price and product_quantity):
-                messages.error(request, 'All fields are required. Please fill them in.')
-                return redirect('admin_side:product')
-
-            # Check for product name uniqueness (case-insensitive) excluding the current product
-            if Product.objects.filter(Q(product_name__iexact=product_name) & ~Q(id=product_id)).exists():
-                messages.error(request, 'A product with this name already exists. Please choose a unique name.')
+                messages.error(request, 'Product price and quantity must be greater than or equal to zero.')
                 return redirect('admin_side:product')
 
             brand, created = Brand.objects.get_or_create(brand_name=product_brand)
             category, created = Category.objects.get_or_create(category_name=product_category)
             offer, created = Offer.objects.get_or_create(offer_name=product_offer)
-            coupon,created=Coupon.objects.get_or_create(coupon_code=product_coupon)
 
-            pro.product_name = product_name
-            pro.product_price = product_price
-            pro.product_brand = brand
-            pro.product_offer = offer
-            pro.product_category = category
-            pro.product_quantity = product_quantity
-            pro.product_coupon=coupon
-            if product_images:
-              for img in product_images:
-                photo = ProductImage.objects.create(product=pro, image=img)
-            photo.save()
-            pro.save()
+            # Check for any changes before saving
+            if (
+                pro.product_name != product_name or
+                pro.product_price != product_price or
+                pro.product_brand != brand or
+                pro.product_offer != offer or
+                pro.product_category != category or
+                pro.product_quantity != product_quantity
+            ):
+                pro.product_name = product_name
+                pro.product_price = product_price
+                pro.product_brand = brand
+                pro.product_offer = offer
+                pro.product_category = category
+                pro.product_quantity = product_quantity
 
-            return redirect('admin_side:product')
-        product = Product.objects.all()
+                pro.save()
+
+                # Handle product images here (if needed)
+
+                return redirect('admin_side:product')
+            else:
+                messages.info(request, 'No changes were made to the product.')
+                return redirect('admin_side:product')
+
+        # If it's a GET request, render the edit form
         brand = Brand.objects.all()
         category = Category.objects.all()
         offer = Offer.objects.all()
-        coupon=Coupon.objects.all()
         context = {
             'brand': brand,
             'category': category,
             'offer': offer,
-            'product': product,
-            'coupon':coupon
+            'product': pro,
         }
+        
         return render(request, 'admin_temp\edit_product.html', context)
+
     else:
         return redirect('admin_login')
 
 
-       
     
-@login_required(login_url='admin_side:admin_login')     
 def product_delete(request, product_id):
     if request.user.is_superuser:
         product = get_object_or_404(Product, id=product_id)
         if not product.is_deleted:
             product.is_deleted = True
             product.save()
-            messages.error(request,'Deleted successfully')
+            messages.success(request, 'Deleted successfully')
         return redirect('admin_side:product')
     else:
         return redirect('admin_login') 
     
-@login_required(login_url='admin_side:admin_login')    
+   
 def product_undelete(request, product_id):
     if request.user.is_superuser:
         product = get_object_or_404(Product, id=product_id)
         if product.is_deleted:
             product.is_deleted = False
             product.save()
-            messages.error(request,'Un Deleted successfully')
+            messages.success(request, 'Undeleted successfully')
         return redirect('admin_side:product')
     else:
-        return redirect('admin_login') 
+        return redirect('admin_login')
+
+
     
 @login_required(login_url='admin_side:admin_login')     
 def admin_user(request):

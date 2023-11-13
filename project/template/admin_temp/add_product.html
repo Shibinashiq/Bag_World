@@ -44,15 +44,7 @@
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label for="product_coupon">Coupon</label>
-                        <select class="form-control" id="product_coupon" name="product_coupon">
-                            <option value="">No Coupon</option> <!-- Use an empty value for no coupon -->
-                            {% for i in coupon %}
-                                <option value="{{ i.coupon_code }}">{{ i.coupon_code }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
+                    
                     
                     
                     <div class="form-group">

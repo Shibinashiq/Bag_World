@@ -28,12 +28,14 @@ def cart(request):
             total_price+=A
 
         grand_total = total_price + shipping_charge
+        user_profile=Profile.objects.all()
 
         context = {
             'cart': cart,
             'shipping_charge': shipping_charge,
             'grand_total': grand_total,
             'total_price': total_price,
+            'user_profile':user_profile
         }
 
         return render(request, 'user_temp/cart.html', context)
@@ -109,13 +111,24 @@ def update_cart(request, action, product_id):
         
         cart_item = Cart.objects.filter(user=request.user, product_id=product_id).first()
         if cart_item:
+            
             if action == "increase":
-                cart_item.quantity += 1
+                if cart_item.product.product_quantity==cart_item.quantity:
+                    messages.error(request,'Product out of stock')
+            
+                else:
+                    cart_item.quantity += 1
+            
+                
             elif action == "decrease":
-                cart_item.quantity -= 1
-                if cart_item.quantity <= 0:
+                if cart_item.quantity>1:
+                  cart_item.quantity -= 1
+                else:
+                      messages.error(request,'you cant order the product below 1')
+                    
+                # if cart_item.quantity <= 0:
                     # Remove the item from the cart if the quantity becomes zero or less
-                    cart_item.delete()
+                    # cart_item.delete()
             else:
                 return HttpResponseBadRequest("Invalid action")
 

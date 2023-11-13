@@ -150,7 +150,7 @@
                                     </a>
                                 </div>
                                 <div class="toolbar-item">
-                                    <a href="wishlist.html" class="toolbar-btn">
+                                    <a href="{% url 'cart:wishlist' %}" class="toolbar-btn">
                                         <i class="flaticon-heart"></i>
                                     </a>
                               
@@ -208,6 +208,8 @@
                                                             {% endfor %}
                                                         </ul>
                                                      {% endif %}
+                        
+
 
                                                     {% for i in cart %}
                                                           <tr>
@@ -249,6 +251,7 @@
                                                             
                                                           
                                                             
+                                                    </div>
                                                             
                                                             
                                                             <td class="product-total-price">
@@ -270,7 +273,19 @@
                                 </div>
                                 <div class="row g-0 border-top pt--20 mt--20">
                                     <div class="col-sm-6">
-                                       
+                                        <!-- <P>THIS IS YOUR shippment address you want to make any changes then press the edit button</P>
+                                        {% for i in user_profile %}
+                                        {{ i.firstname }} {{ i.lastname }}<br>
+                                        {{ i.streetaddress }}<br>
+                                            {{ i.town }}, {{ i.state }}<br>
+                                            {{ i.phone }}
+                                            {{ i.email }}
+                                            {{ i.ordernote }}<br>
+                                            {{ i.company_name }}<br>
+                                            {{ i.country }}<br>
+                                            
+                        
+                                        {% endfor %} -->
                                     </div>
                                     
                                     <div class="col-sm-6 text-sm-end">

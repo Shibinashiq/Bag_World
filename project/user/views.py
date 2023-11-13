@@ -79,8 +79,6 @@ def otp_page(request):
     error_message = None
     if request.method == 'POST':
         otp = request.POST['otp']
-        import pdb
-        pdb.set_trace()
         username = request.session['username']  
         otp_secret_key = request.session['otp_secret_key']  # Use square brackets here
         otp_valid_until = request.session['otp_valid_date']  # Use square brackets here
@@ -100,8 +98,6 @@ def otp_page(request):
                     user = User.objects.create(username=username, email=email, password=make_password(password))
                     user.save()
                     login(request, user)
-                    import pdb
-                    pdb.set_trace()
                     if request.session['username']:
                         del request.session['username']
                         del request.session['password']
@@ -212,7 +208,14 @@ def user_profile(request):
         'order_details': order_details,
     }
 
-    return render(request, 'user_temp/user_profile.html', context)
+    return render(request, 'user_temp/user_profile.html', context) 
+
+
+def edit_profile(adress_id,request):
+    return render(request,'user_temp/edit_profile')
+
+
+
 def place_order(request):
     if request.method == 'POST':
         user = request.user

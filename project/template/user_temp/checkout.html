@@ -201,16 +201,21 @@
                         </div>
                     </div> 
                     <div class="row">
-                        <!-- Checkout Area Start -->  
+                        <!-- Checkout Area Start --> 
+                         
                         <div class="col-lg-6">
                             <div class="checkout-title mt--10">
                                 <h2>Billing Details</h2>
                             </div>
+                            
                             <div class="checkout-form">
+
+
+                                
                                 <form action="{% url 'user:user_profile' %}" class="form form--checkout" method="POST" >
                                     {%csrf_token%}
                                     
-                                
+                                    
                                    
 
                                     <div class="row">
@@ -339,10 +344,11 @@
                                 <div class="checkout-payment">
                                     <form action="{% url 'user:place_order' %}" class="payment-form" method="POST">
                                         {%csrf_token%}
-
+                                        <h3>Address</h3>
                                         {% for i in user_profile %}
                                         <label>
-                                            <input type="radio" name="address_id"  id="address_id" value="{{ i.id }}">
+                                            <input type="radio" name="address_id" id="address_id" value="{{ i.id }}" checked>
+
                                             {{ i.firstname }} {{ i.lastname }}<br>
                                             {{ i.streetaddress }}<br>
                                             {{ i.town }}, {{ i.state }}<br>
@@ -351,11 +357,16 @@
                                             {{ i.ordernote }}<br>
                                             {{ i.company_name }}<br>
                                             {{ i.country }}<br>
+                                            
+
                                         </label>
                                         {% endfor %}
-
-
+                                      <br>
+                                      
+                                      <h3>Payment</h3>
+                                      
                                         <div class="payment-group mb--10">
+                                            
                                             <div class="payment-radio">
                                                 <input type="radio" value="bank" name="payment-method" id="bank" checked="">
                                                 <label class="payment-label" for="bank">Direct Bank Transfer</label>
@@ -401,9 +412,12 @@
                         </div>
                         <!-- Checkout Area End -->
                     </div>
+                   
                 </div>
+                
             </div>
-        </div>
+          
+        
         <!-- Main Content Wrapper Start -->
 
         <!-- Footer Start-->
