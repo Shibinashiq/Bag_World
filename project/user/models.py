@@ -29,7 +29,7 @@ class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,null=True)
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE,null=True)
     total_price = models.IntegerField(null=True) 
-    payment_mode = models.CharField( max_length=50,default=True)
+    payment_mode = models.CharField( max_length=50,default=True ,null=True)
     payment_id = models.CharField( max_length=50,blank=True,null=True,default=True)
     messages = models.TextField(blank=True,null=True,default=True)
     tracking_no =models.CharField( max_length=50,default=True)

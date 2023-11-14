@@ -335,14 +335,14 @@
                                             </tr>
                                             <tr class="order-total">
                                                 <th>Order Total</th>
-                                                <td class="text-end"><span class="order-total-ammount">${{grand_total}}</span></td>
+                                                <td class="text-end"><span class="order-total-ammount" id="totalamount">{{grand_total}}</span></td>
                                             </tr>
                                         </tfoot>
                                     </table>
                                   
                                     
                                 <div class="checkout-payment">
-                                    <form action="{% url 'user:place_order' %}" class="payment-form" method="POST">
+                                    <form action="{% url 'user:place_order' %}" class="payment-form" method="POST" id="checkoutForm">
                                         {%csrf_token%}
                                         <h3>Address</h3>
                                         {% for i in user_profile %}
@@ -364,21 +364,20 @@
                                       <br>
                                       
                                       <h3>Payment</h3>
-                                      
-                                        <div class="payment-group mb--10">
-                                            
-                                            <div class="payment-radio">
-                                                <input type="radio" value="bank" name="payment-method" id="bank" checked="">
-                                                <label class="payment-label" for="bank">Direct Bank Transfer</label>
-                                            </div>
-                                            <div class="payment-info" data-method="bank">
-                                                <p>Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order will not be shipped until the funds have cleared in our account.</p>
-                                            </div>
+                                      <div class="payment-group mb--10">
+                                        <div class="payment-radio">
+                                            <input type="radio" value="razorpay" name="payment_method" id="razorpay">
+                                            <label class="payment-label" for="razorpay">Razorpay</label>
                                         </div>
+                                        <div class="payment-info" data-method="bank">
+                                            <p>Make your payment directly through Razorpay. Your order will not be shipped until the payment is confirmed.</p>
+                                        </div>
+                                    </div>
+                                    
                                        
                                         <div class="payment-group mb--10">
                                             <div class="payment-radio">
-                                                <input type="radio" value="cash" name="payment-method" id="cash">
+                                                <input type="radio" value="cash" name="payment_method" id="cash">
                                                 <label class="payment-label" for="cash">
                                                     CASH ON DELIVERY
                                                 </label>
@@ -392,10 +391,11 @@
                                             <p class="mb--15">Your personal data will be used to process your order, support your experience throughout this website, and for other purposes described in our privacy policy.</p>
                                            <!-- <button  type="submit" class="btn btn-success">Place Order</button> -->
                                         </div>
+                                        <!-- <button id="rzp-button1" class="pay">Pay with Razorpay</button> -->
 
                                         <div class="payment-group mt--20">
                                             <input type="hidden" name="product_id" value="{{ product_id }}">
-                                            <p class="mb--15">Your personal data will be used to process your order, support your experience throughout this website, and for other purposes described in our privacy policy.</p>
+                                            
                                             {% if grand_total >= 2000 %}
                                             <div class="coupon-div">
                                                 <label for="coupon">Enter Coupon:</label>
@@ -404,7 +404,7 @@
                                         {% endif %}
                                         <br>
                                 
-                                            <button type="submit" class="btn btn-success">Place Order</button>
+                                        <button type="button" class="btn btn-success" onclick="placeOrder()">Place Order</button>
                                         </div>
                                     </form>
                                 </div>
@@ -932,7 +932,7 @@ Hasthemes</p>
     </script> -->
 </body>
 
-<script>
+<!-- <script>
   // Get all the radio buttons with the class "address-radio"
 
 
@@ -944,8 +944,85 @@ addressRadios.forEach(function(radio) {
     }
   });
 });
+<!-- Include this in your order_success.html template -->
 
 
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+    function placeOrder() {
+        var selectedPaymentMethod = document.querySelector('input[name="payment_method"]:checked');
+        if (!selectedPaymentMethod) {
+            alert('Please choose a payment method');
+            return;
+        }
+
+        var paymentMethod = selectedPaymentMethod.value;
+
+        if (paymentMethod === 'razorpay') {
+            var totalAmount = parseFloat(document.getElementById('totalamount').textContent); // Adjust this line based on your HTML structure
+
+            var options = {
+                "key": "rzp_test_WHOEXgrD9IAr4I",
+                "amount": totalAmount * 100, // Razorpay expects the amount in paisa, so multiply by 100
+                "currency": "INR",
+                "name": "Bag world",
+                "description": "Thanks for buying from us",
+                "image": "https://example.com/your_logo",
+                "handler": function (response) {
+                    console.log(response.razorpay_payment_id);
+                    // Send the payment ID and total amount to your Django backend
+                    savePaymentDetails(response.razorpay_payment_id, totalAmount);
+                }
+            };
+
+            var rzp1 = new Razorpay(options);
+            rzp1.open();
+        } else {
+            // Handle other payment methods or submit the form as needed
+            document.getElementById("checkoutForm").submit();
+        }
+    }
+
+
+    function savePaymentDetails(paymentId, totalAmount) {
+        const url = '/place_order/';
+    
+        const csrfToken = "{{ csrf_token }}";
+    
+        // Get the value of the element with ID 'address_id'
+        var addressId = document.getElementById('address_id').value;
+    
+        $.ajax({
+            url: url,
+            type: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken
+            },
+            data: {
+                payment_id: paymentId,
+                total_amount: totalAmount,
+                payment_method: 'razorpay',
+                address_id: addressId  // Use the retrieved addressId here
+            },
+            success: function (data) {
+                console.log('Payment details saved successfully');
+                // Optionally, you can redirect or perform other actions here
+            },
+            error: function (error) {
+                console.error('Failed to save payment details:', error);
+            }
+        });
+    }
+    
+
+    
 </script>
+
+
+
+
+<!-- <script src="{% static 'assets/js/checkout.js '%}"></script> -->
 <!-- Mirrored from htmldemo.net/payne/payne/checkout.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 11 Oct 2023 15:26:56 GMT -->
 </html>
