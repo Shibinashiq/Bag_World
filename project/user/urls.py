@@ -21,7 +21,7 @@ urlpatterns = [
     
     
     path('place_order/', views.place_order, name='place_order'),
-    # path('save_payment_details/', views.save_payment_details, name='save_payment_details'),
+    path('cancel_order/<int:order_id>/', views.cancel_order, name='cancel_order'),
     
     
 

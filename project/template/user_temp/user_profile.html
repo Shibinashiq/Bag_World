@@ -235,12 +235,12 @@
                                                                 <td>{{ order.profile.streetaddress }}, {{ order.profile.town }}, {{ order.profile.state }}, {{ order.profile.country }}</td> <!-- Address -->
                                                                 <td>
                                                                     {% if not order.is_cancelled %}
-                                                                        <form method="post" action="">
+                                                                        <form method="post" action="{% url 'user:cancel_order' order.id %}">
                                                                             {% csrf_token %}
-                                                                            <button type="submit" class="btn btn-danger">Cancel Order</button>
+                                                                            <button type="submit"  class="btn btn-danger">Cancel Order</button>
                                                                         </form>
                                                                     {% else %}
-                                                                        <span class="badge badge-warning">Order Cancelled</span>
+                                                                        <h3>cancelled</h3>
                                                                     {% endif %}
                                                                 </td>
                                                             </tr>

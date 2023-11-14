@@ -210,6 +210,7 @@ def user_profile(request):
         'user_profile': user_profile,
         'user_order': user_order,
         'order_details': order_details,
+        
     }
 
     return render(request, 'user_temp/user_profile.html', context) 
@@ -222,13 +223,13 @@ def edit_profile(adress_id,request):
 
 def place_order(request):
     if request.method == 'POST':
-        print('firsttttttttttttttttttttttttttttttt')
+       
         user = request.user
         user_name = User.objects.get(username=user)
         address_id = request.POST.get('address_id')
         print(address_id)
         if address_id is None:
-            print('errorrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr')
+           
             messages.error(request, 'Address should be provided')
             return redirect('cart:checkout')
 
@@ -243,7 +244,7 @@ def place_order(request):
             products_in_order.append(item.product)
 
         payment_mode = request.POST.get('payment_method')
-        print(payment_mode, 'iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii')
+       
         payment_id = request.POST.get('payment_id')
 
         if not payment_mode:
@@ -277,7 +278,7 @@ def place_order(request):
                 pass
 
         if payment_mode == 'cash':
-            print('hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh')
+           
             # If payment method is cash, save the order directly
             order = Order.objects.create(
                 user=user_name,
@@ -285,7 +286,8 @@ def place_order(request):
                 payment_id=payment_id,
                 total_price=total,
                 profile=address,
-                shipping_cost=shipping_cost
+                shipping_cost=shipping_cost,
+                od_status='Processing'
             )
 
             for item in cart:
@@ -298,14 +300,15 @@ def place_order(request):
 
             return redirect('user:place_order')
         elif payment_mode == 'razorpay':
-            print('')
+            
             # If payment method is bank, save the order details to your model
             order = Order.objects.create(
                 user=user_name,
                 payment_mode=payment_mode,
                 total_price=total,
                 profile=address,
-                shipping_cost=shipping_cost
+                shipping_cost=shipping_cost,
+                od_status='Processing'
             )
 
             for item in cart:
@@ -317,7 +320,7 @@ def place_order(request):
             # Save the payment_id and any additional data to your model
             order.payment_id = payment_id
             order.save()
-
+            return render(request, 'user_temp/order_success.html')
             # Call the Razorpay function here if needed
             # razorpay_response = call_razorpay_function(order_id=order.id, total=total)
             
@@ -325,46 +328,26 @@ def place_order(request):
 
             # return JsonResponse({'razorpay_response': razorpay_response})
             # return JsonResponse({'success': True, 'message': 'Order saved successfully'})
-            return render(request, 'user_temp/order_success.html')
+            
      
     return render(request, 'user_temp/order_success.html')
 
 
 
-
 def cancel_order(request, order_id):
+    print('hhhhhhhhhhhhhhhhhhhhh')
+    order = Order.objects.get(id=order_id)
     
-        order = Order.objects.get(id=order_id)
-        if order.od_status == 'Pending':
-            order.is_cancelled = True
-            order.save()
-            # Optionally, you can add logic for order cancellation confirmation or notifications.
-        else:
-            # Handle cases where the order cannot be canceled.
-            raise PermissionDenied("This order cannot be canceled.")
-    # can add specific error-handling logic here if needed.
-        return redirect('user:order_history')
+    if order.od_status == 'Processing' and not order.is_cancelled: 
+        order.is_cancelled = True
+        order.od_status = 'Cancelled'
+        order.save()
+        messages.success(request, 'Order canceled successfully')
+    else:
+        messages.error (request,"This order cannot be canceled.")
+    
+    return redirect('user:user_profile')
 
 
-from django.shortcuts import render
-
-# def get_razorpay_order(request):
-#     print('iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii')
-#     cart = Cart.objects.filter(user=request.user).first()
-#     total = sum(item.product.product_price * item.quantity for item in cart)
-#     print(total)
-#     # Pass the total to the template
-#     return JsonResponse ( {'total': total})
 
 
-# def save_payment_details(request):
-#     if request.method == 'POST':
-#         data = json.loads(request.body)
-#         payment_id = data.get('payment_id')
-#         total_amount = data.get('total_amount')
-
-#         # Save the payment_id and total_amount to your model here...
-
-#         return JsonResponse({'message': 'Payment details saved successfully'})
-#     else:
-#         return JsonResponse({'error': 'Invalid request method'})
