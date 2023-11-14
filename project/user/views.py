@@ -338,7 +338,7 @@ def cancel_order(request, order_id):
     print('hhhhhhhhhhhhhhhhhhhhh')
     order = Order.objects.get(id=order_id)
     
-    if order.od_status == 'Processing' and not order.is_cancelled: 
+    if order.orderstatus == 'Processing' and not order.is_cancelled and order.ordertatus=='Delivered': 
         order.is_cancelled = True
         order.od_status = 'Cancelled'
         order.save()

@@ -36,15 +36,20 @@
                         </td> <!-- Total Price -->
                         <td>{{ order.profile.streetaddress }}, {{ order.profile.town }}, {{ order.profile.state }}, {{ order.profile.country }}</td> <!-- Address -->
                         <td>
-                            {% if not order.is_cancelled %}
-                                <form method="post" action="">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-danger">Cancel Order</button>
-                                </form>
-                            {% else %}
-                                <span class="badge badge-warning">Order Cancelled</span>
-                            {% endif %}
+                            <form method="post" action="{% url 'admin_side:update_status' order.id %}">
+                                {% csrf_token %}
+                                <select name="order_status" class="form-control">
+                                    <option value="Pending" {% if order.od_status == 'Pending' %}selected{% endif %}>Pending</option>
+                                    <option value="Processing" {% if order.od_status == 'Processing' %}selected{% endif %}>Processing</option>
+                                    <option value="Shipped" {% if order.od_status == 'Shipped' %}selected{% endif %}>Shipped</option>
+                                    <option value="Delivered" {% if order.od_status == 'Delivered' %}selected{% endif %}>Delivered</option>
+                                    <option value="Return" {% if order.od_status == 'Return' %}selected{% endif %}>Return</option>
+                                    <option value="Cancelled" {% if order.od_status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                                </select>
+                                <button type="submit" class="btn btn-primary">Update Status</button>
+                            </form>
                         </td>
+                        
                     </tr>
                 {% endfor %}
             </tbody>

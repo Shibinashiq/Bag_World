@@ -476,6 +476,23 @@ def orders(request):
 
     return render(request,'admin_temp/orders.html',context)
 
+
+
+
+@login_required(login_url='admin_side:admin_login')
+def update_status(request, order_id):
+    if request.method == 'POST':
+        new_status = request.POST.get('order_status')
+        order = get_object_or_404(Order, id=order_id)
+        order.od_status = new_status
+        order.save()
+
+    return redirect('admin_side:orders')
+
+
+
+
+
 @login_required(login_url='admin_side:admin_login')   
 def offer(request):
     off=Offer.objects.all()
