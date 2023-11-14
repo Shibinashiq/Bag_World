@@ -24,7 +24,9 @@
                     {% for message in messages %}
                     <li {% if message.tags %} class="{{ message.error }}"{% endif %}>{{ message }}</li>
                     {% endfor %}
+        
                 </ul>
+        
                 {% for i in off %}
                 <tr>
                     <td>{{ i.offer_name }}</td>

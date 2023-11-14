@@ -333,19 +333,27 @@ def place_order(request):
     return render(request, 'user_temp/order_success.html')
 
 
-
 def cancel_order(request, order_id):
-    print('hhhhhhhhhhhhhhhhhhhhh')
     order = Order.objects.get(id=order_id)
-    
-    if order.orderstatus == 'Processing' and not order.is_cancelled and order.ordertatus=='Delivered': 
+
+    allowed_statuses = ['Processing', 'Shipped', 'Pending']
+
+    if order.od_status in allowed_statuses and not order.is_cancelled: 
         order.is_cancelled = True
         order.od_status = 'Cancelled'
         order.save()
         messages.success(request, 'Order canceled successfully')
-    else:
-        messages.error (request,"This order cannot be canceled.")
-    
+    # elif order.od_status == 'Delivered':
+       
+    #     order.od_status = 'Return'
+    #     order.save()
+    #     messages.error(request, "Order return successfully.")
+    # else:
+       
+    #     order.is_cancelled = False
+    #     order.save()
+    #     messages.error(request, "This order cannot be canceled.")
+
     return redirect('user:user_profile')
 
 

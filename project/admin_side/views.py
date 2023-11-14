@@ -484,8 +484,15 @@ def update_status(request, order_id):
     if request.method == 'POST':
         new_status = request.POST.get('order_status')
         order = get_object_or_404(Order, id=order_id)
+
+        if new_status == 'Cancelled':
+            order.is_cancelled = True
+        else:
+            order.is_cancelled = False
+
         order.od_status = new_status
         order.save()
+        messages.success(request, 'Order status updated successfully')
 
     return redirect('admin_side:orders')
 

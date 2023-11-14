@@ -234,15 +234,23 @@
                                                                 </td> <!-- Total Price -->
                                                                 <td>{{ order.profile.streetaddress }}, {{ order.profile.town }}, {{ order.profile.state }}, {{ order.profile.country }}</td> <!-- Address -->
                                                                 <td>
-                                                                    {% if not order.is_cancelled and order. %}
-                                                                        <form method="post" action="{% url 'user:cancel_order' order.id %}">
-                                                                            {% csrf_token %}
-                                                                            <button type="submit"  class="btn btn-danger">Cancel Order</button>
+                                                                    {% if not order.is_cancelled and order.od_status == 'Delivered' %}
+                                                                        
+                                                                            <button type="submit" class="btn btn-danger">Return Order</button>
                                                                         </form>
                                                                     {% else %}
-                                                                        <h3>cancelled</h3>
+                                                                        {% if not order.is_cancelled %}
+                                                                            <form method="post" action="{% url 'user:cancel_order' order.id %}">
+                                                                                {% csrf_token %}
+                                                                                <button type="submit" class="btn btn-danger">Cancel Order</button>
+                                                                            </form>
+                                                                        {% else %}
+                                                                            <h3>Cancelled</h3>
+                                                                        {% endif %}
                                                                     {% endif %}
                                                                 </td>
+                                                                
+                                                                
                                                             </tr>
                                                         {% endfor %}
                                                     </tbody>
