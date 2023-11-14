@@ -334,15 +334,20 @@ def place_order(request):
 
 
 def cancel_order(request, order_id):
-    order = Order.objects.get(id=order_id)
+    if request.method == 'POST':
+        order = Order.objects.get(id=order_id)
 
-    allowed_statuses = ['Processing', 'Shipped', 'Pending']
+        allowed_statuses = ['Processing', 'Shipped', 'Pending']
 
-    if order.od_status in allowed_statuses and not order.is_cancelled: 
-        order.is_cancelled = True
-        order.od_status = 'Cancelled'
-        order.save()
-        messages.success(request, 'Order canceled successfully')
+        if order.od_status in allowed_statuses and not order.is_cancelled and order.od_status != 'Return':
+            order.is_cancelled = True
+            order.od_status = 'Cancelled'
+            order.save()
+            messages.success(request, 'Order canceled successfully')
+        else:
+            messages.error(request, "This order cannot be canceled.")
+
+        return redirect('user:user_profile')
     # elif order.od_status == 'Delivered':
        
     #     order.od_status = 'Return'
@@ -354,8 +359,24 @@ def cancel_order(request, order_id):
     #     order.save()
     #     messages.error(request, "This order cannot be canceled.")
 
+    # return redirect('user:user_profile')
+
+
+
+def return_order(request, order_id):
+    if request.method=='POST':
+        order = Order.objects.get(id=order_id)
+        if order.od_status == 'Delivered':
+        
+            order.od_status = 'Return'
+            order.is_cancelled = True
+            order.save()
+            messages.error(request, "Order return successfully.")
+        else:
+        
+            order.is_cancelled = False
+            order.save()
+            messages.error(request, "This order cannot be canceled.")
+
     return redirect('user:user_profile')
-
-
-
 

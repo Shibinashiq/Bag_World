@@ -183,7 +183,7 @@
                                     <button type="button" class="nav-link" data-bs-toggle="tab" role="tab" data-bs-target="#orders" aria-controls="orders" aria-selected="true">Orders</button>
                                     <button type="button" class="nav-link" data-bs-toggle="tab" role="tab" data-bs-target="#downloads" aria-controls="downloads" aria-selected="true">Downloads</button>
                                     <button type="button" class="nav-link" data-bs-toggle="tab" role="tab" data-bs-target="#addresses" aria-controls="addresses" aria-selected="true">addresses</button>
-                                   
+                                    <button type="button" class="nav-link" data-bs-toggle="tab" role="tab" data-bs-target="#wallet" aria-controls="wallet" aria-selected="true">wallet</button>
                                        
                                     <button type="button" class="nav-link" data-bs-toggle="tab" role="tab" data-bs-target="#accountdetails" aria-controls="accountdetails" aria-selected="true">Account Details</button>
                                     <a class="nav-link" href="{%url 'user:user_logout'%}">Logout</a>
@@ -235,12 +235,15 @@
                                                                 <td>{{ order.profile.streetaddress }}, {{ order.profile.town }}, {{ order.profile.state }}, {{ order.profile.country }}</td> <!-- Address -->
                                                                 <td>
                                                                     {% if not order.is_cancelled and order.od_status == 'Delivered' %}
-                                                                        
-                                                                            <button type="submit" class="btn btn-danger">Return Order</button>
+                                                                        <form method="POST" action="{% url 'user:return_order' order.id %}">
+                                                                            {% csrf_token %}
+                                                                            <button type="submit" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                                                                                Return
+                                                                            </button>
                                                                         </form>
                                                                     {% else %}
-                                                                        {% if not order.is_cancelled %}
-                                                                            <form method="post" action="{% url 'user:cancel_order' order.id %}">
+                                                                        {% if not order.is_cancelled  %}
+                                                                            <form method="POST" action="{% url 'user:cancel_order' order.id %}">
                                                                                 {% csrf_token %}
                                                                                 <button type="submit" class="btn btn-danger">Cancel Order</button>
                                                                             </form>
@@ -249,6 +252,7 @@
                                                                         {% endif %}
                                                                     {% endif %}
                                                                 </td>
+                                                                
                                                                 
                                                                 
                                                             </tr>
@@ -326,6 +330,26 @@
                                                     <p>You have not set up this type of address yet.</p>
                                                 </div>
                                             </div>
+                                        </div>
+                                    </div>
+                                     <div class="tab-pane fade" id="wallet">
+                                        <p class="mb--20">You can purchase with this amount.</p>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-sm--20">
+                                                <div class="text-block">
+                                                    <h4 class="mb--20">wallet</h4>
+                                                   
+                                                </div>
+                                                
+                                               
+                                            </div>
+                                            <!-- <div class="col-md-6">
+                                                <div class="text-block">
+                                                    <h4 class="mb--20">Shopping address</h4>
+                                                    <a href="#">Edit</a>
+                                                    <p>You have not set up this type of address yet.</p>
+                                                </div>
+                                            </div> -->
                                         </div>
                                     </div>
                                     <div class="tab-pane fade" id="accountdetails" style="display: block !important;">
@@ -963,6 +987,7 @@ Hasthemes</p>
                 </div>
             </div>
         </div>
+
         <!-- Qicuk View Modal End -->
 
         <!-- Global Overlay Start -->
