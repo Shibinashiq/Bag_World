@@ -217,7 +217,6 @@ def wishlist(request):
     
     return render(request, 'user_temp/wishlist.html', context)
 
-
 def add_wishlist(request, product_id):
     if request.method == 'POST':
         if request.user.is_authenticated:
@@ -229,13 +228,18 @@ def add_wishlist(request, product_id):
                     return redirect('cart:wishlist')
                 else:
                     wishlist_item = Wishlist.objects.create(user=request.user, product=pro_id)
-                    
-                    # Check if the product has an associated offer
-                    if pro_id.product_offer:
-                        # If the product has an offer, save the offer amount in the wishlist item
-                        wishlist_item.offer_price =  pro_id.product_price - pro_id.product_offer.discount_amount 
-                        wishlist_item.save()
+                
+                    if pro_id.product_offer is not None and pro_id.product_offer.end_date >= date.today():
+                        # Calculate the discounted price and assign it to the wishlist_item
+                        discounted_price = pro_id.product_price - pro_id.product_offer.discount_amount
+                        wishlist_item.offer_price = discounted_price
                         print(wishlist_item.offer_price)
+                    else:
+                        # If there's no offer, leave the price field as it is (you can set a default value if needed)
+                        pass
+                    
+                    # Save the wishlist_item after setting the price
+                    wishlist_item.save()
 
                     messages.success(request, 'Product added to your wishlist.')
                     return redirect('cart:wishlist')
@@ -269,13 +273,7 @@ def wishlist_to_cart(request, wishlist_id):
         if Cart.objects.filter(user=request.user, product_id=wishlist_item.product.id).exists():
             messages.error(request, 'Product already exists in the cart')
         else:
-            if check_product.product_offer is not None:
-                if check_product.product_offer.end_date >= date.today():
-                    offer_price = check_product.product_price - check_product.product_offer.discount_amount
-                else:
-                    offer_price = None  # Offer has expired
-            else:
-                offer_price = None
+            
             # Check if the product is available in sufficient quantity
             if wishlist_item.product.product_quantity >= 1:
                 # Use offer price if available, otherwise use the regular product price
@@ -292,7 +290,9 @@ def wishlist_to_cart(request, wishlist_id):
                     user=request.user,
                     product_id=wishlist_item.product.id,
                     quantity=1,  # You can modify this if needed
-                    total_price=cart_price
+                    total_price=cart_price,
+                    offer_price=cart_price,
+                    
                 )
                 print(cart_price)
                 cart_obj.save()
@@ -305,79 +305,9 @@ def wishlist_to_cart(request, wishlist_id):
         # Delete the item from the wishlist
         wishlist_item.delete()
     else:
-        # Handle the case when the user is not authenticated
-        messages.error(request, 'Please log in')
-        return redirect('cart:wishlist')
         pass
-
-# import random
-# import string
-# from django.http import JsonResponse
-
-
-# def generate_coupon(request):
-#     # if request.method == 'POST':
-#         if request.user.is_authenticated:
-#             # Generate a random 4-digit coupon code
-#             coupon_code = ''.join(random.choices(string.digits, k=4))
-#             request.session['coupon_code'] = coupon_code
-
-#             # Print for debugging
-           
-
-#             return JsonResponse({'coupon_code': coupon_code})
-#         else:
-#             # Handle the case where the user is not authenticated
-#             return JsonResponse({'error': 'Please log in to get a coupon.'})
-   
-    
-
-# from decimal import Decimal
-
-# # ...
-# import json
-# from decimal import Decimal
-
-# # ...
-
-# from decimal import Decimal
-
-# def apply_and_display_coupon(request):
-#     if request.method == 'POST':
-#         if request.user.is_authenticated:
-#             user_entered = request.POST.get('coupon')
-#             coupon_code = request.session.get('coupon_code')
-#             if coupon_code and user_entered == coupon_code:
-#                 # Generate a random 3-digit discount code
-#                 discount_code = ''.join(random.choices(string.digits, k=3))
-#                 request.session['discount_code'] = discount_code
-
-#                 # Calculate the total_price (subtotal) and discount_amount
-#                 user_cart = Cart.objects.filter(user=request.user)
-#                 total_price = user_cart.aggregate(total_price=Sum(F('total_price')))['total_price'] or Decimal('0.00')
-                
-#                 discount_amount = Decimal(discount_code)  # Assuming the discount code directly represents the discount amount
-#                 shipping_coast=20
-#                 # Calculate the new grand total after applying the discount
-#                 grand_total = total_price + shipping_coast - discount_amount 
+        # Handle the case when the user is not authenticated
+        # messages.error(request, 'Please log in')
+        # return redirect('cart:wishlist')
         
-
-
-#                 # Convert Decimal to a serializable format (e.g., float)
-#                 grand_total_serializable = float(grand_total)
-
-#                 request.session['discounted_total'] = grand_total_serializable
-                
-                
-#                 messages.success(request, f'Coupon code applied successfully. You received a discount of {discount_amount}.')
-#                 return redirect('cart:cart')
-#             else:
-#                 messages.error(request, 'Invalid coupon code')
-#                 return redirect('cart:cart')
-#         else:
-#             messages.error(request, 'Please log in to apply a coupon.')
-#             return redirect('user:user_login')
-#     else:
-#         return render(request, 'user_temp/cart.html')
-
 

@@ -235,7 +235,11 @@
                                                             
                                                             <td class="product-price">
                                                                 <span class="product-price-wrapper">
+                                                                    {%if i.offer_price%}
+                                                                    <span class="money">{{ i.offer_price}}</span>
+                                                                    {%else%}
                                                                     <span class="money">{{ i.product.product_price}}</span>
+                                                                    {%endif%}
                                                                 </span>
                                                             </td>
 
@@ -252,8 +256,16 @@
                                                           
                                                             
                                                     </div>
-                                                            
-                                                            
+                                                    <!-- <td class="product-total-price">
+                                                        <span class="product-price-wrapper">
+                                                            {%if i.offer_price%}
+                                                            <span class="money">{{ i.offer_price}}</span>
+                                                            {%else%}
+                                                            <span class="money">{{ i.product.product_price}}</span>
+                                                            {%endif%}
+                                                        </span>
+                                                    </td>
+                                                             -->
                                                             <td class="product-total-price">
                                                                 <span class="product-price-wrapper">
                                                                     {%if i.offer_price%}

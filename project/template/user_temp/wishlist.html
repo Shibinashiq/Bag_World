@@ -216,10 +216,8 @@
                                                 </td>
                                                 <td class="product-price">
                                                     <span class="product-price-wrapper">
-                                                        {% if item.product.product_offer %}
-                                                            <span class="money">
-                                                                ${{ item.offer_price }}
-                                                            </span>
+                                                        {% if item.offer_price %}
+                                                            <span class="money">${{ item.offer_price }}</span>
                                                         {% else %}
                                                             <span class="money">${{ item.product.product_price }}</span>
                                                         {% endif %}
