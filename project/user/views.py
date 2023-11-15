@@ -22,10 +22,27 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 # Create your views here.
+from datetime import date
 
 def home(request):
     # Filter products that are not deleted
-    Pro = Product.objects.filter(is_deleted=False)
+    products = Product.objects.filter(is_deleted=False)
+
+    for product in products:
+        if product.product_offer:
+            if product.product_offer.end_date >= date.today():
+                product.discounted_price = product.product_price - product.product_offer.discount_amount
+            else:
+                product.discounted_price = None
+        else:
+            product.discounted_price = None
+
+    # You might want to pass the products to the template
+    context = {'products': products}
+    return render(request, 'user_temp/home.html', context)
+
+            
+        
     # image=ProductImage.objects.filter(is_delete=False)
     context = {
         'Pro': Pro,

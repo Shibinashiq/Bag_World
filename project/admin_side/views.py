@@ -413,6 +413,7 @@ def edit_product(request, product_id):
 
 
     
+    
 def product_delete(request, product_id):
     if request.user.is_superuser:
         product = get_object_or_404(Product, id=product_id)

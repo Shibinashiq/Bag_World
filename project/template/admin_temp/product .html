@@ -54,11 +54,12 @@
                         </td> 
                         <td>
                             {% if not i.is_deleted %}
-                                <a href="{% url 'admin_side:product_delete' i.id %}" class="btn btn-danger">Delete</a>
-                            {% else %}
                                 <a href="{% url 'admin_side:product_undelete' i.id %}" class="btn btn-success">Undelete</a>
+                            {% else %}
+                                <a href="{% url 'admin_side:product_delete' i.id %}" class="btn btn-danger">Delete</a>
                             {% endif %}
                         </td>
+                        
                         
                     </tr>
                 {% endfor %}

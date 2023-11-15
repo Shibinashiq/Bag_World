@@ -208,55 +208,6 @@ def checkout(request):
     return render(request, 'user_temp/checkout.html', context)
 
 
-
-
-
-
-
-# def multiple_address(request):
-#     if request.method == 'POST':
-#         # Retrieve the list of addresses submitted in the request
-#         addresses = request.POST.getlist('address')
-        
-#         for address_data in addresses:
-#             # Parse the address data
-#             first_name = address_data.get('first_name')
-#             last_name = address_data.get('last_name')
-#             company_name = address_data.get('company_name')
-#             country = address_data.get('country')
-#             street_address = address_data.get('street_address')
-#             town = address_data.get('town')
-#             state = address_data.get('state')
-#             phone = address_data.get('phone')
-#             email = address_data.get('email')
-
-#             # Perform validation for each address
-#             if not first_name or not last_name or not email:
-#                 messages.error(request, 'Please fill in required fields (First Name, Last Name, Email)')
-#             elif len(phone) < 10:
-#                 messages.error(request, 'Phone number must be at least 10 digits long')
-#             else:
-#                 # Data is valid; create a new Profile object and save it
-#                 address = Profile(
-#                     user=request.user,  # Assuming user is associated with the logged-in user
-#                     firstname=first_name,
-#                     lastname=last_name,
-#                     company_name=company_name,
-#                     country=country,
-#                     streetaddress=street_address,
-#                     town=town,
-#                     state=state,
-#                     phone=phone,
-#                     email=email,
-#                 )
-#                 address.save()
-        
-#         messages.success(request, 'Addresses Added Successfully ')
-#         return redirect('cart:checkout')  # Redirect to a success page
-
-#     return render(request, 'user_temp/checkout.html')
-
-
 def wishlist(request):
     list = Wishlist.objects.filter(user=request.user).order_by('created_at')
     
@@ -265,7 +216,6 @@ def wishlist(request):
     }
     
     return render(request, 'user_temp/wishlist.html', context)
-
 
 
 def add_wishlist(request, product_id):
@@ -278,7 +228,15 @@ def add_wishlist(request, product_id):
                     messages.warning(request, 'This product is already in your wishlist.')
                     return redirect('cart:wishlist')
                 else:
-                    Wishlist.objects.create(user=request.user, product=pro_id)
+                    wishlist_item = Wishlist.objects.create(user=request.user, product=pro_id)
+                    
+                    # Check if the product has an associated offer
+                    if pro_id.product_offer:
+                        # If the product has an offer, save the offer amount in the wishlist item
+                        wishlist_item.offer_price =  pro_id.product_price - pro_id.product_offer.discount_amount 
+                        wishlist_item.save()
+                        print(wishlist_item.offer_price)
+
                     messages.success(request, 'Product added to your wishlist.')
                     return redirect('cart:wishlist')
             except Product.DoesNotExist:
@@ -288,6 +246,10 @@ def add_wishlist(request, product_id):
             return redirect('user:user_login')
     return render(request, 'user_temp/wishlist.html')
 
+
+
+
+
 def remove_wishlist(request, product_id):
     if request.user.is_authenticated:
         # Use get_object_or_404 to get the Wishlist item or return a 404 if it doesn't exist
@@ -295,7 +257,6 @@ def remove_wishlist(request, product_id):
         item.delete()  # Remove the item from the wishlist
         messages.success(request,'Item Removed ')
     return redirect('cart:wishlist') 
-
 
 
 
@@ -308,28 +269,46 @@ def wishlist_to_cart(request, wishlist_id):
         if Cart.objects.filter(user=request.user, product_id=wishlist_item.product.id).exists():
             messages.error(request, 'Product already exists in the cart')
         else:
+            if check_product.product_offer is not None:
+                if check_product.product_offer.end_date >= date.today():
+                    offer_price = check_product.product_price - check_product.product_offer.discount_amount
+                else:
+                    offer_price = None  # Offer has expired
+            else:
+                offer_price = None
             # Check if the product is available in sufficient quantity
             if wishlist_item.product.product_quantity >= 1:
+                # Use offer price if available, otherwise use the regular product price
+                print('hiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii')
+                if wishlist_item.offer_price:
+                    cart_price = wishlist_item.offer_price
+                    print(wishlist_item.offer_price)
+                    print(cart_price)
+                else:
+                    cart_price = wishlist_item.product.product_price
+
                 # Create the product in the cart
                 cart_obj = Cart.objects.create(
                     user=request.user,
                     product_id=wishlist_item.product.id,
                     quantity=1,  # You can modify this if needed
-                    total_price=wishlist_item.product.product_price
+                    total_price=cart_price
                 )
+                print(cart_price)
                 cart_obj.save()
+
                 messages.success(request, 'Product added to cart successfully')
-                return redirect ('cart:cart')
+                return redirect('cart:cart')
             else:
                 messages.error(request, 'Product is out of stock')
 
         # Delete the item from the wishlist
         wishlist_item.delete()
     else:
+        # Handle the case when the user is not authenticated
         messages.error(request, 'Please log in')
-    
-    return redirect('cart:wishlist')
-
+        return redirect('cart:wishlist')
+        pass
 
 # import random
 # import string
