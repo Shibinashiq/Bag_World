@@ -1,10 +1,10 @@
 from itertools import product
 import json
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 
 from django.http import JsonResponse
 from cart.models import Cart
-from .models import Order, Profile
+from .models import Order, Profile, Wallet,Transaction
 import random
 from django.db import IntegrityError
 from django.shortcuts import redirect, render,get_object_or_404
@@ -145,6 +145,20 @@ def shop(request):
 
 
 
+# def wallet_item(request):
+    
+#     user_wallets = wallet.objects.filter(user=request.user)
+
+   
+#     for user_wallet in user_wallets:
+#         print(f"User: {user_wallet.user}, Wallet Amount: {user_wallet.wallet_amount}")
+
+#     context = {
+#         'user_wallets': user_wallets,
+#     }
+
+#     return render(request, 'user_temp/use_profile.html', context)
+
 
 def user_profile(request):
     if request.method == 'POST':
@@ -205,15 +219,18 @@ def user_profile(request):
 
         order_details.append(order_detail)
 
-    # context with the user's address data and order history
+    # Retrieve the user's wallet data
+    user_wallets = Wallet.objects.filter(user=request.user).prefetch_related('transactions')
+
+    # context with the user's address data, order history, and wallet data
     context = {
         'user_profile': user_profile,
         'user_order': user_order,
         'order_details': order_details,
-        
+        'user_wallets':user_wallets
     }
 
-    return render(request, 'user_temp/user_profile.html', context) 
+    return render(request, 'user_temp/user_profile.html', context)
 
 
 def edit_profile(adress_id,request):
@@ -333,6 +350,16 @@ def place_order(request):
     return render(request, 'user_temp/order_success.html')
 
 
+
+
+
+
+
+
+
+
+
+
 def cancel_order(request, order_id):
     if request.method == 'POST':
         order = Order.objects.get(id=order_id)
@@ -340,14 +367,33 @@ def cancel_order(request, order_id):
         allowed_statuses = ['Processing', 'Shipped', 'Pending']
 
         if order.od_status in allowed_statuses and not order.is_cancelled and order.od_status != 'Return':
+            # Update order status to 'Cancelled'
             order.is_cancelled = True
             order.od_status = 'Cancelled'
             order.save()
-            messages.success(request, 'Order canceled successfully')
+
+            # Add product amount to the user's wallet
+            user_wallet, created = Wallet.objects.get_or_create(user=request.user)
+            amount_to_add = order.total_price  # Assuming total_price is the product amount
+            user_wallet.wallet_amount += amount_to_add
+            user_wallet.save()
+
+            # Record the transaction in the wallet history
+            transaction = Transaction.objects.create (
+                            user=request.user,
+                            amount=amount_to_add,
+                            transaction_type='credit'  
+                        )
+            user_wallet.transactions.add(transaction)
+
+            messages.success(request, 'Order canceled successfully. Amount added to your wallet.')
         else:
             messages.error(request, "This order cannot be canceled.")
 
-        return redirect('user:user_profile')
+    return redirect('user:user_profile')
+    
+    
+    
     # elif order.od_status == 'Delivered':
        
     #     order.od_status = 'Return'
@@ -360,6 +406,7 @@ def cancel_order(request, order_id):
     #     messages.error(request, "This order cannot be canceled.")
 
     # return redirect('user:user_profile')
+
 
 
 
@@ -380,3 +427,22 @@ def return_order(request, order_id):
 
     return redirect('user:user_profile')
 
+
+
+
+def wallet_item(request):
+    
+    # return HttpResponse("Debug: Inside wallet_item view")
+
+    
+    user_wallets = Wallet.objects.filter(user=request.user)
+
+    # Now you can access the wallet amount directly for each wallet
+    for user_wallet in user_wallets:
+        print(f"User: {user_wallet.user}, Wallet Amount: {user_wallet.wallet_amount}")
+
+    context = {
+        'user_wallets': user_wallets,
+    }
+
+    return render(request, 'user_temp/use_profile.html', context)

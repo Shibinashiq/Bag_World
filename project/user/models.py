@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, timezone
 from django.db import models
 
 # Create your models here.
@@ -51,3 +51,27 @@ class Order(models.Model):
         return self.created_at + timedelta(days=7)
     def __str__(self):
         return f"Order {self.id} for {self.user.first_name}"
+    
+
+
+class Transaction(models.Model):
+    TRANSACTION_TYPES = [
+        ('credit', 'Credit'),
+        ('debit', 'Debit'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    amount = models.IntegerField(default=0)
+    transaction_type = models.CharField(max_length=50, choices=TRANSACTION_TYPES)
+    date_added = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user} - {self.amount} - {self.transaction_type} - {self.date_added}"
+
+class Wallet(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    wallet_amount = models.IntegerField(default=0)
+    transactions = models.ManyToManyField(Transaction)
+
+    def __str__(self):
+        return f"{self.user} - {self.wallet_amount}"

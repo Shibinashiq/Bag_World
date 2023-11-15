@@ -219,6 +219,7 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
+                                                        
                                                         {% for order in user_order %}
                                                             <tr>
                                                                 <td>{{ order.id }}</td> <!-- Order ID -->
@@ -332,26 +333,49 @@
                                             </div>
                                         </div>
                                     </div>
-                                     <div class="tab-pane fade" id="wallet">
-                                        <p class="mb--20">You can purchase with this amount.</p>
+                                    <div class="tab-pane fade" id="wallet">
+                                       
                                         <div class="row">
                                             <div class="col-md-6 mb-sm--20">
                                                 <div class="text-block">
-                                                    <h4 class="mb--20">wallet</h4>
+                                                    <!-- <h4 class="mb--20">Wallet Amount</h4> -->
+                                                    <!-- {% for user_wallet in user_wallets %}
+                                                        User: {{ user_wallet.user }}, Wallet Amount: {{ user_wallet.wallet_amount }}<br>
+                                                    {% endfor %} -->
+                                                    
                                                    
-                                                </div>
+                                                    
+                                                    {% for user_wallet in user_wallets %}
+                                                    <p class="mb--20">You can purchase with this amount.</p>
+                                                    <p>Wallet Amount: ${{ user_wallet.wallet_amount }}</p>
                                                 
-                                               
-                                            </div>
-                                            <!-- <div class="col-md-6">
-                                                <div class="text-block">
-                                                    <h4 class="mb--20">Shopping address</h4>
-                                                    <a href="#">Edit</a>
-                                                    <p>You have not set up this type of address yet.</p>
+                                                    <table class="table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th scope="col">Date</th>
+                                                                <th scope="col">Transaction Type</th>
+                                                                <th scope="col">Amount</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {% for transaction in user_wallet.transactions.all %}
+                                                                <tr>
+                                                                    <td>{{ transaction.date_added }}</td>
+                                                                    <td>{{ transaction.transaction_type }}</td>
+                                                                    <td>${{ transaction.amount }}</td>
+                                                                </tr>
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                   {% endfor %}
+
                                                 </div>
-                                            </div> -->
+                                            </div>
+                                            
                                         </div>
                                     </div>
+                                    
+                                    
                                     <div class="tab-pane fade" id="accountdetails" style="display: block !important;">
                                         
                                         <form action="{% url 'user:user_profile' %}" class="form form--account" method="POST">
@@ -413,7 +437,7 @@
                                                         <input type="email" name="email" id="email" class="form__input">
                                                     </div>
                                                 </div>
-                                           
+                                           <br>
                                             <div class="col-md-6">
                                                 <div class="form__group">
                                                     <button type="submit" class="btn">Save</button>
