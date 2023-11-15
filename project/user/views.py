@@ -390,26 +390,11 @@ def cancel_order(request, order_id):
         else:
             messages.error(request, "This order cannot be canceled.")
 
-    return redirect('user:user_profile')
-    
-    
-    
-    # elif order.od_status == 'Delivered':
-       
-    #     order.od_status = 'Return'
-    #     order.save()
-    #     messages.error(request, "Order return successfully.")
-    # else:
-       
-    #     order.is_cancelled = False
-    #     order.save()
-    #     messages.error(request, "This order cannot be canceled.")
-
-    # return redirect('user:user_profile')
+    return redirect('user:user_profile')  
 
 
 
-
+  
 def return_order(request, order_id):
     if request.method=='POST':
         order = Order.objects.get(id=order_id)
@@ -418,11 +403,20 @@ def return_order(request, order_id):
             order.od_status = 'Return'
             order.is_cancelled = True
             order.save()
-            messages.error(request, "Order return successfully.")
+            
+            user_wallet,created= Wallet.objects.get_or_create(user=request.user)
+            amount_add=order.total_price
+            user_wallet.wallet_amount += amount_add
+            user_wallet.save()
+            
+            transaction=Transaction.objects.create(user=request.user,amount=amount_add,transaction_type='credit')
+            
+            user_wallet.transactions.add(transaction)
+            messages.success(request, "Order return successfully . Amount added to your wallet.")  
+            
+            
         else:
-        
-            order.is_cancelled = False
-            order.save()
+            
             messages.error(request, "This order cannot be canceled.")
 
     return redirect('user:user_profile')
@@ -430,17 +424,8 @@ def return_order(request, order_id):
 
 
 
-def wallet_item(request):
-    
-    # return HttpResponse("Debug: Inside wallet_item view")
-
-    
+def wallet_item(request):  
     user_wallets = Wallet.objects.filter(user=request.user)
-
-    # Now you can access the wallet amount directly for each wallet
-    for user_wallet in user_wallets:
-        print(f"User: {user_wallet.user}, Wallet Amount: {user_wallet.wallet_amount}")
-
     context = {
         'user_wallets': user_wallets,
     }
