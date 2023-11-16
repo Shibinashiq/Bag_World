@@ -63,10 +63,11 @@ class Transaction(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     amount = models.IntegerField(default=0)
     transaction_type = models.CharField(max_length=50, choices=TRANSACTION_TYPES)
-    date_added = models.DateField(auto_now_add=True)
+    date_added = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user} - {self.amount} - {self.transaction_type} - {self.date_added}"
+        formatted_date_time = self.date_added.strftime('%b. %d, %Y, %I:%M %p')
+        return f"{self.user} - {self.amount} - {self.transaction_type} - {formatted_date_time}"
 
 class Wallet(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

@@ -272,6 +272,7 @@ def wishlist_to_cart(request, wishlist_id):
         # Check if the product is already in the cart
         if Cart.objects.filter(user=request.user, product_id=wishlist_item.product.id).exists():
             messages.error(request, 'Product already exists in the cart')
+            return redirect('cart:cart')
         else:
             
             # Check if the product is available in sufficient quantity
@@ -295,6 +296,7 @@ def wishlist_to_cart(request, wishlist_id):
                     
                 )
                 print(cart_price)
+                wishlist_item.delete()
                 cart_obj.save()
 
                 messages.success(request, 'Product added to cart successfully')
@@ -303,7 +305,7 @@ def wishlist_to_cart(request, wishlist_id):
                 messages.error(request, 'Product is out of stock')
 
         # Delete the item from the wishlist
-        wishlist_item.delete()
+        
     else:
         pass
         # Handle the case when the user is not authenticated

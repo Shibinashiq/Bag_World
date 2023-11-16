@@ -160,6 +160,16 @@ def shop(request):
 
     return render(request, 'user_temp/shop.html', context)
 
+def product_view(request, product_id):
+    product = get_object_or_404(Product, pk=product_id, is_deleted=False)
+    product_images = ProductImage.objects.filter(product=product)
+    print(product_id)
+    context = {
+        'product': product,
+        'product_images': product_images,
+    }
+    return render(request, 'user_temp/product_view.html', context)
+
 
 
 # def wallet_item(request):

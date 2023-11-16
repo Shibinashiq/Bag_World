@@ -252,18 +252,17 @@ def category_delete(request, cat_id):
 @login_required(login_url='admin_side:admin_login')   
 def product(request):
     products = Product.objects.filter(is_deleted=False)
-    # brand = Brand.objects.all()
-    # category = Category.objects.all()
-    # offer = Offer.objects.filter(is_deleted=False)
-    # coupon=Coupon.objects.filter(is_deleted=False)
-    
+    brand = Brand.objects.all()
+    category = Category.objects.all()
+    offer = Offer.objects.all()
+    coupon = Coupon.objects.filter(is_deleted=False)
 
     context = {
-        'products': products,  # Pass the products to the template context
+        'products': products,
         'brand': brand,
         'category': category,
         'offer': offer,
-        'coupon':coupon
+        'coupon': coupon,
     }
     return render(request, 'admin_temp/product .html', context)
 
@@ -342,7 +341,6 @@ def add_product(request):
     else:
         return redirect('admin_login')
     
-    
 @login_required(login_url='admin_side:admin_login')    
 def edit_product(request, product_id):
     if request.user.is_superuser:
@@ -386,10 +384,15 @@ def edit_product(request, product_id):
                 pro.product_category = category
                 pro.product_quantity = product_quantity
 
+                # Save the product instance
                 pro.save()
 
-                # Handle product images here (if needed)
+              
+                for image in product_images:
+                    # Save each image to the product instance
+                    pro.product_images.create(image=image)
 
+                messages.success(request, 'Product successfully updated.')
                 return redirect('admin_side:product')
             else:
                 messages.info(request, 'No changes were made to the product.')
@@ -409,7 +412,8 @@ def edit_product(request, product_id):
         return render(request, 'admin_temp\edit_product.html', context)
 
     else:
-        return redirect('admin_login')
+        messages.error(request, 'You do not have permission to edit products.')
+        return redirect('admin_side:product')
 
 
     

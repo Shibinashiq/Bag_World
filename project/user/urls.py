@@ -13,7 +13,7 @@ urlpatterns = [
     path('otp',views.otp_page,name='otp'),
     
     path('shop',views.shop,name='shop'),
-    
+    path('product_view/<int:product_id>/',views.product_view, name='product_view'),
     
     path('user_profile/', views.user_profile, name='user_profile'),
     path('edit_profile/<int:address_id>/', views.edit_profile, name='edit_profile'),

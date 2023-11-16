@@ -344,15 +344,16 @@
                                                     {% endfor %} -->
                                                     
                                                    
-                                                    
+                                                     
                                                     {% for user_wallet in user_wallets %}
-                                                    <p class="mb--20">You can purchase with this amount.</p>
+                                                    
                                                     <p>Wallet Amount: ${{ user_wallet.wallet_amount }}</p>
                                                 
                                                     <table class="table">
                                                         <thead>
                                                             <tr>
-                                                                <th scope="col">Date</th>
+                                                                <th scope="col">Date & Time</th>
+                                                                
                                                                 <th scope="col">Transaction Type</th>
                                                                 <th scope="col">Amount</th>
                                                             </tr>
@@ -367,6 +368,8 @@
                                                             {% endfor %}
                                                         </tbody>
                                                     </table>
+                                                    <div class="fade show active"><p><a href="{% url 'user:shop' %}">You Can Purchase Or Redeem</a>>
+                                                    </p></div>
                                                    {% endfor %}
 
                                                 </div>

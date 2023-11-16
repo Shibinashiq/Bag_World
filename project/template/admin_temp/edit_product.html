@@ -16,9 +16,7 @@
         {% csrf_token %}
         <div class="form-group">
             <label for="product_image">Product Image</label>
-            
-            <input type="file" class="form-control" id="product_images" name="product_image"  value="{{ product.product_image }}" multiple >
-            
+            <input type="file" class="form-control" id="product_images" name="product_images" value="{{ product.product_image }}" multiple>
         </div>
         <div class="form-group">
             <label for="product_name">Product Name</label>
