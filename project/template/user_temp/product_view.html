@@ -224,44 +224,40 @@
                                         <span>Rated <strong class="rating">5.00</strong> out of 5</span>
                                     </div>
                                 </div>
-                                <h3 class="product-title mb--20">Golden Easy Spot Chair.</h3>
+                                <h3 class="product-title mb--20">{{ product.product_name }}.</h3>
                                 <p class="product-short-description mb--20">Donec accumsan auctor iaculis. Sed suscipit
                                     arcu ligula, at egestas magna molestie a. Proin ac ex maximus, ultrices justo eget,
                                     sodales orci. Aliquam egestas libero ac turpis pharetra, in vehicula lacus
                                     scelerisque. Vestibulum ut sem laoreet, feugiat tellus at, hendrerit arcu.</p>
                                    
-                                <div class="product-price-wrapper mb--25">
+                                    <div class="product-price-wrapper mb--25">
+                                        {% if product.discounted_price is not None %}
+                                            <span class="money discount">{{ product.discounted_price }}</span>
+                                            <span class="sign">$</span>
+                                            <br>
+                                            <del class="line-through" style="font-size: 85%;">{{ product.product_price }}</del>
+                                        {% else %}
+                                            <span class="money regular">{{ product.product_price }}</span>
+                                            <span class="sign">$</span>
+                                        {% endif %}
+                                    </div>
                                     
-                                        <span class="money">{{ product.product_price }} $</span>
-                                    
-                                    
-                                </div>
                                 <form action="#" class="variation-form mb--20">
                                     
                                     <a href="#" class="reset_variations">Clear</a>
                                 </form>
                                 <div
-                                    class="product-action d-flex flex-sm-row align-items-sm-center flex-column align-items-start mb--30">
-                                    <div class="quantity-wrapper d-flex align-items-center mr--30 mr-xs--0 mb-xs--30">
-                                        <label class="quantity-label" for="pro-qty">Quantity:</label>
-                                        <div class="quantity">
-                                            <input type="number" class="quantity-input" name="pro-qty" id="pro-qty" value="1"
-                                                min="1">
-                                        </div>
-                                    </div>
-                                    <button type="button" class="btn btn-shape-square btn-size-sm"
-                                        onclick="window.location.href='cart.html'">
-                                        Add To Cart
-                                    </button>
+                                    -->
+                                    
+                                    <form method="post" action="{% url 'cart:add_cart' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="product_id" value="{{ product.id }}">
+                                        <input type="hidden" name="product_count" value="1">
+                                        <button class="btn btn-size-sm">Add To Cart</button>
+                                    </form>
+                                    
                                 </div>
-                                <div class="product-footer-meta">
-                                    <p><span>Category:</span>
-                                        <a href="shop.html">Full Sweater</a>,
-                                        <a href="shop.html">SweatShirt</a>,
-                                        <a href="shop.html">Jacket</a>,
-                                        <a href="shop.html">Blazer</a>
-                                    </p>
-                                </div>
+                               
                             </div>
                         </div>
                     </div>
@@ -327,16 +323,7 @@
                                                         <th>Dimensions</th>
                                                         <td>160 × 152 × 110 cm</td>
                                                     </tr>
-                                                    <tr>
-                                                        <th>Color</th>
-                                                        <td>
-                                                            <a href="shop.html">Black</a>,
-                                                            <a href="shop.html">Gray</a>,
-                                                            <a href="shop.html">Red</a>,
-                                                            <a href="shop.html">Violet</a>,
-                                                            <a href="shop.html">Yellow</a>
-                                                        </td>
-                                                    </tr>
+                                                    
                                                 </tbody>
                                             </table>
                                         </div>
@@ -348,53 +335,42 @@
                                             <ul class="review__list">
                                                 <li class="review__item">
                                                     <div class="review__container">
-                                                       
-                                                         
-                                                        <div class="review__text">
-                                                            
-                                                            <div
-                                                                class="d-flex flex-sm-row flex-column justify-content-between">
-                                                                <div class="review__meta">
-                                                                    <strong class="review__author">user.username </strong>
-                                                                    <span class="review__dash">-</span>
-                                                                    <span class="review__published-date"> i.created_at|date:"F d, Y" 
-                                                                        </span>
-                                                                </div>
-                                                                <div class="product-rating">
-                                                                    <div class="star-rating star-five">
-                                                                        <span>Rated <strong class="rating"></strong> out of 5</span>
+                                                        {% for i in review %}
+                                                            <div class="review__text">
+                                                                <div class="d-flex flex-sm-row flex-column justify-content-between">
+                                                                    <div class="review__meta">
+                                                                        <strong class="review__author">{{ i.user_instance.username }}</strong>
+                                                                        <span class="review__dash">-</span>
+                                                                        <span class="review__published-date">{{ i.created_at|date:"F d, Y" }}</span>
+                                                                    </div>
+                                                                    <div class="product-rating">
+                                                                        <div class="star-rating star-five">
+                                                                            <span>Rated <strong class="rating">{{ i.rating }}</strong> out of 5</span>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
+                                                                <p class="review__description">{{ i.comment }}</p>
                                                             </div>
-                                                            <p class="review__description">comment
-                                                                </p>
-                                                            
-                                                        </div>
+                                                            <hr>
+                                                        {% endfor %}
                                                     </div>
+                                                    
                                                 </li>
                                             </ul>
                                             <div class="review-form-wrapper">
                                                 <div class="row">
                                                     <div class="col-lg-8">
                                                         <span class="reply-title">Add a review</span>
-                                                        <form action="{% url 'user:add_review' product_id=product.id %}" class="form pr--30" method="POST">
+                                                        {% if product.id %}
 
+                                                        <form action="{% url 'user:add_review' product_id=product.id %}" class="form pr--30" method="POST">
                                                             {% csrf_token %}
                                                             <!-- Your form fields go here -->
                                                             <div class="form__group mb--10">
                                                                 <label class="form__label d-block mb--10" for="comment">Your Review<span class="required">*</span></label>
                                                                 <textarea name="comment" id="comment" class="form__input form__input--textarea"></textarea>
                                                             </div>
-                                                            <div class="form__group mb--10">
-                                                                <label class="form__label d-block mb--10" for="rating">Rating<span class="required">*</span></label>
-                                                                <select name="rating" id="rating" class="form__input">
-                                                                    <option value="1">1</option>
-                                                                    <option value="2">2</option>
-                                                                    <option value="3">3</option>
-                                                                    <option value="4">4</option>
-                                                                    <option value="5">5</option>
-                                                                </select>
-                                                            </div>
+                                                            
                                                             
                                                             <div class="form__group">
                                                                 <div class="row">
@@ -404,6 +380,9 @@
                                                                 </div>
                                                             </div>
                                                         </form>
+                                                        {% else %}
+                                                            <p>Product ID is empty or None.</p>
+                                                        {% endif %}
                                                     </div>
                                                 </div>
                                             </div>
@@ -433,58 +412,53 @@
                                             "slidesToShow": 1
                                         }}
                                     ]'>
+                                    {% for product in products %}
                                 <div class="item">
-                                    <div class="payne-product">
-                                        <div class="product__inner">
-                                            <div class="product__image">
-                                                <figure class="product__image--holder">
-                                                    <img src="{% static 'assets/img/products/product-03-270x300.jpg' %}" alt="Product">
-                                                </figure>
-                                                <a href="product-details.html" class="product__overlay"></a>
-                                                <div class="product__action">
-                                                    <a data-bs-toggle="modal" data-bs-target="#productModal"
-                                                        class="action-btn">
-                                                        <i class="fa fa-eye"></i>
-                                                        <span class="sr-only">Quick View</span>
-                                                    </a>
-                                                    <a href="wishlist.html" class="action-btn">
-                                                        <i class="fa fa-heart-o"></i>
-                                                        <span class="sr-only">Add to wishlist</span>
-                                                    </a>
-                                                    <a href="compare.html" class="action-btn">
-                                                        <i class="fa fa-repeat"></i>
-                                                        <span class="sr-only">Add To Compare</span>
-                                                    </a>
-                                                    <a href="cart.html" class="action-btn">
-                                                        <i class="fa fa-shopping-cart"></i>
-                                                        <span class="sr-only">Add To Cart</span>
-                                                    </a>
+                                 
+                                        <div class="payne-product">
+                                           
+                                            <div class="product__inner">
+                                                <div class="product__image">
+                                                    <figure class="product__image--holder">
+                                                        <img src="{{ product.product_image.url }}" alt="{{ product.product_name }}">
+                                                    </figure>
+                                                    <a href="" class="product__overlay"></a>
                                                 </div>
-                                            </div>
-                                            <div class="product__info">
-                                                <div class="product__info--left">
-                                                    <h3 class="product__title">
-                                                        <a href="product-details.html">Lexbaro Begadi</a>
-                                                    </h3>
-                                                    <div class="product__price">
-                                                        <span class="money">132.00</span>
-                                                        <span class="sign">$</span>
+                                                <div class="product__info">
+                                                    <div class="product__info--left">
+                                                        <h3 class="product__title">
+                                                            <a href="">{{ product.product_name }}</a>
+                                                        </h3>
+                                                        <div class="product__price">
+                                                            {% if product.discounted_price is not None %}
+                                                                <span class="money discount">{{ product.discounted_price }}</span>
+                                                                <span class="sign">$</span>
+                                                                <br>
+                                                                <del class="line-through" style="font-size: 85%;">{{ product.product_price }}</del>
+                                                            {% else %}
+                                                                <span class="money regular">{{ product.product_price }}</span>
+                                                                <span class="sign">$</span>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                    <div class="product__info--right">
+                                                        <span class="product__rating">
+                                                            <i class="fa fa-star"></i>
+                                                            <i class="fa fa-star"></i>
+                                                            <i class="fa fa-star"></i>
+                                                            <i class="fa fa-star"></i>
+                                                            <i class="fa fa-star"></i>
+                                                        </span>
                                                     </div>
                                                 </div>
-                                                <div class="product__info--right">
-                                                    <span class="product__rating">
-                                                        <i class="fa fa-star"></i>
-                                                        <i class="fa fa-star"></i>
-                                                        <i class="fa fa-star"></i>
-                                                        <i class="fa fa-star"></i>
-                                                        <i class="fa fa-star"></i>
-                                                    </span>
-                                                </div>
                                             </div>
+                                            
                                         </div>
-                                    </div>
+                                   
+                                       
                                 </div>
-                                <div class="item">
+                                {% endfor %}
+                                <!-- <div class="item">
                                     <div class="payne-product">
                                         <div class="product__inner">
                                             <div class="product__image">
@@ -492,25 +466,7 @@
                                                     <img src="{% static 'assets/img/products/product-05-270x300.jpg' %}" alt="Product">
                                                 </figure>
                                                 <a href="product-details.html" class="product-overlay"></a>
-                                                <div class="product__action">
-                                                    <a data-bs-toggle="modal" data-bs-target="#productModal"
-                                                        class="action-btn">
-                                                        <i class="fa fa-eye"></i>
-                                                        <span class="sr-only">Quick View</span>
-                                                    </a>
-                                                    <a href="wishlist.html" class="action-btn">
-                                                        <i class="fa fa-heart-o"></i>
-                                                        <span class="sr-only">Add to wishlist</span>
-                                                    </a>
-                                                    <a href="wishlist.html" class="action-btn">
-                                                        <i class="fa fa-repeat"></i>
-                                                        <span class="sr-only">Add To Compare</span>
-                                                    </a>
-                                                    <a href="cart.html" class="action-btn">
-                                                        <i class="fa fa-shopping-cart"></i>
-                                                        <span class="sr-only">Add To Cart</span>
-                                                    </a>
-                                                </div>
+                                               
                                             </div>
                                             <div class="product__info">
                                                 <div class="product__info--left">
@@ -543,25 +499,7 @@
                                                     <img src="{% static 'assets/img/products/product-06-270x300.jpg'%}" alt="Product">
                                                 </figure>
                                                 <a href="product-details.html" class="product-overlay"></a>
-                                                <div class="product__action">
-                                                    <a data-bs-toggle="modal" data-bs-target="#productModal"
-                                                        class="action-btn">
-                                                        <i class="fa fa-eye"></i>
-                                                        <span class="sr-only">Quick View</span>
-                                                    </a>
-                                                    <a href="wishlist.html" class="action-btn">
-                                                        <i class="fa fa-heart-o"></i>
-                                                        <span class="sr-only">Add to wishlist</span>
-                                                    </a>
-                                                    <a href="wishlist.html" class="action-btn">
-                                                        <i class="fa fa-repeat"></i>
-                                                        <span class="sr-only">Add To Compare</span>
-                                                    </a>
-                                                    <a href="cart.html" class="action-btn">
-                                                        <i class="fa fa-shopping-cart"></i>
-                                                        <span class="sr-only">Add To Cart</span>
-                                                    </a>
-                                                </div>
+                                                
                                             </div>
                                             <div class="product__info">
                                                 <div class="product__info--left">
@@ -594,25 +532,7 @@
                                                     <img src="{% static 'assets/img/products/product-08-270x300.jpg' %}" alt="Product">
                                                 </figure>
                                                 <a href="product-details.html" class="product-overlay"></a>
-                                                <div class="product__action">
-                                                    <a data-bs-toggle="modal" data-bs-target="#productModal"
-                                                        class="action-btn">
-                                                        <i class="fa fa-eye"></i>
-                                                        <span class="sr-only">Quick View</span>
-                                                    </a>
-                                                    <a href="wishlist.html" class="action-btn">
-                                                        <i class="fa fa-heart-o"></i>
-                                                        <span class="sr-only">Add to wishlist</span>
-                                                    </a>
-                                                    <a href="wishlist.html" class="action-btn">
-                                                        <i class="fa fa-repeat"></i>
-                                                        <span class="sr-only">Add To Compare</span>
-                                                    </a>
-                                                    <a href="cart.html" class="action-btn">
-                                                        <i class="fa fa-shopping-cart"></i>
-                                                        <span class="sr-only">Add To Cart</span>
-                                                    </a>
-                                                </div>
+                                                
                                             </div>
                                             <div class="product__info">
                                                 <div class="product__info--left">
@@ -636,7 +556,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
                     </div>
@@ -1135,7 +1055,7 @@ Hasthemes</p>
         <!-- Mini Cart End -->
 
         <!-- Qicuk View Modal Start -->
-        <div class="modal fade product-modal" id="productModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <!-- <div class="modal fade product-modal" id="productModal" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-body">
@@ -1257,7 +1177,7 @@ Hasthemes</p>
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
         <!-- Qicuk View Modal End -->
 
         <!-- Global Overlay Start -->

@@ -4,7 +4,7 @@ from django.http import HttpResponse, JsonResponse
 
 from django.http import JsonResponse
 from cart.models import Cart
-from .models import Order, Profile, Wallet,Transaction
+from .models import Order, Profile, Review, Wallet,Transaction
 import random
 from django.db import IntegrityError
 from django.shortcuts import redirect, render,get_object_or_404
@@ -38,7 +38,11 @@ def home(request):
             product.discounted_price = None
 
     # You might want to pass the products to the template
-    context = {'products': products}
+    context = {
+        'products': products,
+               
+               
+               }
     return render(request, 'user_temp/home.html', context)
 
             
@@ -160,19 +164,28 @@ def shop(request):
 
     return render(request, 'user_temp/shop.html', context)
 
+from datetime import date
+
 def product_view(request, product_id):
     product = get_object_or_404(Product, pk=product_id, is_deleted=False)
+    products = Product.objects.filter(is_deleted=False)
     product_images = ProductImage.objects.filter(product=product)
-    # review=Review.objects.filter(product=product).select_related('user')
-        
-    print(product_id)
+    review = Review.objects.all()
+
+    # Check for product offer and calculate discounted price
+    if product.product_offer and product.product_offer.end_date >= date.today():
+        product.discounted_price = product.product_price - product.product_offer.discount_amount
+    else:
+        product.discounted_price = None
+    
     context = {
         'product': product,
         'product_images': product_images,
-        # 'review':review,
-        
+        'review': review,
+        'products':products
     }
     return render(request, 'user_temp/product_view.html', context)
+
 
 
 
@@ -501,25 +514,30 @@ def wallet_item(request):
 
 
 def add_review(request, product_id):
-    # product = Product.objects.get(id=product_id)
-    # if request.method == 'POST':
-    #     comment = request.POST.get('comment')
-    #     rating =request.POST.get('rating') 
-    #     user = request.user
+    
+    product = Product.objects.get(id=product_id)
+   
+    if request.method == 'POST':
+        comment = request.POST.get('comment')
+        print(comment)
+       
+        user = request.user
        
 
         
-    #     review = Review(
-    #         user=user,
-    #         product=product,
-    #         comment=comment,
-    #         rating=rating
+        review = Review(
+            user_instance=user,
+            product=product,
+            comment=comment,
             
-    #     )
-    #     review.save()
+            
+            
+        )
+        review.save()
         
-
-        # return redirect('user:product_view', product_id=product_id)
+        print(product_id)
+        return redirect('user:product_view', product_id=product_id)
+       
 
     
     return render(request, 'user_temp/product_view.html')
