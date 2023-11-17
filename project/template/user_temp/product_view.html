@@ -351,13 +351,13 @@
                                                        
                                                          
                                                         <div class="review__text">
-                                                            {% for i in review %}
+                                                            
                                                             <div
                                                                 class="d-flex flex-sm-row flex-column justify-content-between">
                                                                 <div class="review__meta">
-                                                                    <strong class="review__author">{{i.user.username}} </strong>
+                                                                    <strong class="review__author">user.username </strong>
                                                                     <span class="review__dash">-</span>
-                                                                    <span class="review__published-date">{{ i.created_at|date:"F d, Y" }}
+                                                                    <span class="review__published-date"> i.created_at|date:"F d, Y" 
                                                                         </span>
                                                                 </div>
                                                                 <div class="product-rating">
@@ -366,9 +366,9 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <p class="review__description">{{i.comment}}
+                                                            <p class="review__description">comment
                                                                 </p>
-                                                                {%endfor%}
+                                                            
                                                         </div>
                                                     </div>
                                                 </li>
@@ -378,6 +378,7 @@
                                                     <div class="col-lg-8">
                                                         <span class="reply-title">Add a review</span>
                                                         <form action="{% url 'user:add_review' product_id=product.id %}" class="form pr--30" method="POST">
+
                                                             {% csrf_token %}
                                                             <!-- Your form fields go here -->
                                                             <div class="form__group mb--10">

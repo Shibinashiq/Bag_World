@@ -4,7 +4,7 @@ from django.http import HttpResponse, JsonResponse
 
 from django.http import JsonResponse
 from cart.models import Cart
-from .models import Order, Profile, Review, Wallet,Transaction
+from .models import Order, Profile, Wallet,Transaction
 import random
 from django.db import IntegrityError
 from django.shortcuts import redirect, render,get_object_or_404
@@ -163,13 +163,13 @@ def shop(request):
 def product_view(request, product_id):
     product = get_object_or_404(Product, pk=product_id, is_deleted=False)
     product_images = ProductImage.objects.filter(product=product)
-    review=Review.objects.filter(product=product).select_related('user')
+    # review=Review.objects.filter(product=product).select_related('user')
         
     print(product_id)
     context = {
         'product': product,
         'product_images': product_images,
-        'review':review
+        # 'review':review,
         
     }
     return render(request, 'user_temp/product_view.html', context)
@@ -501,24 +501,25 @@ def wallet_item(request):
 
 
 def add_review(request, product_id):
-    product = Product.objects.get(id=product_id)
-    if request.method == 'POST':
-        comment = request.POST.get('comment')
-        rating =request.POST.get('rating') 
-        user = request.user
+    # product = Product.objects.get(id=product_id)
+    # if request.method == 'POST':
+    #     comment = request.POST.get('comment')
+    #     rating =request.POST.get('rating') 
+    #     user = request.user
        
 
         
-        review = Review(
-            user=user,
-            product=product,
-            comment=comment,
+    #     review = Review(
+    #         user=user,
+    #         product=product,
+    #         comment=comment,
+    #         rating=rating
             
-        )
-        review.save()
+    #     )
+    #     review.save()
         
 
-        return redirect('user:product_view', product_id=product_id)
+        # return redirect('user:product_view', product_id=product_id)
 
     
     return render(request, 'user_temp/product_view.html')

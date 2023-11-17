@@ -80,11 +80,9 @@ class Wallet(models.Model):
 
 
 class Review(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user_instance = models.ForeignKey(User, on_delete=models.CASCADE ,blank=True,null=True,default=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     comment = models.TextField()
-    Rating = models.IntegerField()
     created_at = models.DateTimeField(default=timezone.now)
-
     def __str__(self):
-        return f"{self.user} - {self.product} - {self.created_at}"
+        return f"{self.user_instance} - {self.product} - {self.created_at}"
