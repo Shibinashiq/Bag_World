@@ -1,5 +1,6 @@
 from datetime import timedelta, timezone
 from django.db import models
+from django.utils import timezone
 
 # Create your models here.
 from django.contrib.auth.models import User
@@ -76,3 +77,14 @@ class Wallet(models.Model):
 
     def __str__(self):
         return f"{self.user} - {self.wallet_amount}"
+
+
+class Review(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    comment = models.TextField()
+    Rating = models.IntegerField()
+    created_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"{self.user} - {self.product} - {self.created_at}"

@@ -24,6 +24,7 @@
 
     <!-- style css -->
     <link rel="stylesheet" href="{%static 'assets/css/main.css' %}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/zoom.js/1.7.21/zoom.min.js"></script>
 </head>
 
 <body>
@@ -178,20 +179,27 @@
                                                     {% with forloop.counter0 as counter %}
                                                         {% if counter == 0 %}
                                                             <div class="col-12 mb--10">
+                                                                <figure class="product-gallery__image">
+                                                                    <img src="{{ image.image.url }}" alt="Product" width="510" height="586.5">
+                                                                </figure>
+                                                            </div>
                                                         {% elif counter == 1 or counter == 2 %}
                                                             <div class="col-sm-6 mb--10">
+                                                                <figure class="product-gallery__image">
+                                                                    <img src="{{ image.image.url }}" alt="Product" width="250" height="233">
+                                                                </figure>
+                                                            </div>
                                                         {% elif counter == 3 %}
                                                             <div class="col-12 mb--10">
+                                                                <figure class="product-gallery__image">
+                                                                    <img src="{{ image.image.url }}" alt="Product" width="510" height="586.5">
+                                                                </figure>
+                                                            </div>
                                                         {% endif %}
-                                                        
-                                                        <figure class="product-gallery__image">
-                                                            <img src="{{ image.image.url }}" alt="Product">
-                                                        </figure>
-                                                        
-                                                    </div>
                                                     {% endwith %}
                                                 {% endfor %}
                                             </div>
+                                            
                                             
                                             <div class="product-gallery__actions">
                                                 <button class="action-btn btn-zoom-popup"><i
@@ -221,41 +229,15 @@
                                     arcu ligula, at egestas magna molestie a. Proin ac ex maximus, ultrices justo eget,
                                     sodales orci. Aliquam egestas libero ac turpis pharetra, in vehicula lacus
                                     scelerisque. Vestibulum ut sem laoreet, feugiat tellus at, hendrerit arcu.</p>
+                                   
                                 <div class="product-price-wrapper mb--25">
-                                    <span class="money">$200.00</span>
-                                    <span class="price-separator">-</span>
-                                    <span class="money">$400.00</span>
+                                    
+                                        <span class="money">{{ product.product_price }} $</span>
+                                    
+                                    
                                 </div>
                                 <form action="#" class="variation-form mb--20">
-                                    <div class="product-size-variations d-flex align-items-center mb--15">
-                                        <p class="variation-label">Size:</p>
-                                        <div class="product-size-variation variation-wrapper">
-                                            <div class="variation">
-                                                <a class="product-size-variation-btn selected" data-bs-toggle="tooltip"
-                                                    data-bs-placement="top" title="S">
-                                                    <span class="product-size-variation-label">S</span>
-                                                </a>
-                                            </div>
-                                            <div class="variation">
-                                                <a class="product-size-variation-btn" data-bs-toggle="tooltip"
-                                                    data-bs-placement="top" title="M">
-                                                    <span class="product-size-variation-label">M</span>
-                                                </a>
-                                            </div>
-                                            <div class="variation">
-                                                <a class="product-size-variation-btn" data-bs-toggle="tooltip"
-                                                    data-bs-placement="top" title="L">
-                                                    <span class="product-size-variation-label">L</span>
-                                                </a>
-                                            </div>
-                                            <div class="variation">
-                                                <a class="product-size-variation-btn" data-bs-toggle="tooltip"
-                                                    data-bs-placement="top" title="XL">
-                                                    <span class="product-size-variation-label">XL</span>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    
                                     <a href="#" class="reset_variations">Clear</a>
                                 </form>
                                 <div
@@ -362,32 +344,31 @@
                                     <div class="tab-pane fade" id="nav-reviews" role="tabpanel"
                                         aria-labelledby="nav-reviews-tab">
                                         <div class="product-reviews">
-                                            <h3 class="review__title">1 review for Black Blazer</h3>
+                                            <h3 class="review__title"></h3>
                                             <ul class="review__list">
                                                 <li class="review__item">
                                                     <div class="review__container">
-                                                        <img src="{% static 'assets/img/others/comment-1.jpg' %}" alt="Review Avatar"
-                                                            class="review__avatar">
+                                                       
+                                                         
                                                         <div class="review__text">
+                                                            {% for i in review %}
                                                             <div
                                                                 class="d-flex flex-sm-row flex-column justify-content-between">
                                                                 <div class="review__meta">
-                                                                    <strong class="review__author">John Snow </strong>
+                                                                    <strong class="review__author">{{i.user.username}} </strong>
                                                                     <span class="review__dash">-</span>
-                                                                    <span class="review__published-date">November 20,
-                                                                        2018</span>
+                                                                    <span class="review__published-date">{{ i.created_at|date:"F d, Y" }}
+                                                                        </span>
                                                                 </div>
                                                                 <div class="product-rating">
                                                                     <div class="star-rating star-five">
-                                                                        <span>Rated <strong class="rating">5.00</strong>
-                                                                            out of 5</span>
+                                                                        <span>Rated <strong class="rating"></strong> out of 5</span>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <p class="review__description">Aliquam egestas libero ac
-                                                                turpis pharetra, in vehicula lacus scelerisque.
-                                                                Vestibulum ut sem laoreet, feugiat tellus at, hendrerit
-                                                                arcu.</p>
+                                                            <p class="review__description">{{i.comment}}
+                                                                </p>
+                                                                {%endfor%}
                                                         </div>
                                                     </div>
                                                 </li>
@@ -396,46 +377,28 @@
                                                 <div class="row">
                                                     <div class="col-lg-8">
                                                         <span class="reply-title">Add a review</span>
-                                                        <form action="#" class="form pr--30">
-                                                            <div class="form-notes mb--20">
-                                                                <p>Your email address will not be published. Required
-                                                                    fields are marked <span class="required">*</span>
-                                                                </p>
+                                                        <form action="{% url 'user:add_review' product_id=product.id %}" class="form pr--30" method="POST">
+                                                            {% csrf_token %}
+                                                            <!-- Your form fields go here -->
+                                                            <div class="form__group mb--10">
+                                                                <label class="form__label d-block mb--10" for="comment">Your Review<span class="required">*</span></label>
+                                                                <textarea name="comment" id="comment" class="form__input form__input--textarea"></textarea>
                                                             </div>
                                                             <div class="form__group mb--10">
-                                                                <label class="form__label d-block mb--10">Your Ratings</label>
-                                                                <div class="rating">
-                                                                    <span><i class="fa fa-star"></i></span>
-                                                                    <span><i class="fa fa-star"></i></span>
-                                                                    <span><i class="fa fa-star"></i></span>
-                                                                    <span><i class="fa fa-star"></i></span>
-                                                                    <span><i class="fa fa-star"></i></span>
-                                                                </div>
+                                                                <label class="form__label d-block mb--10" for="rating">Rating<span class="required">*</span></label>
+                                                                <select name="rating" id="rating" class="form__input">
+                                                                    <option value="1">1</option>
+                                                                    <option value="2">2</option>
+                                                                    <option value="3">3</option>
+                                                                    <option value="4">4</option>
+                                                                    <option value="5">5</option>
+                                                                </select>
                                                             </div>
-                                                            <div class="form__group mb--10">
-                                                                <label class="form__label d-block mb--10" for="email">Your
-                                                                    Review<span class="required">*</span></label>
-                                                                <textarea name="review" id="review"
-                                                                    class="form__input form__input--textarea"></textarea>
-                                                            </div>
-                                                            <div class="form__group mb--20">
-                                                                <label class="form__label d-block mb--10" for="name">Name<span
-                                                                        class="required">*</span></label>
-                                                                <input type="text" name="name" id="name"
-                                                                    class="form__input">
-                                                            </div>
-                                                            <div class="form__group mb--20">
-                                                                <label class="form__label d-block mb--10"
-                                                                    for="email">Email<span
-                                                                        class="required">*</span></label>
-                                                                <input type="email" name="email" id="email"
-                                                                    class="form__input">
-                                                            </div>
+                                                            
                                                             <div class="form__group">
                                                                 <div class="row">
                                                                     <div class="col-12">
-                                                                        <input type="submit" value="Submit Now"
-                                                                            class="btn btn-size-md">
+                                                                        <input type="submit" value="Submit Now" class="btn btn-size-md">
                                                                     </div>
                                                                 </div>
                                                             </div>

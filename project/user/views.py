@@ -4,7 +4,7 @@ from django.http import HttpResponse, JsonResponse
 
 from django.http import JsonResponse
 from cart.models import Cart
-from .models import Order, Profile, Wallet,Transaction
+from .models import Order, Profile, Review, Wallet,Transaction
 import random
 from django.db import IntegrityError
 from django.shortcuts import redirect, render,get_object_or_404
@@ -44,12 +44,12 @@ def home(request):
             
         
     # image=ProductImage.objects.filter(is_delete=False)
-    context = {
-        'Pro': Pro,
-        # 'image':image,
-    }
+    # context = {
+    #     'Pro': Pro,
+    #     # 'image':image,
+    # }
     
-    return render(request, 'user_temp/home.html', context)
+    # return render(request, 'user_temp/home.html', context)
 
 
 def user_login(request):
@@ -163,10 +163,14 @@ def shop(request):
 def product_view(request, product_id):
     product = get_object_or_404(Product, pk=product_id, is_deleted=False)
     product_images = ProductImage.objects.filter(product=product)
+    review=Review.objects.filter(product=product).select_related('user')
+        
     print(product_id)
     context = {
         'product': product,
         'product_images': product_images,
+        'review':review
+        
     }
     return render(request, 'user_temp/product_view.html', context)
 
@@ -278,12 +282,16 @@ def place_order(request):
             return redirect('cart:checkout')
 
         cart = Cart.objects.filter(user=request.user)
+        
         address = Profile.objects.get(id=address_id)
         products_in_order = []  # List to store products in the order
         total = 0
 
         for item in cart:
+           
+            
             total += item.total_price
+            
             # Add the product to the list of products in the order
             products_in_order.append(item.product)
 
@@ -333,6 +341,7 @@ def place_order(request):
                 shipping_cost=shipping_cost,
                 od_status='Processing'
             )
+            
 
             for item in cart:
                 order.product.add(item.product)
@@ -360,7 +369,34 @@ def place_order(request):
 
             order.save()
             order.product.set(products_in_order)
+            cart.delete()
+            
+            
+            
+        elif payment_mode == 'wallet':
+            wallet=Wallet.objects.get()
+            if wallet.wallet_amount<=total:
+                messages.error(request,'User Wallet Amount wont Be Enough ')
+                return redirect ('cart:checkout')
+            else:
+                
+              order = Order.objects.create(
+                user=user_name,
+                payment_mode=payment_mode,
+                payment_id=payment_id,
+                total_price=total,
+                profile=address,
+                shipping_cost=shipping_cost,
+                od_status='Processing'
+            )    
+              print(payment_mode)
+            for item in cart:
+                order.product.add(item.product)
 
+            
+            order.product.set(products_in_order)
+            cart.delete() 
+            
             # Save the payment_id and any additional data to your model
             order.payment_id = payment_id
             order.save()
@@ -458,3 +494,31 @@ def wallet_item(request):
     }
 
     return render(request, 'user_temp/use_profile.html', context)
+
+
+
+
+
+
+def add_review(request, product_id):
+    product = Product.objects.get(id=product_id)
+    if request.method == 'POST':
+        comment = request.POST.get('comment')
+        rating =request.POST.get('rating') 
+        user = request.user
+       
+
+        
+        review = Review(
+            user=user,
+            product=product,
+            comment=comment,
+            
+        )
+        review.save()
+        
+
+        return redirect('user:product_view', product_id=product_id)
+
+    
+    return render(request, 'user_temp/product_view.html')

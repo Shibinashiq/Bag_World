@@ -318,7 +318,7 @@ def add_product(request):
                     product_quantity=product_quantity,
                     
                 )
-
+                print(product_offer)
                 new_product.save()
 
                 for img in product_images:
