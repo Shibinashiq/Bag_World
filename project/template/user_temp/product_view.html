@@ -27,6 +27,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/zoom.js/1.7.21/zoom.min.js"></script>
 </head>
 
+
 <body>
 
     <!-- Preloader Start -->
@@ -180,7 +181,7 @@
                                                         {% if counter == 0 %}
                                                             <div class="col-12 mb--10">
                                                                 <figure class="product-gallery__image">
-                                                                    <img src="{{ image.image.url }}" alt="Product" width="510" height="586.5">
+                                                                   <img src="{{ image.image.url }}" alt="Product" class="zoomable-image" width="510" height="586.5">
                                                                 </figure>
                                                             </div>
                                                         {% elif counter == 1 or counter == 2 %}
@@ -244,10 +245,9 @@
                                     
                                 <form action="#" class="variation-form mb--20">
                                     
-                                    <a href="#" class="reset_variations">Clear</a>
+                                    <a href="{% url 'user:shop' %}" class="reset_variations">Clear</a>
                                 </form>
-                                <div
-                                    -->
+                                <div>                            
                                     
                                     <form method="post" action="{% url 'cart:add_cart' %}">
                                         {% csrf_token %}
@@ -275,7 +275,7 @@
                                     </button>
                                     <button type="button" class="nav-link" id="nav-reviews-tab" data-bs-toggle="tab" data-bs-target="#nav-reviews"
                                         role="tab" aria-selected="true">
-                                        <span>Reviews(1)</span>
+                                        <span>Reviews</span>
                                     </button>
                                 </div>
                                 <div class="tab-content" id="product-tabContent">
@@ -360,9 +360,10 @@
                                             <div class="review-form-wrapper">
                                                 <div class="row">
                                                     <div class="col-lg-8">
-                                                        <span class="reply-title">Add a review</span>
+                                                        
                                                         {% if product.id %}
-
+                                                           
+                                                           <span class="reply-title">Add a review</span>
                                                         <form action="{% url 'user:add_review' product_id=product.id %}" class="form pr--30" method="POST">
                                                             {% csrf_token %}
                                                             <!-- Your form fields go here -->
@@ -380,9 +381,11 @@
                                                                 </div>
                                                             </div>
                                                         </form>
-                                                        {% else %}
-                                                            <p>Product ID is empty or None.</p>
-                                                        {% endif %}
+                                                        
+                                                {% else %}
+                                                    <p>Product ID is empty or None.</p>
+                                                {% endif %}
+                                            </div>
                                                     </div>
                                                 </div>
                                             </div>

@@ -1,6 +1,9 @@
+from decimal import Decimal
 from django.db import models
 from datetime import datetime
 from django.utils import timezone
+
+
 
 class Brand(models.Model):
     brand_name = models.CharField(max_length=100)
@@ -32,9 +35,12 @@ class Offer(models.Model):
             return self.offer_name
         
 class Coupon(models.Model):
+    start_date = models.DateField(default=datetime.now)  # Use datetime from the imported module
+    end_date = models.DateField(default=datetime.now)
     coupon_code = models.CharField(max_length=50)
     discount = models.PositiveIntegerField()
     is_deleted = models.BooleanField(default=False)
+    min_price=models.PositiveIntegerField()
 
     def __str__(self):
         return self.coupon_code

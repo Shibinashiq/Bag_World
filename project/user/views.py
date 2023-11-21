@@ -171,6 +171,8 @@ def product_view(request, product_id):
     products = Product.objects.filter(is_deleted=False)
     product_images = ProductImage.objects.filter(product=product)
     review = Review.objects.all()
+   
+    
 
     # Check for product offer and calculate discounted price
     if product.product_offer and product.product_offer.end_date >= date.today():
@@ -182,7 +184,7 @@ def product_view(request, product_id):
         'product': product,
         'product_images': product_images,
         'review': review,
-        'products':products
+        'products':products,
     }
     return render(request, 'user_temp/product_view.html', context)
 
@@ -284,67 +286,50 @@ def edit_profile(adress_id,request):
 
 def place_order(request):
     if request.method == 'POST':
-       
         user = request.user
         user_name = User.objects.get(username=user)
         address_id = request.POST.get('address_id')
-        print(address_id)
+
         if address_id is None:
-           
             messages.error(request, 'Address should be provided')
             return redirect('cart:checkout')
 
         cart = Cart.objects.filter(user=request.user)
-        
         address = Profile.objects.get(id=address_id)
-        products_in_order = []  # List to store products in the order
+        products_in_order = []
         total = 0
 
         for item in cart:
-           
-            
             total += item.total_price
-            
-            # Add the product to the list of products in the order
             products_in_order.append(item.product)
 
         payment_mode = request.POST.get('payment_method')
-       
         payment_id = request.POST.get('payment_id')
 
         if not payment_mode:
             messages.error(request, 'Please choose a payment method')
             return redirect('cart:checkout')
 
-        # Calculate the shipping cost (You can adjust this based on your requirements)
         shipping_cost = 20
-
-        # Add the shipping cost to the total only once
         total += shipping_cost
 
-        # Initialize coupon_code with an empty string
         coupon_code = ''
 
-        # Check if the total price is greater than or equal to 2000 to show the coupon field
         if total >= 2000:
             coupon_code = request.POST.get('coupon')
 
-            # Check if the coupon code is valid
-            if coupon_code:
-                try:
-                    coupon = Coupon.objects.get(coupon_code=coupon_code, is_deleted=False)
-                    # Apply the coupon discount to the total price
-                    total -= coupon.discount
-                except Coupon.DoesNotExist:
-                    messages.error(request, 'Coupon is not valid.')  # Display error message
+        if coupon_code:
+            try:
+                coupon = Coupon.objects.get(coupon_code=coupon_code, is_deleted=False)
+                if total < coupon.min_price:
+                    messages.error(request, 'You cannot apply the coupon right now. Shop more and apply it later.')
                     return redirect('cart:checkout')
-            else:
-                # No coupon code provided, continue without applying any discount
-                pass
+                total -= coupon.discount
+            except Coupon.DoesNotExist:
+                messages.error(request, 'Coupon is not valid.')
+                return redirect('cart:checkout')
 
         if payment_mode == 'cash':
-           
-            # If payment method is cash, save the order directly
             order = Order.objects.create(
                 user=user_name,
                 payment_mode=payment_mode,
@@ -354,10 +339,14 @@ def place_order(request):
                 shipping_cost=shipping_cost,
                 od_status='Processing'
             )
-            
 
             for item in cart:
                 order.product.add(item.product)
+
+                # Subtract the purchased quantity from the product quantity
+                product = item.product
+                product.product_quantity -= item.quantity
+                product.save()  # Move this line inside the loop
 
             order.save()
             order.product.set(products_in_order)
@@ -366,8 +355,6 @@ def place_order(request):
 
             return redirect('user:place_order')
         elif payment_mode == 'razorpay':
-            
-            # If payment method is bank, save the order details to your model
             order = Order.objects.create(
                 user=user_name,
                 payment_mode=payment_mode,
@@ -383,66 +370,58 @@ def place_order(request):
             order.save()
             order.product.set(products_in_order)
             cart.delete()
-            
-            
-            
-        elif payment_mode == 'wallet':
-            wallet=Wallet.objects.get()
-            if wallet.wallet_amount<=total:
-                messages.error(request,'User Wallet Amount wont Be Enough ')
-                return redirect ('cart:checkout')
-            else:
-                
-              order = Order.objects.create(
-                user=user_name,
-                payment_mode=payment_mode,
-                payment_id=payment_id,
-                total_price=total,
-                profile=address,
-                shipping_cost=shipping_cost,
-                od_status='Processing'
-            )    
-              print(payment_mode)
-            for item in cart:
-                order.product.add(item.product)
 
-            
-            order.product.set(products_in_order)
-            cart.delete() 
-            
-            # Save the payment_id and any additional data to your model
-            order.payment_id = payment_id
-            order.save()
+            # You can include Razorpay logic here if needed
+
             return render(request, 'user_temp/order_success.html')
-            # Call the Razorpay function here if needed
-            # razorpay_response = call_razorpay_function(order_id=order.id, total=total)
-            
-            # Process the Razorpay response as needed
+        elif payment_mode == 'wallet':
+            wallet = Wallet.objects.get()
+            if wallet.wallet_amount <= total:
+                messages.error(request, 'User Wallet Amount won\'t be enough.')
+                return redirect('cart:checkout')
+            else:
+                order = Order.objects.create(
+                    user=user_name,
+                    payment_mode=payment_mode,
+                    payment_id=payment_id,
+                    total_price=total,
+                    profile=address,
+                    shipping_cost=shipping_cost,
+                    od_status='Processing'
+                )
 
-            # return JsonResponse({'razorpay_response': razorpay_response})
-            # return JsonResponse({'success': True, 'message': 'Order saved successfully'})
-            
-     
+                for item in cart:
+                    order.product.add(item.product)
+
+                order.product.set(products_in_order)
+                cart.delete()
+
+                order.payment_id = payment_id
+                order.save()
+
+                return render(request, 'user_temp/order_success.html')
+
     return render(request, 'user_temp/order_success.html')
-
-
-
-
-
-
-
-
 
 
 
 
 def cancel_order(request, order_id):
     if request.method == 'POST':
-        order = Order.objects.get(id=order_id)
+        order = get_object_or_404(Order, id=order_id)
 
         allowed_statuses = ['Processing', 'Shipped', 'Pending']
 
         if order.od_status in allowed_statuses and not order.is_cancelled and order.od_status != 'Return':
+            # Update product quantity
+            for product in order.product.all():
+                try:
+                    product.product_quantity += 1  # Assuming the user returns one product
+                    product.save()
+                except Product.DoesNotExist:
+                    # Handle the case where the product does not exist
+                    pass
+
             # Update order status to 'Cancelled'
             order.is_cancelled = True
             order.od_status = 'Cancelled'
@@ -455,18 +434,20 @@ def cancel_order(request, order_id):
             user_wallet.save()
 
             # Record the transaction in the wallet history
-            transaction = Transaction.objects.create (
-                            user=request.user,
-                            amount=amount_to_add,
-                            transaction_type='credit'  
-                        )
+            transaction = Transaction.objects.create(
+                user=request.user,
+                amount=amount_to_add,
+                transaction_type='credit'
+            )
             user_wallet.transactions.add(transaction)
 
             messages.success(request, 'Order canceled successfully. Amount added to your wallet.')
         else:
             messages.error(request, "This order cannot be canceled.")
 
-    return redirect('user:user_profile')  
+    return redirect('user:user_profile')
+
+
 
 
 
@@ -519,7 +500,7 @@ def add_review(request, product_id):
    
     if request.method == 'POST':
         comment = request.POST.get('comment')
-        print(comment)
+       
        
         user = request.user
        
@@ -541,3 +522,7 @@ def add_review(request, product_id):
 
     
     return render(request, 'user_temp/product_view.html')
+
+
+def success (request):
+    return (request,'user_temp/success.html')

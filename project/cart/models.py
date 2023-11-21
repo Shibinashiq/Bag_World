@@ -1,6 +1,6 @@
 from decimal import Decimal
 from django.db import models
-from admin_side.models import Product  # Import the Products model from your 'items' app
+from admin_side.models import Product  
 from django.contrib.auth.models import User
 
  

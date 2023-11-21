@@ -159,13 +159,17 @@
             </div>
         </section>
         <!-- Breadcrumb area End -->
-        {% if messages %}
-<ul class="messages">
-    {% for message in messages %}
-        <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-    {% endfor %}
-</ul>
-{% endif %}
+       {% if messages %}
+                                                        <ul class="messages">
+                                                            {% for message in messages %}
+                                                                 <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                     {% endif %}
+                        
+
+
+                                                    
  
         <!-- Main Content Wrapper Start -->
         <div class="main-content-wrapper">
@@ -961,8 +965,10 @@ addressRadios.forEach(function(radio) {
             },
             success: function (data) {
                 console.log('Payment details saved successfully');
-                // Optionally, you can redirect or perform other actions here
+                // Redirect to the success page
+                window.location.href = '/home/';
             },
+            
             error: function (error) {
                 console.error('Failed to save payment details:', error);
             }

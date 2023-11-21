@@ -1,3 +1,4 @@
+import datetime
 from decimal import Decimal, DecimalException, InvalidOperation
 import re
 from django.contrib.auth import authenticate,login
@@ -251,10 +252,10 @@ def category_delete(request, cat_id):
 
 @login_required(login_url='admin_side:admin_login')   
 def product(request):
-    products = Product.objects.filter(is_deleted=False)
-    brand = Brand.objects.all()
-    category = Category.objects.all()
-    offer = Offer.objects.all()
+    products = Product.objects.all()
+    brand = Brand.objects.filter(is_deleted=False)
+    category = Category.objects.filter(is_deleted=False)
+    offer = Offer.objects.filter(is_deleted=False)
     coupon = Coupon.objects.filter(is_deleted=False)
 
     context = {
@@ -327,8 +328,8 @@ def add_product(request):
 
                 return redirect('admin_side:product')
 
-        brand = Brand.objects.all()
-        category = Category.objects.all()
+        brand = Brand.objects.filter(is_deleted=False)
+        category = Category.objects.filter(is_deleted=False)
         offer = Offer.objects.filter(is_deleted=False)
         coupon = Coupon.objects.filter(is_deleted=False)
         context = {
@@ -445,7 +446,7 @@ def product_undelete(request, product_id):
     
 @login_required(login_url='admin_side:admin_login')     
 def admin_user(request):
-    register_details = User.objects.all()
+    register_details = User.objects.filter(is_superuser=False)
     context = {
         'register_details': register_details
     }
@@ -605,32 +606,64 @@ def coupon(request):
     return render(request,'admin_temp/coupon.html',context)
 
 
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from .models import Coupon
+from datetime import datetime
+
 @login_required(login_url='admin_side:admin_login')   
 def add_coupon(request):
     if request.method == 'POST':
         coupon_code = request.POST.get('coupon_code')
         discount = request.POST.get('discount')
         min_price = request.POST.get('min_price')
-        
-        #  validation for coupon_code, discount, and min_price here
-        if not coupon_code or not discount or not min_price:
+        start_date_str = request.POST.get('start_date')
+        end_date_str = request.POST.get('end_date')
+
+        # Validate coupon_code, discount, min_price, start_date, and end_date here
+        if not coupon_code or not discount or not min_price or not start_date_str or not end_date_str:
             messages.error(request, 'All fields are required.')
         elif not discount.isdigit() or not min_price.isdigit():
             messages.error(request, 'Discount and minimum price should be numeric.')
         else:
-            new_coupon = Coupon(
-                coupon_code=coupon_code,
-                discount=discount,
-                min_price=min_price
-            )
-            new_coupon.save()
-            messages.success(request, 'Coupon added successfully.')
-            return redirect('admin_side:coupon')
+            try:
+                discount = int(discount)
+                min_price = int(min_price)
+                start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
+                end_date = datetime.strptime(end_date_str, '%Y-%m-%d')
+                
+                if discount < 0 or min_price < 0:
+                    messages.error(request, 'Discount and minimum price should be non-negative.')
+                elif start_date >= end_date:
+                    messages.error(request, 'End date must be after start date.')
+                elif min_price <= discount:
+                    messages.error(request, 'Minimum price should be greater than the discount amount.')
+                else:
+                    new_coupon = Coupon(
+                        coupon_code=coupon_code,
+                        discount=discount,
+                        min_price=min_price,
+                        start_date=start_date,
+                        end_date=end_date
+                    )
+                    new_coupon.save()
+                    messages.success(request, 'Coupon added successfully.')
+                    return redirect('admin_side:coupon')
+            except ValueError:
+                messages.error(request, 'Invalid date format. Please use YYYY-MM-DD.')
     
     return render(request, 'admin_temp/add_coupon.html')
 
 
+
+
+
+
+
+
 @login_required(login_url='admin_side:admin_login')   
+
 def edit_coupon(request, coupon_id):
     coupon = get_object_or_404(Coupon, id=coupon_id)
     
@@ -638,6 +671,9 @@ def edit_coupon(request, coupon_id):
         coupon_code = request.POST.get('coupon_code')
         discount = request.POST.get('discount')
         min_price = request.POST.get('min_price')
+        min_price = request.POST.get('min_price')
+        start_date=request.POST.get('start_date')
+        end_date=request.POST.get('end_date')
         
         # Add validation for coupon_code, discount, and min_price here
         if not coupon_code or not discount or not min_price:

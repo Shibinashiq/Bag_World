@@ -17,8 +17,7 @@
                     <th>Brand</th>
                     <th>Offer</th>
                     <th>Offer Price</th>
-                    <th>Coupon</th>
-                    <th>Coupon Price</th>
+                   
                     <th>Category</th>
                     <th>Quantity</th>
                     <th>Action</th>
@@ -45,8 +44,7 @@
                         <td>{{ i.product_brand }}</td>
                         <td>{{ i.product_offer }}</td>
                         <td>{{ i.product_offer.discount_amount }}</td>
-                        <td>{{ i.product_coupon }}</td>
-                        <td>{{ i.product_coupon.discount }}</td>
+                       
                         <td>{{ i.product_category }}</td>
                         <td>{{ i.product_quantity }}</td>
                         <td>
@@ -54,11 +52,18 @@
                         </td> 
                         <td>
                             {% if not i.is_deleted %}
-                                <a href="{% url 'admin_side:product_undelete' i.id %}" class="btn btn-success">Undelete</a>
+                                <form action="{% url 'admin_side:product_delete' i.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </form>
                             {% else %}
-                                <a href="{% url 'admin_side:product_delete' i.id %}" class="btn btn-danger">Delete</a>
+                                <form action="{% url 'admin_side:product_undelete' i.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-success">Undelete</button>
+                                </form>
                             {% endif %}
                         </td>
+                        
                         
                         
                     </tr>

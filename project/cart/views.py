@@ -63,7 +63,7 @@ def add_cart(request):
             # Check if the product is already in the cart
             if Cart.objects.filter(user=request.user, product_id=pro_id).exists():
                 messages.error(request, 'Product already exists in the cart')
-                return redirect('cart:cart')
+                return redirect('user:shop')
             else:
                 product_qty = quantity
             
@@ -93,7 +93,7 @@ def add_cart(request):
                 )
                 cart_obj.save()
                 messages.success(request, 'Product Added Successfully')
-                return redirect('cart:cart')
+                return redirect('user:shop')
             else:
                 messages.error(request, 'Only a few quantities available')
                 return redirect('user:shop')
