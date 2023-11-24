@@ -35,8 +35,8 @@ urlpatterns = [
     
     
     
-    # path('contact',views.contact,name='contact'),
-    path('index',views.index,name='index'),
+    path('full_order_view/<int:order_id>/', views.full_order_view, name='full_order_view'),
+    # path('order_success',views.order_success,name='order_success'),
     # path('about_us',views.about_us,name='about_us.html'),
     # path('contact_page',views.contact_page,name='contact_page.html'),
    

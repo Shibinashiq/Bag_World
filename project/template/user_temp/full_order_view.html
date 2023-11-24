@@ -176,7 +176,7 @@
                                           <span class="me-3">22-11-2021</span>
                                           <span class="me-3">#16123222</span>
                                           <span class="me-3">Visa -1234</span>
-                                          <span class="badge rounded-pill bg-info">SHIPPING</span>
+                                          <span class="badge rounded-pill bg-info">{{order.od_status}}</span>
                                         </div>
                                       
                                         <div class="d-flex">
@@ -194,59 +194,65 @@
                                       </div>
                                       <table class="table table-borderless " id="tablePrint">
                                         <tbody>
-                                          <tr>
-                                            <td>
-                                                {% for order in user_order %}
-                                              <div class="d-flex mb-2">
-                                                <div class="flex-shrink-0">
-                                                  <img src="https://www.bootdey.com/image/280x280/87CEFA/000000" alt="" width="35" class="img-fluid">
-                                                </div>
-                                                {% for item in order.product.all %}
+                                            {% for product_item in order.product.all %}
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex mb-2">
+                                                      
+                                                        <div class="flex-shrink-0">
+                                                            <!-- Assuming the first product in the order has an image -->
+                                                           
+                                                            <div class="d-flex mb-2">
+                                                                <div class="flex-shrink-0">
+                                                                    {% if product_item.product_image %}
+                                                                        <img src="{{ product_item.product_image.url }}" alt="{{ product_item.product_name }}" width="35" class="img-fluid">
+                                                                    {% else %}
+                                                                        <!-- Provide a default image or handle the case where the product has no image -->
+                                                                        <img src="{% static 'path_to_default_image/default_image.jpg' %}" alt="Default Image" width="35" class="img-fluid">
+                                                                    {% endif %}
+                                                                </div>
+                                                                <div class="flex-lg-grow-1 ms-3">
+                                                                    <h6 class="small mb-0"><a href="{%url 'user:shop'%}" class="text-reset">{{ product_item.product_name }}</a></h6>
+                                                                    <!-- Add other product details if needed -->
+                                                                </div>
+                                                                <div class="flex-lg-grow-1 ms-3">
+                                                                    <h6 class="small mb-0"><a href="{%url 'user:shop'%}" class="text-reset">{{ product_item.product_price}}</a></h6>
+                                                                    <!-- Add other product details if needed -->
+                                                                </div>
+                                                            </div>
+                                                        
+                                                        </div>
+                                                        <div class="flex-lg-grow-1 ms-3">
+                                                            <!-- Assuming the first product in the order has a name -->
+                                                            <h6 class="small mb-0"><a href="#" class="text-reset">{{ order.product.product_name }}</a></h6>
+                                                        </div>
+                                                    </div>
+                                                    
                                                 
-                                                <div class="flex-lg-grow-1 ms-3">
-                                                  <h6 class="small mb-0"><a href="#" class="text-reset">{{ item.product_name }}</a></h6>
-                                                  
-                                                </div>
-                                                {%endfor%}
-                                              </div>
-                                            </td>
-                                            <td>1</td>
-                                            <td class="text-end">$order.total_price</td>
-                                          </tr>
                                           
-                                          {%endfor%}
-                                          <!-- <tr>
-                                            <td>
-                                              <div class="d-flex mb-2">
-                                                <div class="flex-shrink-0">
-                                                  <img src="https://www.bootdey.com/image/280x280/FF69B4/000000" alt="" width="35" class="img-fluid">
-                                                </div>
-                                                <div class="flex-lg-grow-1 ms-3">
-                                                  <h6 class="small mb-0"><a href="#" class="text-reset">Smartwatch IP68 Waterproof GPS and Bluetooth Support</a></h6>
-                                                  <span class="small">Color: White</span>
-                                                </div>
-                                              </div>
-                                            </td>
-                                            <td>1</td>
-                                            <td class="text-end">$79.99</td>
-                                          </tr> -->
+                                            {% endfor %}
+                                        </td>
+                                                
+                                        <td class="text-end"></td>
+                                    </tr>
                                         </tbody>
+                                        
                                         <tfoot>
-                                          <tr>
+                                          <!-- <tr>
                                             <td colspan="2">Subtotal</td>
-                                            <td class="text-end">$159,98</td>
+                                            <td class="text-end">${{order.product.product_price}}</td> -->
                                           </tr>
                                           <tr>
                                             <td colspan="2">Shipping</td>
                                             <td class="text-end">$20.00</td>
                                           </tr>
-                                          <tr>
+                                          <!-- <tr>
                                             <td colspan="2">Discount (Code: NEWYEAR)</td>
                                             <td class="text-danger text-end">-$10.00</td>
-                                          </tr>
+                                          </tr> -->
                                           <tr class="fw-bold">
                                             <td colspan="2">TOTAL</td>
-                                            <td class="text-end">$169,98</td>
+                                            <td class="text-end">${{ order.total_price }}</td>
                                           </tr>
                                         </tfoot>
                                       </table>
@@ -258,17 +264,20 @@
                                       <div class="row">
                                         <div class="col-lg-6">
                                           <h3 class="h6">Payment Method</h3>
-                                          <p>Visa -1234 <br>
-                                          Total: $169,98 <span class="badge bg-success rounded-pill">PAID</span></p>
+                                          <p>{{ order.payment_mode }} -{{ order.payment_id }} <br>
+                    Total: ${{ order.total_price }} <span class="badge bg-success rounded-pill">{{ order.od_status }}</span></p>
                                         </div>
                                         <div class="col-lg-6">
                                           <h3 class="h6">Billing address</h3>
                                           <address>
-                                            <strong>John Doe</strong><br>
-                                            1355 Market St, Suite 900<br>
-                                            San Francisco, CA 94103<br>
-                                            <abbr title="Phone">P:</abbr> (123) 456-7890
-                                          </address>
+                                            <strong>{{ order.profile.firstname }} {{ order.profile.lastname }}</strong><br>
+                                            {{ order.profile.streetaddress }}<br>
+                                            {{ order.profile.town }}, {{ order.profile.state }} {{ order.profile.zipcode }}<br>
+                                            <abbr title="Phone">Phone:</abbr> {{ order.profile.phone }}<br>
+                                            <abbr title="Email">Email:</abbr> {{ order.profile.email }}<br>
+                                            <abbr title="Company">Company:</abbr> {{ order.profile.company_name }}<br>
+                                            <abbr title="Country">Country:</abbr> {{ order.profile.country }}
+                                        </address>
                                         </div>
                                       </div>
                                     </div>
@@ -280,8 +289,7 @@
                                   <div class="card mb-4">
                                     <div class="card-body">
                                       <h3 class="h6">Customer Notes</h3>
-                                      <p>Sed enim, faucibus litora velit vestibulum habitasse. Cras lobortis cum sem aliquet mauris rutrum. Sollicitudin. Morbi, sem tellus vestibulum porttitor.</p>
-                                    </div>
+                                      <p>{{order.profile.ordernote}}</p>
                                   </div>
                                   <div class="card mb-4">
                                     <!-- Shipping information -->
@@ -292,10 +300,12 @@
                                       <hr>
                                       <h3 class="h6">Address</h3>
                                       <address>
-                                        <strong>John Doe</strong><br>
-                                        1355 Market St, Suite 900<br>
-                                        San Francisco, CA 94103<br>
-                                        <abbr title="Phone">P:</abbr> (123) 456-7890
+                                        <strong>{{ order.profile.firstname }} {{ order.profile.lastname }}</strong><br>
+                                        {{ order.profile.streetaddress }} <br>
+                                        {{ order.profile.town }}, {{ order.profile.state }} {{ order.profile.zipcode }}<br>
+                                        <!-- 1355 Market St, Suite 900<br>
+                                        San Francisco, CA 94103<br> -->
+                                        <abbr title="Phone">Phone:</abbr> {{ order.profile.phone }}
                                       </address>
                                     </div>
                                   </div>
@@ -303,90 +313,7 @@
                               </div>
                             </div>
                               </div>
-                        
-                        <!-- <div class="col-xl-4 col-lg-4">
-                            <div class="shop-widget mb--40">
-                                    <h3 class="widget-title mb--30">Color</h3>
-                                    <div class="widget-color">
-                                        <a href="shop.html" class="red">Red</a>
-                                        <a href="shop.html" class="pink">Pink</a>
-                                        <a href="shop.html" class="black">black</a>
-                                        <a href="shop.html" class="brown">brown</a>
-                                        <a href="shop.html" class="blue">blue</a>
-                                        <a href="shop.html" class="cholate">cholate</a>
-                                        <a href="shop.html" class="copper">copper</a>
-                                        <a href="shop.html" class="gray">grey</a>
-                                    </div>
-                                </div>
-                                <div class="shop-widget mb--40">
-                                    <h3 class="widget-title mb--25">Price</h3>
-                                    <ul class="widget-list price-list">
-                                        <li>
-                                            <a href="shop.html">
-                                                <span>Low - Medium</span>
-                                                <strong class="font-weight-medium">$10.00 - $45.00</strong>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="shop.html">
-                                                <span>Medium - High</span>
-                                                <strong class="font-weight-medium">$45.00 - $60.00</strong>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="shop.html">
-                                                <span>High - Avobe</span>
-                                                <strong class="font-weight-medium">$60.00 - $200</strong>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="shop-widget mb--40">
-                                    <h3 class="widget-title mb--25">Brand</h3>
-                                    <ul class="widget-list brand-list">
-                                        <li>
-                                            <a href="shop.html">
-                                                <span>Walmart</span>
-                                                <strong class="color--red font-weight-medium">10</strong>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="shop.html">
-                                                <span>Yellow</span>
-                                                <strong class="color--red font-weight-medium">50</strong>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="shop.html">
-                                                <span>H &amp; M</span>
-                                                <strong class="color--red font-weight-medium">46</strong>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="shop.html">
-                                                <span>Black &amp; White</span>
-                                                <strong class="color--red font-weight-medium">46</strong>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="shop-widget">
-                                    <h3 class="widget-title mb--25">Tag</h3>
-                                    <div class="tagcloud">
-                                        <a href="shop.html">Cloth</a>
-                                        <a href="shop.html">Blazer</a>
-                                        <a href="shop.html">Jacket</a>
-                                        <a href="shop.html">Polo Shirt</a>
-                                        <a href="shop.html">T-Shirt</a>
-                                        <a href="shop.html">Shoes</a>
-                                        <a href="shop.html">Pant</a>
-                                        <a href="shop.html">Party Dress</a>
-                                        <a href="shop.html">Coktail Dress</a>
-                                        <a href="shop.html">Sweater</a>
-                                        <a href="shop.html">Jeans</a>
-                                    </div>
-                                </div>
-                            </aside> -->
+ 
                         </div>
                     </div>
                 </div>
@@ -862,4 +789,3 @@
 
         
    
-

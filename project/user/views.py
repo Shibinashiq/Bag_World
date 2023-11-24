@@ -290,6 +290,7 @@ def edit_profile(adress_id,request):
 
 
 def place_order(request):
+    
     if request.method == 'POST':
         user = request.user
         user_name = User.objects.get(username=user)
@@ -344,7 +345,7 @@ def place_order(request):
                 shipping_cost=shipping_cost,
                 od_status='Processing'
             )
-
+           
             for item in cart:
                 # Subtract the purchased quantity from the product quantity
                 product = item.product
@@ -432,10 +433,11 @@ def place_order(request):
 
             order.save()
             cart.delete()
+            
+            
+        
 
-            return redirect('user:place_order')
-
-    return render(request, 'user_temp/order_success.html')
+    return redirect('user:full_order_view')
 
 
 
@@ -565,32 +567,16 @@ def success (request):
 
 
 
-def index(request):
-    user_order = Order.objects.filter(user=request.user).order_by('-created_at')
-    order_details = []
+def full_order_view(request, order_id):
+    # Fetch the specific order based on order_id
+    order = Order.objects.filter(user=request.user, id=order_id).first()
 
-    for order in user_order:
-        # Get the products associated with the current order
-        products = order.product.all()
-
-        # Check if any product in this order has an offer
-        has_offer = any(product.product_offer is not None for product in products)
-
-        # order details
-        order_detail = {
-            'order': order,
-            'products': products,
-            'has_offer': has_offer,
+    # Check if the order exists
+    if order:
+        context = {
+            'order': order
         }
-        
-        order_details.append(order_detail)
-
-
-    
-    context={
-        'order_detail':order_detail,
-        'order_details':order_details,
-        'user_order':user_order
-    }
-    
-    return render(request,'user_temp/index.html',context)
+        return render(request, 'user_temp/full_order_view.html', context)
+    else:
+        # Handle the case where the order doesn't exist (e.g., show an error message)
+        return HttpResponse("Order not found.")
