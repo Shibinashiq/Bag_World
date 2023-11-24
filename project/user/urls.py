@@ -36,7 +36,7 @@ urlpatterns = [
     
     
     # path('contact',views.contact,name='contact'),
-    # path('blog',views.contact,name='blog.html'),
+    path('index',views.index,name='index'),
     # path('about_us',views.about_us,name='about_us.html'),
     # path('contact_page',views.contact_page,name='contact_page.html'),
    

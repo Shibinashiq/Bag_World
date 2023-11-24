@@ -176,6 +176,7 @@
             </div>
         </section>
         <!-- Breadcrumb area End -->
+       
 
         <!-- Main Content Wrapper Start -->
         <div class="main-content-wrapper">
@@ -190,6 +191,15 @@
                                         <div class="table-content table-responsive">
                                             <table class="table text-center">
                                                 <thead>
+                                                    {% if messages %}
+                                                    <div class="messages">
+                                                        {%for message in messages%}
+                                                        <div class="alert alert-{{ message.tags }}">
+                                                         {{ message }}
+                                                        </div>
+                                                        {% endfor %}
+                                                    </div>
+                                                    {% endif %}
                                                     <tr>
                                                         <th>&nbsp;</th>
                                                         <th>&nbsp;</th>
@@ -201,14 +211,14 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                 {% if messages %}
+                                                 <!-- {% if messages %}
                                                         <ul class="messages">
                                                             {% for message in messages %}
                                                                  <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
                                                             {% endfor %}
                                                         </ul>
                                                      {% endif %}
-                        
+                         -->
 
 
                                                     {% for i in cart %}
@@ -223,9 +233,17 @@
                                                             </form>
                                                             
                                                             
-                                                            <td class="product-thumbnail text-start" >
+                                                            <td class="product-thumbnail text-start">
+                                                                {% if i.product.product_quantity == 0 or i.product.is_deleted %}
+                                                                    <del>
+                                                                {% endif %}
                                                                 <img src="{{ i.product.product_image.url }}" alt="Product Thumbnail" style="width: 70px; height: 88px;">
+                                                                {% if i.product.product_quantity == 0 or i.product.is_deleted %}
+                                                                    </del>
+                                                                {% endif %}
                                                             </td>
+                                                            
+                                                            
                                                             
                                                             <td class="product-name text-start wide-column">
                                                                 <h3>
@@ -339,15 +357,7 @@
                                                 </span>
                                             </div>
                                             
-                                            <!-- {% if request.session.discount_code %}
-                                                <p>Coupon Applied: -{{ request.session.discount_code }}</p>
-                                                <p>Discounted Total: ${{ request.session.discounted_total }}</p> -->
-                                                <!-- <p>Grand Total: ${{request.session.discounted_total }} (after applying coupon)</p>
-                                            {% else %} -->
-                                            <!--   <p>Grand Total: ${{ request.session.discounted_total }}</p> -->
-
-                                            <!-- {% endif %} -->
-                                            
+                                           
                                         </div>
                                     </div>
                                 </div>

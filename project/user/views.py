@@ -26,8 +26,7 @@ from datetime import date
 
 def home(request):
     # Filter products that are not deleted
-    products = Product.objects.filter(is_deleted=False)
-
+    products = Product.objects.filter(is_deleted=False, product_quantity__gt=0)
     for product in products:
         if product.product_offer:
             if product.product_offer.end_date >= date.today():
@@ -147,8 +146,9 @@ def user_logout(request):
 from datetime import date
 
 def shop(request):
-    # Filter products that are not deleted
-    products = Product.objects.filter(is_deleted=False)
+    # Filter products that are not deleted and have a quantity greater than 0
+    products = Product.objects.filter(is_deleted=False, product_quantity__gt=0)
+
     for product in products:
         if product.product_offer:
             if product.product_offer.end_date >= date.today():
@@ -163,6 +163,8 @@ def shop(request):
     }
 
     return render(request, 'user_temp/shop.html', context)
+
+
 
 from datetime import date
 
@@ -284,6 +286,9 @@ def edit_profile(adress_id,request):
 
 
 
+
+
+
 def place_order(request):
     if request.method == 'POST':
         user = request.user
@@ -341,19 +346,27 @@ def place_order(request):
             )
 
             for item in cart:
-                order.product.add(item.product)
-
                 # Subtract the purchased quantity from the product quantity
                 product = item.product
-                product.product_quantity -= item.quantity
-                product.save()  # Move this line inside the loop
+                new_quantity = product.product_quantity - item.quantity
+
+                # Check if the new quantity is valid
+                if new_quantity >= 0:
+                    product.product_quantity = new_quantity
+                    product.save()
+                    # Add the product to the order
+                    order.product.add(product)
+                else:
+                    # Handle the case where the product quantity would become negative
+                    messages.warning(request, f'Product "{product.product_name}" has insufficient quantity and will not be included in the order.')
 
             order.save()
-            order.product.set(products_in_order)
-
             cart.delete()
 
             return redirect('user:place_order')
+
+        
+        
         elif payment_mode == 'razorpay':
             order = Order.objects.create(
                 user=user_name,
@@ -365,15 +378,27 @@ def place_order(request):
             )
 
             for item in cart:
-                order.product.add(item.product)
+                    # Subtract the purchased quantity from the product quantity
+                product = item.product
+                new_quantity = product.product_quantity - item.quantity
+
+                # Check if the new quantity is valid
+                if new_quantity >= 0:
+                    product.product_quantity = new_quantity
+                    product.save()
+                    # Add the product to the order
+                    order.product.add(product)
+                else:
+                    # Handle the case where the product quantity would become negative
+                    messages.warning(request, f'Product "{product.product_name}" has insufficient quantity and will not be included in the order.')
 
             order.save()
-            order.product.set(products_in_order)
             cart.delete()
+
+            return redirect('user:place_order')
 
             # You can include Razorpay logic here if needed
 
-            return render(request, 'user_temp/order_success.html')
         elif payment_mode == 'wallet':
             wallet = Wallet.objects.get()
             if wallet.wallet_amount <= total:
@@ -391,15 +416,24 @@ def place_order(request):
                 )
 
                 for item in cart:
-                    order.product.add(item.product)
+                    # Subtract the purchased quantity from the product quantity
+                    product = item.product
+                    new_quantity = product.product_quantity - item.quantity
 
-                order.product.set(products_in_order)
-                cart.delete()
+                    # Check if the new quantity is valid
+                    if new_quantity >= 0:
+                        product.product_quantity = new_quantity
+                        product.save()
+                        # Add the product to the order
+                        order.product.add(product)
+                    else:
+                        # Handle the case where the product quantity would become negative
+                        messages.warning(request, f'Product "{product.product_name}" has insufficient quantity and will not be included in the order.')
 
-                order.payment_id = payment_id
-                order.save()
+            order.save()
+            cart.delete()
 
-                return render(request, 'user_temp/order_success.html')
+            return redirect('user:place_order')
 
     return render(request, 'user_temp/order_success.html')
 
@@ -526,3 +560,37 @@ def add_review(request, product_id):
 
 def success (request):
     return (request,'user_temp/success.html')
+
+
+
+
+
+def index(request):
+    user_order = Order.objects.filter(user=request.user).order_by('-created_at')
+    order_details = []
+
+    for order in user_order:
+        # Get the products associated with the current order
+        products = order.product.all()
+
+        # Check if any product in this order has an offer
+        has_offer = any(product.product_offer is not None for product in products)
+
+        # order details
+        order_detail = {
+            'order': order,
+            'products': products,
+            'has_offer': has_offer,
+        }
+        
+        order_details.append(order_detail)
+
+
+    
+    context={
+        'order_detail':order_detail,
+        'order_details':order_details,
+        'user_order':user_order
+    }
+    
+    return render(request,'user_temp/index.html',context)

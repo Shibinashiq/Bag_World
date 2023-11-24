@@ -1,209 +1,196 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
-<body style="background-color: #e6e6e6; width: 100%; height: 100%;">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 
-<!-- Modal -->
-<div id="success_tic" class="modal fade" role="dialog">
-    <div class="modal-dialog">
+    <!-- Include Font Awesome CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js">
 
-        <!-- Modal content -->
-        <div class="modal-content">
-            <a class="close" href="{% url 'user:home' %}" data-dismiss="modal">&times;</a>
-            <div class="page-body">
-                <div class="head">
-                    <h3 style="margin-top:5px;">Order Placed Successfully</h3>
-                    <h4>Your order has been processed</h4>
-                </div>
-                <div>
-                    <p>Thank you for your order.</p>
-                </div>
+    <!-- Include jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
-                <h1 style="text-align:center;">
-                    <div class="checkmark-circle">
-                        <div class="background"></div>
-                        <div class="checkmark draw"></div>
-                    </div>
-                </h1>
-            </div>
-        </div>
-    </div>
-</div>
+    <!-- Include Bootstrap Bundle (JS and Popper.js) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></script>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-<style>
-    #success_tic .page-body {
-        max-width: 300px;
-        background-color: #FFFFFF;
-        margin: 10% auto;
+</head><style>
+    body {
+        color: #000;
+        overflow-x: hidden;
+        height: 100%;
+        background-color: #8C9EFF;
+        background-repeat: no-repeat;
     }
-
-    #success_tic .page-body .head {
-        text-align: center;
+    
+    .card {
+        z-index: 0;
+        background-color: #ECEFF1;
+        padding-bottom: 20px;
+        margin-top: 90px;
+        margin-bottom: 90px;
+        border-radius: 10px;
     }
-
-    #success_tic .close {
-        opacity: 1;
-        position: absolute;
-        right: 0px;
-        font-size: 30px;
-        padding: 3px 15px;
-        margin-bottom: 10px;
+    
+    .top {
+        padding-top: 40px;
+        padding-left: 13% !important;
+        padding-right: 13% !important;
     }
-
-    #success_tic .checkmark-circle {
-        width: 150px;
-        height: 150px;
+    
+    /*Icon progressbar*/
+    #progressbar {
+        margin-bottom: 30px;
+        overflow: hidden;
+        color: #455A64;
+        padding-left: 0px;
+        margin-top: 30px;
+    } 
+    
+    #progressbar li {
+        list-style-type: none;
+        font-size: 13px;
+        width: 25%;
+        float: left;
         position: relative;
-        display: inline-block;
-        vertical-align: top;
+        font-weight: 400;
     }
-
-    .checkmark-circle .background {
-        width: 150px;
-        height: 150px;
+    
+    #progressbar .step0:before {
+        font-family: FontAwesome;
+        content: "\f10c";
+        color: #fff;
+    }
+    
+    #progressbar li:before {
+        width: 40px;
+        height: 40px;
+        line-height: 45px;
+        display: block;
+        font-size: 20px;
+        background: #C5CAE9;
         border-radius: 50%;
-        background: #1ab394;
-        position: absolute;
+        margin: auto;
+        padding: 0px;
     }
-
-    #success_tic .checkmark-circle .checkmark {
-        border-radius: 5px;
-    }
-
-    #success_tic .checkmark-circle .checkmark.draw:after {
-        -webkit-animation-delay: 300ms;
-        -moz-animation-delay: 300ms;
-        animation-delay: 300ms;
-        -webkit-animation-duration: 1s;
-        -moz-animation-duration: 1s;
-        animation-duration: 1s;
-        -webkit-animation-timing-function: ease;
-        -moz-animation-timing-function: ease;
-        animation-timing-function: ease;
-        -webkit-animation-name: checkmark;
-        -moz-animation-name: checkmark;
-        animation-name: checkmark;
-        -webkit-transform: scaleX(-1) rotate(135deg);
-        -moz-transform: scaleX(-1) rotate(135deg);
-        -ms-transform: scaleX(-1) rotate(135deg);
-        -o-transform: scaleX(-1) rotate(135deg);
-        transform: scaleX(-1) rotate(135deg);
-        -webkit-animation-fill-mode: forwards;
-        -moz-animation-fill-mode: forwards;
-        animation-fill-mode: forwards;
-    }
-
-    #success_tic .checkmark-circle .checkmark:after {
-        opacity: 1;
-        height: 75px;
-        width: 37.5px;
-        -webkit-transform-origin: left top;
-        -moz-transform-origin: left top;
-        -ms-transform-origin: left top;
-        -o-transform-origin: left top;
-        transform-origin: left top;
-        border-right: 15px solid #fff;
-        border-top: 15px solid #fff;
-        border-radius: 2.5px !important;
+    
+    /*ProgressBar connectors*/
+    #progressbar li:after {
         content: '';
-        left: 35px;
-        top: 80px;
+        width: 100%;
+        height: 12px;
+        background: #C5CAE9;
         position: absolute;
+        left: 0;
+        top: 16px;
+        z-index: -1;
     }
-
-    @-webkit-keyframes checkmark {
-        0% {
-            height: 0;
-            width: 0;
-            opacity: 1;
-        }
-
-        20% {
-            height: 0;
-            width: 37.5px;
-            opacity: 1;
-        }
-
-        40% {
-            height: 75px;
-            width: 37.5px;
-            opacity: 1;
-        }
-
-        100% {
-            height: 75px;
-            width: 37.5px;
-            opacity: 1;
-        }
+    
+    #progressbar li:last-child:after {
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
+        position: absolute;
+        left: -50%;
     }
-
-    @-moz-keyframes checkmark {
-        0% {
-            height: 0;
-            width: 0;
-            opacity: 1;
-        }
-
-        20% {
-            height: 0;
-            width: 37.5px;
-            opacity: 1;
-        }
-
-        40% {
-            height: 75px;
-            width: 37.5px;
-            opacity: 1;
-        }
-
-        100% {
-            height: 75px;
-            width: 37.5px;
-            opacity: 1;
-        }
+    
+    #progressbar li:nth-child(2):after, #progressbar li:nth-child(3):after {
+        left: -50%;
     }
-
-    @keyframes checkmark {
-        0% {
-            height: 0;
-            width: 0;
-            opacity: 1;
-        }
-
-        20% {
-            height: 0;
-            width: 37.5px;
-            opacity: 1;
-        }
-
-        40% {
-            height: 75px;
-            width: 37.5px;
-            opacity: 1;
-        }
-
-        100% {
-            height: 75px;
-            width: 37.5px;
-            opacity: 1;
+    
+    #progressbar li:first-child:after {
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+        position: absolute;
+        left: 50%;
+    }
+    
+    #progressbar li:last-child:after {
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
+    }
+    
+    #progressbar li:first-child:after {
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+    }
+    
+    /*Color number of the step and the connector before it*/
+    #progressbar li.active:before, #progressbar li.active:after {
+        background: #651FFF;
+    }
+    
+    #progressbar li.active:before {
+        font-family: FontAwesome;
+        content: "\f00c";
+    }
+    
+    .icon {
+        width: 60px;
+        height: 60px;
+        margin-right: 15px;
+    }
+    
+    .icon-content { 
+        padding-bottom: 20px;
+    }
+    
+    @media screen and (max-width: 992px) {
+        .icon-content {
+            width: 50%;
         }
     }
 </style>
-
-<script>
-    // Automatically close the modal and redirect to the home page after 3 seconds
-    $(document).ready(function () {
-        $('#success_tic').modal('show');
-        setTimeout(function () {
-            $('#success_tic').modal('hide');
-            window.location.href = '{% url "user:home" %}'; // Replace with your home page URL
-        }, 3000);
-    });
-</script>
+<body>
+    <div class="container px-1 px-md-4 py-5 mx-auto">
+        <div class="card">
+            <div class="row d-flex justify-content-between px-3 top">
+                <div class="d-flex">
+                    <h5>ORDER <span class="text-primary font-weight-bold">#Y34XDHR</span></h5>
+                </div>
+                <div class="d-flex flex-column text-sm-right">
+                    <p class="mb-0">Expected Arrival <span>01/12/19</span></p>
+                    <p>USPS <span class="font-weight-bold">234094567242423422898</span></p>
+                </div>
+            </div>
+            <!-- Add class 'active' to progress -->
+            <div class="row d-flex justify-content-center">
+                <div class="col-12">
+                <ul id="progressbar" class="text-center">
+                    <li class="active step0"></li>
+                    <li class="active step0"></li>
+                    <li class="active step0"></li>
+                    <li class="step0"></li>
+                </ul>
+                </div>
+            </div>
+            <div class="row justify-content-between top">
+                <div class="row d-flex icon-content">
+                    <img class="icon" src="https://i.imgur.com/9nnc9Et.png">
+                    <div class="d-flex flex-column">
+                        <p class="font-weight-bold">Order<br>Processed</p>
+                    </div>
+                </div>
+                <div class="row d-flex icon-content">
+                    <img class="icon" src="https://i.imgur.com/u1AzR7w.png">
+                    <div class="d-flex flex-column">
+                        <p class="font-weight-bold">Order<br>Shipped</p>
+                    </div>
+                </div>
+                <div class="row d-flex icon-content">
+                    <img class="icon" src="https://i.imgur.com/TkPm63y.png">
+                    <div class="d-flex flex-column">
+                        <p class="font-weight-bold">Order<br>En Route</p>
+                    </div>
+                </div>
+                <div class="row d-flex icon-content">
+                    <img class="icon" src="https://i.imgur.com/HdsziHP.png">
+                    <div class="d-flex flex-column">
+                        <p class="font-weight-bold">Order<br>Arrived</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

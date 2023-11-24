@@ -75,7 +75,9 @@ def add_cart(request):
                     offer_price = None  # Offer has expired
             else:
                 offer_price = None  # No offer
-
+            if check_product.product_quantity <= 0 or check_product.is_deleted:
+                    messages.error(request, 'Product is not available')
+                    return redirect('user:shop')
             # Calculate the total price
             if offer_price is not None:
                 total_price = offer_price * product_qty
@@ -177,7 +179,6 @@ def delete_cart_item(request,product_id):
     
 def checkout(request):
     cart_items = Cart.objects.filter(user=request.user)
-    
 
     # Check if the cart is empty
     if not cart_items.exists():
@@ -187,22 +188,33 @@ def checkout(request):
     user_profile = Profile.objects.filter(user=request.user.id)
     grand_total = 0
     shipping_cost = 20
+    available_cart_items = []
+
     for cart_item in cart_items:
+        if cart_item.product.product_quantity > 0 and not cart_item.product.is_deleted:
+            # Product is available, add to the list
+            available_cart_items.append(cart_item)
+
             if cart_item.offer_price is not None:
                 item_total = cart_item.offer_price * cart_item.quantity
             else:
                 item_total = cart_item.product.product_price * cart_item.quantity
             grand_total += item_total
 
+    # Check if there are any available items in the cart
+    if not available_cart_items:
+        messages.error(request, 'All products in your cart are not available for checkout.Please wait some days we will inform You')
+        return redirect('cart:cart')
+
     # Add shipping cost to the grand total
     grand_total += shipping_cost
     available_coupons = Coupon.objects.filter(is_deleted=False)
 
     context = {
-        'cart_items': cart_items,
+        'cart_items': available_cart_items,
         'user_profile': user_profile,
         'grand_total': grand_total,
-        'available_coupons':available_coupons
+        'available_coupons': available_coupons
     }
 
     return render(request, 'user_temp/checkout.html', context)
@@ -264,6 +276,7 @@ def remove_wishlist(request, product_id):
 
 
 
+
 def wishlist_to_cart(request, wishlist_id):
     if request.user.is_authenticated:
         # Get the Wishlist item
@@ -274,17 +287,12 @@ def wishlist_to_cart(request, wishlist_id):
             messages.error(request, 'Product already exists in the cart')
             return redirect('cart:cart')
         else:
-            
-            # Check if the product is available in sufficient quantity
-            if wishlist_item.product.product_quantity >= 1:
+            check_product = wishlist_item.product
+
+            # Check if the product quantity is available and the product is not deleted
+            if check_product.product_quantity > 0 and not check_product.is_deleted:
                 # Use offer price if available, otherwise use the regular product price
-                print('hiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii')
-                if wishlist_item.offer_price:
-                    cart_price = wishlist_item.offer_price
-                    print(wishlist_item.offer_price)
-                    print(cart_price)
-                else:
-                    cart_price = wishlist_item.product.product_price
+                cart_price = wishlist_item.offer_price if wishlist_item.offer_price else wishlist_item.product.product_price
 
                 # Create the product in the cart
                 cart_obj = Cart.objects.create(
@@ -293,23 +301,18 @@ def wishlist_to_cart(request, wishlist_id):
                     quantity=1,  # You can modify this if needed
                     total_price=cart_price,
                     offer_price=cart_price,
-                    
                 )
-                print(cart_price)
+
                 wishlist_item.delete()
                 cart_obj.save()
 
                 messages.success(request, 'Product added to cart successfully')
                 return redirect('cart:cart')
             else:
-                messages.error(request, 'Product is out of stock')
+                messages.error(request, 'Product is not available')
+                return redirect('user:home')
 
-        # Delete the item from the wishlist
-        
     else:
-        pass
-        # Handle the case when the user is not authenticated
-        # messages.error(request, 'Please log in')
-        # return redirect('cart:wishlist')
-        
+        messages.error(request, 'Please log in')
+        return redirect('cart:wishlist')
 

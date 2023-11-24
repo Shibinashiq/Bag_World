@@ -161,13 +161,14 @@
         </section>
         <!-- Breadcrumb area End -->
         {% if messages %}
-                                                        <ul class="messages">
-                                                            {% for message in messages %}
-                                                                 <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-                                                            {% endfor %}
-                                                        </ul>
-                                                     {% endif %}
-                        
+        <div class="messages">
+            {%for message in messages%}
+            <div class="alert alert-{{ message.tags }}">
+             {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}               
 
 
                                                 
@@ -219,12 +220,7 @@
                                                     <a href="" class="d-block">
                                                         <img src="{{ pro.product_image.url }}" alt="Product Image" style="max-width: 270px; max-height: 300px;">
                                                     </a>
-                                                    <!-- <div class="product__thumbnail-action">
-                                                        <a d class="action-btn quick-view">
-                                                            <i class="fa fa-eye"></i>
-                                                            <span class="sr-only">Quick View</span>
-                                                        </a>
-                                                    </div> -->
+                                                  
                                                 </figure>
                                                 
                                                 <div class="product__info">
