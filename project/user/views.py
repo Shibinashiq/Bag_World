@@ -364,7 +364,10 @@ def place_order(request):
             order.save()
             cart.delete()
 
-            return redirect('user:place_order')
+            messages.success(request, 'Order placed successfully!')
+
+            # Redirect to the checkout.html page
+            return render(request, 'user_temp/checkout.html')
 
         
         
@@ -395,8 +398,12 @@ def place_order(request):
 
             order.save()
             cart.delete()
+            messages.success(request, 'Order placed successfully!')
 
-            return redirect('user:place_order')
+            # Redirect to the checkout.html page
+            return render(request, 'user_temp/checkout.html')
+
+           
 
             # You can include Razorpay logic here if needed
 
@@ -435,9 +442,10 @@ def place_order(request):
             cart.delete()
             
             
-        
+            messages.success(request, 'Order placed successfully!')
+            return render(request, 'user_temp/checkout.html')
 
-    return redirect('user:full_order_view')
+    return redirect('user:home')
 
 
 

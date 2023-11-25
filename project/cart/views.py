@@ -128,9 +128,9 @@ def update_cart(request, action, product_id):
                 else:
                       messages.error(request,'you cant order the product below 1')
                     
-                # if cart_item.quantity <= 0:
+                if cart_item.quantity <= 0:
                     # Remove the item from the cart if the quantity becomes zero or less
-                    # cart_item.delete()
+                    cart_item.delete()
             else:
                 return HttpResponseBadRequest("Invalid action")
 
@@ -168,7 +168,7 @@ def delete_cart_item(request,product_id):
         dele = Cart.objects.filter(id = product_id)
    
         dele.delete()
-        messages.success(request, 'Successfully Removed')
+        messages.success(request, 'Product Deleted .')
         return redirect('cart:cart')
     else:
         messages.error(request , 'please login')

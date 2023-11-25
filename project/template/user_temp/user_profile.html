@@ -216,7 +216,7 @@
                                                             <th>TotalPrice</th>
                                                             <th>Address</th>
                                                             <th>Action</th>
-                                                            <th>Action</th>
+                                                            
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -234,7 +234,7 @@
                                                                 <td>
                                                                    {{order.total_price}}
                                                                 </td> <!-- Total Price -->
-                                                                <td>{{ order.profile.streetaddress }}, {{ order.profile.town }}, {{ order.profile.state }}, {{ order.profile.country }}</td> <!-- Address -->
+                                                                <!-- <td>{{ order.profile.streetaddress }}, {{ order.profile.town }}, {{ order.profile.state }}, {{ order.profile.country }}</td> Address -->
                                                                 <td>
                                                                     {% if not order.is_cancelled and order.od_status == 'Delivered' %}
                                                                         <form method="POST" action="{% url 'user:return_order' order.id %}">
@@ -255,7 +255,7 @@
                                                                     {% endif %}
                                                                 </td>
                                                                 <td>
-                                                                    <a href="{%url 'user:full_order_view' order.id%}" class="mainmenu__link">Home</a>
+                                                                    <a href="{%url 'user:full_order_view' order.id%}" class="mainmenu__link">View</a>
 
                                                                  </td> 
                                                                
