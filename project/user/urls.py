@@ -11,9 +11,14 @@ urlpatterns = [
     path('user_logout',views.user_logout, name='user_logout'),
     path('user_signup',views.user_signup, name='user_signup'),
     path('otp',views.otp_page,name='otp'),
+    path('change_pass',views.change_pass,name='change_pass'),
     
     path('shop',views.shop,name='shop'),
     path('product_view/<int:product_id>/',views.product_view, name='product_view'),
+    path('track_order', views.track_order, name='track_order'),
+    
+    
+    
     
     path('user_profile/', views.user_profile, name='user_profile'),
     path('edit_profile/<int:address_id>/', views.edit_profile, name='edit_profile'),

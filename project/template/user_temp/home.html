@@ -137,13 +137,15 @@
                                         <i class="flaticon-heart"></i>
                                     </a>
                                 </div>
-                                <div id="cartCountContainer">
+                                
+                                
+                                
                                     <div class="toolbar-item mini-cart-btn">
                                         <a  class="toolbar-btn js-toolbar">
                                             <span class="mini-cart-btn__icon">
                                                 <i class="flaticon-bag"></i>
                                             </span>
-                                            <sup class="mini-cart-btn__count" id="cartCount">
+                                           
                                                 <!-- Cart count will be displayed here -->
                                             </sup>
                                         </a>
@@ -160,15 +162,7 @@
         <!-- Header End -->
 
         <!-- Main Content Wrapper Start -->
-        {% if messages %}
-        <div class="messages">
-            {%for message in messages%}
-            <div class="alert alert-{{ message.tags }}">
-             {{ message }}
-            </div>
-            {% endfor %}
-        </div>
-        {% endif %}
+        
         <main class="main-content-wrapper">
             <!-- Slider area Start -->
             <section class="homepage-slider mb--11pt5">
@@ -1359,6 +1353,60 @@
     <!-- Main JS -->
     <script src="{% static 'assets/js/main.js' %}"></script>
     <!-- Example: Set the initial cart count when the page loads -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script>
+        {% if messages %}
+            document.addEventListener('DOMContentLoaded', function() {
+                {% for message in messages %}
+                    {% if message.tags == 'success' %}
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: "top-end",
+                            showConfirmButton: false,
+                            timer: null,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.onmouseenter = Swal.stopTimer;
+                                toast.onmouseleave = Swal.resumeTimer;
+                            }
+                        });
+    
+                        Toast.fire({
+                            icon: "success",
+                            title: "{{ message }}"
+                        });
+                    {% endif %}
+                {% endfor %}
+            });
+        {% endif %}
+    </script>
+    <script>
+    {% if messages %}
+        document.addEventListener('DOMContentLoaded', function() {
+            {% for message in messages %}
+                {% if message.tags == 'error' %}
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: "top-end",
+                        showConfirmButton: false,
+                        timer: null,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.onmouseenter = Swal.stopTimer;
+                            toast.onmouseleave = Swal.resumeTimer;
+                        }
+                    });
+
+                    Toast.fire({
+                        icon: "error",
+                        title: "{{ message }}"
+                    });
+                {% endif %}
+            {% endfor %}
+        });
+    {% endif %}
+</script>
+
     
 {%endblock%}
 </body>

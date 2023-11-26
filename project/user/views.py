@@ -1,5 +1,6 @@
 from itertools import product
 import json
+import re
 from django.http import HttpResponse, JsonResponse
 
 from django.http import JsonResponse
@@ -23,6 +24,8 @@ from django.conf import settings
 from django.core.exceptions import PermissionDenied
 # Create your views here.
 from datetime import date
+from django.contrib.auth import authenticate, login, update_session_auth_hash
+from django.contrib.auth.decorators import login_required
 
 def home(request):
     # Filter products that are not deleted
@@ -143,6 +146,52 @@ def user_logout(request):
         logout(request)
     return redirect('user:home')
 
+@login_required
+def change_pass(request):
+    if request.method == 'POST':
+        current_pass = request.POST.get('current_password')
+        new_pass = request.POST.get('new_password')
+        confirm_new_pass = request.POST.get('confirm_new_password')
+
+        # Verify the old password
+        user = authenticate(username=request.user.username, password=current_pass)
+
+        if user is not None:
+            # Old password is correct, proceed to change password
+
+            # Password length validation
+            if len(new_pass) < 8:
+                messages.error(request, 'Password must be at least 8 characters long')
+                return render(request, 'user_temp/pass_change.html')
+
+            # Password complexity validation
+            pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$'
+            if not re.match(pattern, new_pass):
+                messages.error(request, 'Password must meet complexity requirements')
+                return render(request, 'user_temp/pass_change.html')
+
+            # Previous password check
+            if user.check_password(new_pass):
+                messages.error(request, 'New password cannot be the same as the old password')
+                return render(request, 'user_temp/pass_change.html')
+
+            # Check if new passwords match
+            if new_pass == confirm_new_pass:
+                user.set_password(new_pass)
+                user.save()
+                update_session_auth_hash(request, user)  # Update the session to prevent the user from being logged out
+                messages.success(request, 'Password changed successfully')
+                # Redirect to the user profile or another page upon successful password change
+                return redirect('user:user_profile')  # Replace 'user:user_profile' with your actual URL name
+            else:
+                messages.error(request, 'New passwords do not match')
+        else:
+            messages.error(request, 'Incorrect old password')
+
+    return render(request, 'user_temp/pass_change.html')
+
+
+
 from datetime import date
 
 def shop(request):
@@ -169,8 +218,8 @@ def shop(request):
 from datetime import date
 
 def product_view(request, product_id):
-    product = get_object_or_404(Product, pk=product_id, is_deleted=False)
-    products = Product.objects.filter(is_deleted=False)
+    product = get_object_or_404(Product, pk=product_id, is_deleted=False,product_quantity__gt=0)
+    products = Product.objects.filter(is_deleted=False, product_quantity__gt=0)
     product_images = ProductImage.objects.filter(product=product)
     review = Review.objects.all()
    
@@ -490,6 +539,15 @@ def cancel_order(request, order_id):
             messages.error(request, "This order cannot be canceled.")
 
     return redirect('user:user_profile')
+
+
+
+
+
+
+def track_order(request):
+    return render(request,'user_temp/order_track.html')
+
 
 
 

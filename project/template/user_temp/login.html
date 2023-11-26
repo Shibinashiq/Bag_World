@@ -154,15 +154,7 @@
                         <div class="col-md-6 mb-sm--50">
                             <div class="login-box">
                                 <h3 class="heading__tertiary mb--30">Login</h3>
-                                {% if messages %}
-                                <div class="messages">
-                                    {%for message in messages%}
-                                    <div class="alert alert-{{ message.tags }}">
-                                     {{ message }}
-                                    </div>
-                                    {% endfor %}
-                                </div>
-                                {% endif %}
+                                
                                 
                                 <form class="form form--login" method="POST" id="loginform" onsubmit="return validateForm()">
                                     {% csrf_token %}
@@ -846,6 +838,59 @@ Hasthemes</p>
     <!-- Main JS -->
     <script src="{%static 'assets/js/main.js'%}"></script>
     <script src="{%static 'assets/js/validation.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script>
+        {% if messages %}
+            document.addEventListener('DOMContentLoaded', function() {
+                {% for message in messages %}
+                    {% if message.tags == 'success' %}
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: "top-end",
+                            showConfirmButton: false,
+                            timer: null,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.onmouseenter = Swal.stopTimer;
+                                toast.onmouseleave = Swal.resumeTimer;
+                            }
+                        });
+    
+                        Toast.fire({
+                            icon: "success",
+                            title: "{{ message }}"
+                        });
+                    {% endif %}
+                {% endfor %}
+            });
+        {% endif %}
+    </script>
+    <script>
+    {% if messages %}
+        document.addEventListener('DOMContentLoaded', function() {
+            {% for message in messages %}
+                {% if message.tags == 'error' %}
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: "top-end",
+                        showConfirmButton: false,
+                        timer: null,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.onmouseenter = Swal.stopTimer;
+                            toast.onmouseleave = Swal.resumeTimer;
+                        }
+                    });
+
+                    Toast.fire({
+                        icon: "error",
+                        title: "{{ message }}"
+                    });
+                {% endif %}
+            {% endfor %}
+        });
+    {% endif %}
+</script>
     {%endblock%}
 </body>
 

@@ -207,6 +207,7 @@
                                                                 <div class="flex-shrink-0">
                                                                     {% if product_item.product_image %}
                                                                         <img src="{{ product_item.product_image.url }}" alt="{{ product_item.product_name }}" width="35" class="img-fluid">
+                                                                        
                                                                     {% else %}
                                                                         <!-- Provide a default image or handle the case where the product has no image -->
                                                                         <img src="{% static 'path_to_default_image/default_image.jpg' %}" alt="Default Image" width="35" class="img-fluid">
@@ -716,6 +717,59 @@
             document.body.innerHTML = x; // Restore the original content
         }
       </script>
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script>
+        {% if messages %}
+            document.addEventListener('DOMContentLoaded', function() {
+                {% for message in messages %}
+                    {% if message.tags == 'success' %}
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: "top-end",
+                            showConfirmButton: false,
+                            timer: null,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.onmouseenter = Swal.stopTimer;
+                                toast.onmouseleave = Swal.resumeTimer;
+                            }
+                        });
+    
+                        Toast.fire({
+                            icon: "success",
+                            title: "{{ message }}"
+                        });
+                    {% endif %}
+                {% endfor %}
+            });
+        {% endif %}
+    </script>
+    <script>
+    {% if messages %}
+        document.addEventListener('DOMContentLoaded', function() {
+            {% for message in messages %}
+                {% if message.tags == 'error' %}
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: "top-end",
+                        showConfirmButton: false,
+                        timer: null,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.onmouseenter = Swal.stopTimer;
+                            toast.onmouseleave = Swal.resumeTimer;
+                        }
+                    });
+
+                    Toast.fire({
+                        icon: "error",
+                        title: "{{ message }}"
+                    });
+                {% endif %}
+            {% endfor %}
+        });
+    {% endif %}
+</script>
 
     <!-- Main JS -->
     <script src="{% static 'assets/assets/js/main.js script' %}">

@@ -27,7 +27,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/zoom.js/1.7.21/zoom.min.js"></script>
 </head>
 
-
+<style>
+    .slick-prev, .slick-next {
+        font-size: 100px; /* Adjust the font size as needed */
+        color: #000000; /* Set the color to your desired color code */
+    }
+</style>
 <body>
 
     <!-- Preloader Start -->
@@ -69,6 +74,14 @@
                                             <a href="{% url 'user:shop' %}" class="mainmenu__link">Shop</a>
                                            
                                         </li>
+                                       
+                                        <li class="mainmenu__item menu-item-has-children position-relative">
+                                            <a href="#" class="mainmenu__link">Blog</a>
+                                            
+                                        </li>
+                                        <li class="mainmenu__item">
+                                            <a href="contact-us.html" class="mainmenu__link">Contact Us</a>
+                                        </li>
                                         {% if user.is_authenticated %}
                                         <li class="mainmenu__item menu-item-has-children position-relative">
                                             <a href="#" class="mainmenu__link">Pages</a>
@@ -96,13 +109,6 @@
                                             </div>
                                         </li>
                                         {%endif%}
-                                        <li class="mainmenu__item menu-item-has-children position-relative">
-                                            <a href="#" class="mainmenu__link">Blog</a>
-                                            
-                                        </li>
-                                        <li class="mainmenu__item">
-                                            <a href="contact-us.html" class="mainmenu__link">Contact Us</a>
-                                        </li>
                                     </ul>
                                 </nav>
                             </div>
@@ -396,7 +402,7 @@
                         </div>
                     </div>
                     <div class="row mb--77 mb-md--57">
-                        <div class="col-12">
+                        <div class="col-20">
                             <div class="element-carousel slick-vertical-center" data-slick-options='{
                                         "spaceBetween": 30,
                                         "slidesToShow": 4,
