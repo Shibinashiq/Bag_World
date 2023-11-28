@@ -21,7 +21,7 @@ urlpatterns = [
     
     
     path('user_profile/', views.user_profile, name='user_profile'),
-    path('edit_profile/<int:address_id>/', views.edit_profile, name='edit_profile'),
+    # path('edit_profile/<int:address_id>/', views.edit_profile, name='edit_profile'),
     
     
     
@@ -36,7 +36,7 @@ urlpatterns = [
     # path('wallet_item/', views.wallet_item, name='wallet_item'),
 
     # path('user_address',views.user_address, name='user_address'),
-    # path('edit_address/<int:user_id>/',views.edit_address, name='edit_address'),
+    path('edit_address/<int:address_id>/',views.edit_address, name='edit_address'),
     
     
     

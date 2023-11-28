@@ -258,7 +258,7 @@
                                                             <td>
                                                                 <div class="quantity-container">
                                                                     <button class="decrement-button" data-action="decrement" data-product-id="1" onclick="updateQuantity('{{i.product.id}}','decrease')">&#8722;</button>
-                                                                    <input type="number" class="quantity-input" name="product_count" id="product_qty1" value="{{i.quantity}}" min="1" data-product-id="1" fdprocessedid="169ehu" readonly>
+                                                                    <input type="number" class="quantity-input" name="product_count" id="product_qty{{i.product.id}}" value="{{i.quantity}}" min="1" data-product-id="1" fdprocessedid="169ehu" readonly>
                                                                     <button class="increment-button" data-action="increment" data-product-id="1" onclick="updateQuantity('{{i.product.id}}','increase')">&#43;</button>
                                                                 </div>
                                                             </td>
@@ -279,9 +279,9 @@
                                                             <td class="product-total-price">
                                                                 <span class="product-price-wrapper">
                                                                     {%if i.offer_price%}
-                                                                    <span class="money">{{ i.offer_price}}</span>
+                                                                    <span id="productTotal{{i.product.id}}" = class="money">{{ i.offer_price}}</span>
                                                                     {%else%}
-                                                                    <span class="money">{{ i.product.product_price}}</span>
+                                                                    <span id="productTotal{{i.product.id}}" class="money">{{ i.product.product_price}}</span>
                                                                     {%endif%}
                                                                 </span>
                                                             </td>
@@ -327,7 +327,7 @@
                                                 <span>Subtotal</span>
                                             </div>
                                             <div class="cart-calculator__item--value">
-                                                <span>${{total_price}}</span>
+                                                <span id="subTotal">${{total_price}}</span>
                                             </div>
                                         </div>
                                         <div class="cart-calculator__item">
@@ -345,7 +345,7 @@
                                             </div>
                                             <div class="cart-calculator__item--value">
                                                 <span class="product-price-wrapper">
-                                                    <span class="money">${{ grand_total }}</span>
+                                                    <span id="cartTotal" class="money">${{ grand_total }}</span>
                                                 </span>
                                             </div>
                                             
@@ -967,42 +967,81 @@ JavaScript for updating the cart and handling out-of-stock items -->
         
         })
         .then((response) => {
-
-            if(response.ok){
-
-                console.log(response.response_data)
-            }
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-           console.log('hhhhhhhhhhhhhhhhhhhhhhhhhhhhhh')
-           window.location.reload()
-
-        })
-        .then((response_data) => {
            
-            window.location.reload()
-
-            console.log(response_data)
             
-            if (data && data.success) {
-                const { success, total, qnty } = data;
-           
-                updateCartTotal(sub_total, total);
-            } else {
-                console.error("Invalid or missing data in the response.");
+            /*if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }*/
+            return response.json(); 
+        })
+        .then((data) => {
+            if(data.error){
+                if(data.error=='Product out of stock'){
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: "top-end",
+                        showConfirmButton: false,
+                        timer: 2000,  // Set timer to null to remove it
+                        didOpen: (toast) => {
+                            toast.onmouseenter = Swal.stopTimer;
+                            toast.onmouseleave = Swal.resumeTimer;
+                        }
+                    });
+    
+                    Toast.fire({
+                        icon: "warning",
+                        title: "Not enough stock"
+                    });
+                }
+                else{
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: "top-end",
+                        showConfirmButton: false,
+                        timer: 2000,  // Set timer to null to remove it
+                        didOpen: (toast) => {
+                            toast.onmouseenter = Swal.stopTimer;
+                            toast.onmouseleave = Swal.resumeTimer;
+                        }
+                    });
+    
+                    Toast.fire({
+                        icon: "warning",
+                        title: "Minimum quantity should be 1"
+                    });
+            }
+        }
+            else{
+                console.log(data)
+                if (data && data.success) {
+                    const { success, total, qnty,productId,subTotal } = data;
+        
+               
+                    updateCartTotal( total,qnty,productId,subTotal);
+                } else {
+                    console.error("Invalid or missing data in the response.");
+                }
             }
         })
+            
+           
+           
         .catch((error) => {
             console.error("Error:", error);
         });
     }
 
     // Function to update the cart total
-    function updateCartTotal(subTotal, total) {
+    function updateCartTotal(total,qnty ,productId,subTotal) {
+        const totalShip = (parseInt(total)+20).toFixed(2)
         // Update the UI elements with the new subtotal and total values
-        $("#subTotal").text(subTotal);
-        $("#cartTotal").text(total);
+        $("#subTotal").text(`$${total}`);
+        $("#cartTotal").text(`$${totalShip}`);
+      //  $("#cartTotal").text(total);
+      
+        $(`#product_qty${productId}`).val(qnty);
+        $(`#productTotal${productId}`).text(subTotal);
+
     }
 
     function getCookie(name) {
@@ -1030,7 +1069,7 @@ JavaScript for updating the cart and handling out-of-stock items -->
                         toast: true,
                         position: "top-end",
                         showConfirmButton: false,
-                        timer: null,  // Set timer to null to remove it
+                        timer: 2000,  // Set timer to null to remove it
                         didOpen: (toast) => {
                             toast.onmouseenter = Swal.stopTimer;
                             toast.onmouseleave = Swal.resumeTimer;
@@ -1056,7 +1095,7 @@ JavaScript for updating the cart and handling out-of-stock items -->
                         toast: true,
                         position: "top-end",
                         showConfirmButton: false,
-                        timer: null,  // Set timer to null to remove it
+                        timer: 2000,  // Set timer to null to remove it
                         didOpen: (toast) => {
                             toast.onmouseenter = Swal.stopTimer;
                             toast.onmouseleave = Swal.resumeTimer;

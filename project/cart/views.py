@@ -1,3 +1,4 @@
+import datetime
 from admin_side.models import Coupon
 from user.models import Profile
 from django.db.models import  F
@@ -18,7 +19,8 @@ def cart(request):
             messages.error(request, 'Your cart is empty. Please add items to your cart.')
             return redirect('user:shop') 
 
-        total_price = Decimal(0)  
+        total_price = Decimal(0) 
+        
         shipping_charge = 20  
         for i in cart:
             if i.offer_price is not None:
@@ -26,10 +28,12 @@ def cart(request):
             else:
                 A=i.product.product_price*i.quantity
             total_price+=A
-
+        print(total_price) 
+        
         grand_total = total_price + shipping_charge
         user_profile=Profile.objects.all()
-
+        
+        print(grand_total)
         context = {
             'cart': cart,
             'shipping_charge': shipping_charge,
@@ -116,7 +120,12 @@ def update_cart(request, action, product_id):
             
             if action == "increase":
                 if cart_item.product.product_quantity==cart_item.quantity:
-                    messages.error(request,'Product out of stock')
+                     response_data = {
+                        'success': False,
+                         'error': 'Product out of stock',
+                        }
+                     return JsonResponse(response_data, status=400)
+                    # messages.error(request,'Product out of stock')
             
                 else:
                     cart_item.quantity += 1
@@ -126,15 +135,20 @@ def update_cart(request, action, product_id):
                 if cart_item.quantity>1:
                   cart_item.quantity -= 1
                 else:
-                      messages.error(request,'you cant order the product below 1')
+                    #  messages.error(request,'you cant order the product below 1')
+                 response_data = {
+                        'success': False,
+                         'error': 'minimum quantity should be 1',
+                        }
+                 return JsonResponse(response_data, status=400)
                     
-                if cart_item.quantity <= 0:
-                    # Remove the item from the cart if the quantity becomes zero or less
-                    cart_item.delete()
+                # if cart_item.quantity <= 0:
+                #     # Remove the item from the cart if the quantity becomes zero or less
+                #     cart_item.delete()
             else:
                 return HttpResponseBadRequest("Invalid action")
-
-            cart_item.total_price = cart_item.product.product_price * cart_item.quantity
+            
+           
             cart_item.save()
 
             # Calculate the total for the entire cart
@@ -149,6 +163,9 @@ def update_cart(request, action, product_id):
                                 'success': True,
                                 'total': total,
                                 'qnty': cartQnty,
+                                'productId':product_id,
+                                'subTotal':cart_item.total_price
+                                
                             }
 
             return JsonResponse(response_data, status=200)
@@ -171,7 +188,7 @@ def delete_cart_item(request,product_id):
         messages.success(request, 'Product Deleted .')
         return redirect('cart:cart')
     else:
-        messages.error(request , 'please login')
+        messages.error(request ,'please login')
         return redirect('user:user_login')
     
     

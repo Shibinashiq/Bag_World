@@ -385,16 +385,17 @@
                                         
                                         <form action="{% url 'user:user_profile' %}" class="form form--account" method="POST">
                                             {%csrf_token%}
+                                           
                                             <div class="row mb--20">
                                                 <div class="col-md-6 mb-sm--20">
                                                     <div class="form__group">
-                                                        <label class="form__label" for="first_name">First Name <span class="required">*</span></label>
+                                                        <label class="form__label" for="first_name">First Name <span >*</span></label>
                                                         <input type="text" name="first_name" id="first_name" class="form__input">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6 mb-sm--20">
                                                     <div class="form__group">
-                                                        <label class="form__label" for="last_name">Last Name <span class="required">*</span></label>
+                                                        <label class="form__label" for="last_name">Last Name <span class="">*</span></label>
                                                         <input type="text" name="last_name" id="last_name" class="form__input">
                                                     </div>
                                                 </div>
@@ -440,6 +441,12 @@
                                                     <div class="form__group">
                                                         <label class="form__label" for="email">Email Address <span class="required">*</span></label>
                                                         <input type="email" name="email" id="email" class="form__input">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form__group">
+                                                        <label class="form__label" for="email">order Note <span class="required">*</span></label>
+                                                        <input type="email" name="ordernote " id="email" class="form__input">
                                                     </div>
                                                 </div>
                                            <br>
@@ -914,6 +921,7 @@ Hasthemes</p>
                     </ul>
                 </div>
             </div>
+            
         </aside>
         <!-- OffCanvas Menu End -->
 
@@ -1043,6 +1051,7 @@ Hasthemes</p>
                         </div>
                     </div>
                 </div>
+                
             </div>
         </div>
 
@@ -1075,7 +1084,7 @@ Hasthemes</p>
                             toast: true,
                             position: "top-end",
                             showConfirmButton: false,
-                            timer: null,
+                            timer: 2000,
                             timerProgressBar: true,
                             didOpen: (toast) => {
                                 toast.onmouseenter = Swal.stopTimer;
@@ -1101,7 +1110,7 @@ Hasthemes</p>
                         toast: true,
                         position: "top-end",
                         showConfirmButton: false,
-                        timer: null,
+                        timer: 2000,
                         timerProgressBar: true,
                         didOpen: (toast) => {
                             toast.onmouseenter = Swal.stopTimer;

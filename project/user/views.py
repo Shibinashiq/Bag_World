@@ -38,10 +38,14 @@ def home(request):
                 product.discounted_price = None
         else:
             product.discounted_price = None
-
+    if request.user.is_authenticated:
+            # Fetch the cart items for the authenticated user
+        cart_items = Cart.objects.filter(user=request.user)
+    
     # You might want to pass the products to the template
     context = {
         'products': products,
+        'cart_items':cart_items
                
                
                }
@@ -206,12 +210,16 @@ def shop(request):
                 product.discounted_price = None
         else:
             product.discounted_price = None
+        if request.user.is_authenticated:
+            # Fetch the cart items for the authenticated user
+           cart_items = Cart.objects.filter(user=request.user)
 
     context = {
         'products': products,
+        'cart_items':cart_items
     }
 
-    return render(request, 'user_temp/shop.html', context)
+    return render(request, 'user_temp/shop_sidebar.html', context)
 
 
 
@@ -269,6 +277,7 @@ def user_profile(request):
         state = request.POST.get('state')
         phone = request.POST.get('phone')
         email = request.POST.get('email')
+        ordernote=request.POST.get('ordernote')
 
         # Perform validation here
         if not first_name or not last_name or not email:
@@ -287,7 +296,8 @@ def user_profile(request):
                 town=town,
                 state=state,
                 phone=phone,
-                email=email
+                email=email,
+                ordernote=ordernote
             )
             address.save()
             messages.success(request, 'Address Added Successfully')
@@ -330,8 +340,8 @@ def user_profile(request):
     return render(request, 'user_temp/user_profile.html', context)
 
 
-def edit_profile(adress_id,request):
-    return render(request,'user_temp/edit_profile')
+# def edit_profile(adress_id,request):
+#     return render(request,'user_temp/edit_profile')
 
 
 
@@ -359,6 +369,7 @@ def place_order(request):
             products_in_order.append(item.product)
 
         payment_mode = request.POST.get('payment_method')
+        print(payment_mode)
         payment_id = request.POST.get('payment_id')
 
         if not payment_mode:
@@ -618,7 +629,7 @@ def add_review(request, product_id):
         )
         review.save()
         
-        print(product_id)
+       
         return redirect('user:product_view', product_id=product_id)
        
 
@@ -646,3 +657,56 @@ def full_order_view(request, order_id):
     else:
         # Handle the case where the order doesn't exist (e.g., show an error message)
         return HttpResponse("Order not found.")
+
+
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+
+
+@login_required
+def edit_address(request, address_id):
+    print('hhhhhhhhhhhhhhhhhhhhhhhhh')
+    # Fetch the user's profile based on the given address_id
+    profile = get_object_or_404(Profile, id=address_id, user=request.user)
+
+    if request.method == 'POST':
+        # Get the form data from the request
+        firstname = request.POST.get('firstname')
+        lastname = request.POST.get('lastname')
+        companyname = request.POST.get('companyname')
+        country = request.POST.get('country')
+        streetaddress = request.POST.get('streetaddress')
+        town = request.POST.get('town')
+        state = request.POST.get('state')
+        phone = request.POST.get('phone')
+        email = request.POST.get('email')
+        ordernote = request.POST.get('ordernote')
+
+        # Perform validation
+        if not firstname or not lastname or not country or not streetaddress or not town or not state or not phone or not email:
+            messages.error(request, 'All fields are required.')
+            return render(request, 'your_template.html', {'profile': profile})
+
+        # Update the profile with the form data
+        profile.firstname = firstname
+        profile.lastname = lastname
+        profile.company_name = companyname
+        profile.country = country
+        profile.streetaddress = streetaddress
+        profile.town = town
+        profile.state = state
+        profile.phone = phone
+        profile.email = email
+        profile.ordernote = ordernote
+        profile.save()
+
+        # Display a success message
+        messages.success(request, 'Address updated successfully.')
+
+        # Redirect to another page or refresh the current page
+        return redirect('cart:checkout')  # Change 'some_redirect_url' to the desired URL
+
+    return render(request, 'user_temp/checkout.html', {'profile': profile})
+

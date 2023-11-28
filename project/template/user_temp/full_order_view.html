@@ -165,7 +165,7 @@
                               </div>
                             
                               <!-- Main content -->
-                              <div class="row">
+                              <div class="row" id="tablePrint">
                                 <div class="col-lg-8" >
                                     <form>
                                   <!-- Details -->
@@ -193,7 +193,7 @@
                                           </div>
                                         </div>
                                       </div>
-                                      <table class="table table-borderless " id="tablePrint">
+                                      <table class="table table-borderless " >
                                         <tbody>
                                             {% for product_item in order.product.all %}
                                             <tr>
@@ -727,7 +727,7 @@
                             toast: true,
                             position: "top-end",
                             showConfirmButton: false,
-                            timer: null,
+                            timer: 2000,
                             timerProgressBar: true,
                             didOpen: (toast) => {
                                 toast.onmouseenter = Swal.stopTimer;
@@ -753,7 +753,7 @@
                         toast: true,
                         position: "top-end",
                         showConfirmButton: false,
-                        timer: null,
+                        timer: 2000,
                         timerProgressBar: true,
                         didOpen: (toast) => {
                             toast.onmouseenter = Swal.stopTimer;

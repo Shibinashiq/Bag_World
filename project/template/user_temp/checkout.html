@@ -15,6 +15,16 @@
     <link rel="apple-touch-icon" href="{%static 'assets/img/icon.png'%}">
 
     <!-- ************************* CSS Files ************************* -->
+    
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+<!-- jQuery and Popper.js -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+
+<!-- Bootstrap JS -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="{%static 'assets/css/bootstrap.css'%}">
@@ -198,103 +208,222 @@
                         </div>
                     </div> 
                     <div class="row">
+                        <!-- <form action="{% url 'user:user_profile' %}" class="form form--checkout" method="POST" >
+                            {%csrf_token%} -->
+                        
                         <!-- Checkout Area Start --> 
                          
                         <div class="col-lg-6">
-                            <div class="checkout-title mt--10">
-                                <h2>Billing Details</h2>
-                            </div>
+                            <form action="{% url 'user:user_profile' %}" class="form form--checkout" method="POST" >
+                                {%csrf_token%}
+                                <div class="checkout-title mt--10">
+                                    <h2>Billing Details</h2>  <h4>(add multiple address)</h4>
+                              
+                                </div>
+                                <div class="checkout-form">
+                                    <form action="{% url 'user:user_profile' %}" class="form form--checkout" method="POST" >
+                                        {%csrf_token%}
+                                        <div class="row mb--20">
+                                            <div class="form__group col-6"> <!-- Use col-6 to make each input take half of the row -->
+                                                <label for="billing_fname" class="form__label">First Name <span class="required">*</span></label>
+                                                <input type="text" name="first_name" id="billing_fname" class="form__input">
+                                            </div>
+                                            <div class="form__group col-6"> <!-- Use col-6 to make each input take half of the row -->
+                                                <label for="billing_lname" class="form__label">Last Name <span class="required">*</span></label>
+                                                <input type="text" name="last_name" id="billing_lname" class="form__input">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row mb--20">
+                                            <div class="form__group col-12">
+                                                <label for="billing_company" class="form__label">Company Name (Optional)</label>
+                                                <input type="text" name="company_name" id="billing_company" class="form__input">
+                                            </div>
+                                        </div>
+                                        <div class="row mb--20">
+                                            <div class="form__group col-12">
+                                                <label for="billing_country" class="form__label">Country <span class="required">*</span></label>
+                                                <input list="countries" name="country" id="billing_country" class="form__input">
+                                                <datalist id="countries">
+                                                    <option value="Afghanistan">
+                                                    <option value="Albania">
+                                                    <option value="Algeria">
+                                                    <option value="Andorra">
+                                                    <option value="Angola">
+                                                    <option value="Antigua and Barbuda">
+                                                    <option value="Argentina">
+                                                    <option value="Armenia">
+                                                    <option value="Australia">
+                                                    <option value="Austria">
+                                                    <option value="Azerbaijan">
+                                                    <option value="Bahamas">
+                                                    <option value="Bahrain">
+                                                    <option value="Bangladesh">
+                                                    <option value="Barbados">
+                                                    <option value="Belarus">
+                                                    <option value="Belgium">
+                                                    <option value="Belize">
+                                                    <option value="Benin">
+                                                    <option value="Bhutan">
+                                                    <option value="Bolivia">
+                                                    <option value="Bosnia and Herzegovina">
+                                                    <option value="Botswana">
+                                                    <option value="Brazil">
+                                                    <option value="Brunei">
+                                                    <option value="Bulgaria">
+                                                    <option value="Burkina Faso">
+                                                    <option value="Burundi">
+                                                    <option value="Cabo Verde">
+                                                    <option value="Cambodia">
+                                                    <option value="Cameroon">
+                                                    <option value="Canada">
+                                                    <option value="Central African Republic">
+                                                    <option value="Chad">
+                                                    <option value="Chile">
+                                                    <option value="China">
+                                                        <option value="Dominica">
+                                                            <option value="Denmark">
+                                                            <option value="Djibouti">
+                                                            <option value="Dominican Republic">
+                                                            <option value="East Timor">
+                                                            <option value="Ecuador">
+                                                            <option value="Egypt">
+                                                            <option value="El Salvador">
+                                                            <option value="Equatorial Guinea">
+                                                            <option value="Eritrea">
+                                                            <option value="Estonia">
+                                                            <option value="Eswatini">
+                                                            <option value="Fiji">
+                                                            <option value="France">
+                                                            <option value="Gabon">
+                                                            <option value="Gambia">
+                                                            <option value="Georgia">
+                                                            <option value="Germany">
+                                                            <option value="Ghana">
+                                                            <option value="Greece">
+                                                            <option value="Grenada">
+                                                            <option value="Guatemala">
+                                                            <option value="Guinea">
+                                                            <option value="Guinea-Bissau">
+                                                            <option value="Guyana">
+                                                            <option value="Haiti">
+                                                            <option value="Honduras">
+                                                            <option value="Hungary">
+                                                            <option value="Iceland">
+                                                            <option value="India">
+                                                            <option value="Indonesia">
+                                                            <option value="Iran">
+                                                            <option value="Iraq">
+                                                            <option value="Jamaica">
+                                                            <option value="Japan">
+                                                            <option value="Jordan">
+                                                                <option value="Kenya">
+                                                                    <option value="Kiribati">
+                                                                        <option value="Kosovo">
+                                                                        <option value="Kuwait">
+                                                                        <option value="Kyrgyzstan">
+                                                                        <option value="Laos">
+                                                                        <option value="Latvia">
+                                                                        <option value="Lebanon">
+                                                                        <option value="Lesotho">
+                                                                        <option value="Liberia">
+                                                                        <option value="Libya">
+                                                                        <option value="Liechtenstein">
+                                                                        <option value="Lithuania">
+                                                                        <option value="Luxembourg">
+                                                                        <option value="Madagascar">
+                                                                        <option value="Malawi">
+                                                                        <option value="Malaysia">
+                                                                        <option value="Maldives">
+                                                                        <option value="Mali">
+                                                                        <option value="Malta">
+                                                                        <option value="Marshall Islands">
+                                                                        <option value="Mauritania">
+                                                                        <option value="Mauritius">
+                                                                        <option value="Mexico">
+                                                                        <option value="Micronesia, Federated States of">
+                                                                        <option value="Moldova">
+                                                                        <option value="Monaco">
+                                                                        <option value="Mongolia">
+                                                                        <option value="Montenegro">
+                                                                        <option value="Morocco">
+                                                                        <option value="Mozambique">
+                                                                        <option value="Myanmar">
+                                                                        <!-- ... (Continue adding the rest of the countries) ... -->
+                                                                        <option value="Vietnam">
+                                                                        <option value="Wales">
+                                                                        <option value="Yemen">
+                                                                        <option value="Zambia">
+                                                                    <option value="Kazakhstan">
+                                                                    <option value="Guyana">
+                                                                    <option value="Haiti">
+                                                                    <option value="Honduras">
+                                                                    <option value="Hungary">
+                                                                    <option value="Iceland">
+                                                                    <option value="India">
+                                                                    <option value="Indonesia">
+                                                                    <option value="Iran">
+                                                                    <option value="Iraq">
+                                                                    <option value="Jamaica">
+                                                                    <option value="Japan">
+                                                                    <option value="Jordan">
+                                                    <!-- Add more countries as needed -->
+                                                </datalist>
+                                            </div>
+                                        </div>
+                                        
+                                        
+                                        
+                                        <div class="row mb--20">
+                                            <div class="form__group col-12">
+                                                <label for="billing_streetAddress" class="form__label">Street Address <span class="required">*</span></label>
+    
+                                                <input type="text" name="street_address" id="billing_streetAddress" class="form__input mb--30" placeholder="House number and street name">
+    
+                                            </div>
+                                        </div>
+                                        <div class="row mb--20">
+                                            <div class="form__group col-12">
+                                                <label for="billing_city" class="form__label">Town / City <span class="required">*</span></label>
+                                                <input type="text" name="town" id="billing_city" class="form__input">
+                                            </div>
+                                        </div>
+                                        <div class="row mb--20">
+                                            <div class="form__group col-12">
+                                                <label for="billing_state" class="form__label">State / County <span class="required">*</span></label>
+                                                <input type="text" name="state" id="billing_state" class="form__input">
+                                            </div>
+                                        </div>
+                                        <div class="row mb--20">
+                                            <div class="form__group col-12">
+                                                <label for="billing_phone" class="form__label">Phone <span class="required">*</span></label>
+                                                <input type="text" name="phone" id="billing_phone" class="form__input">
+                                            </div>
+                                        </div>
+                                        <div class="row mb--20">
+                                            <div class="form__group col-12">
+                                                <label for="billing_email" class="form__label">Email Address  <span class="required">*</span></label>
+                                                <input type="email" name="email" id="billing_email" class="form__input">
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form__group col-12">
+                                                <label for="orderNotes" class="form__label">Order Notes</label>
+                                                <textarea class="form__input form__input--textarea" id="orderNotes" name="ordernote" placeholder="Notes about your order, e.g. special notes for delivery."></textarea>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-12">
+                                            <div class="form__group">
+                                                <button type="submit"  class="btn">Save</button>
+                                            </div>
+                                        </div>
+
+                                </div>
+                            </form>
                             
-                            <div class="checkout-form">
-
-
-                                
-                                <form action="{% url 'user:user_profile' %}" class="form form--checkout" method="POST" >
-                                    {%csrf_token%}
-                                    
-                                    
-                                   
-
-                                    <div class="row">
-                                        <div class="form__group col-12">
-                                            <div class="custom-checkbox mb--20">
-                                                <input type="checkbox" name="shipdifferetads" id="shipdifferetads" class="form__checkbox">
-                                                
-                                                <label for="shipdifferetads" class="form__label shipping-label">Ship To A Different Address?</label>
-                                            </div>
-                                            <div class="ship-box-info hide-in-default mt--30">
-                                                <div class="row mb--20">
-                                                    <div class="form__group col-12">
-                                                        <label for="shipping_fname" class="form__label">First Name  <span class="required">*</span></label>
-                                                        <input type="text" name="first_name" id="shipping_fname" class="form__input">
-                                                    </div>
-                                                    <div class="form__group col-12">
-                                                        <label for="shipping_lname" class="form__label">Last Name  <span class="required">*</span></label>
-                                                        <input type="text" name="last_name" id="shipping_lname" class="form__input">
-                                                    </div>
-                                                </div>
-                                                <div class="row mb--20">
-                                                    <div class="form__group col-12">
-                                                        <label for="shipping_company" class="form__label">Company Name (Optional)</label>
-                                                        <input type="text" name="company_name" id="shipping_company" class="form__input">
-                                                    </div>
-                                                </div>
-                                                <div class="row mb--20">
-                                                    <div class="form__group">
-                                                        <label class="form__label" for="country">Country <span class="required">*</span></label>
-                                                        <input type="text" name="country" id="country" class="form__input">
-                                                    </div>
-                                                </div>
-                                                <div class="row mb--20">
-                                                    <div class="form__group col-12">
-                                                        <label for="shipping_streetAddress" class="form__label">Street Address <span class="required">*</span></label>
-
-                                                        <input type="text" name="street_address" id="shipping_streetAddress" class="form__input mb--30" placeholder="House number and street name">
-
-                                                       
-                                                    </div>
-                                                </div>
-                                                <div class="row mb--20">
-                                                    <div class="form__group col-12">
-                                                        <label for="shipping_city" class="form__label">Town / City <span class="required">*</span></label>
-                                                        <input type="text" name="town" id="shipping_city" class="form__input">
-                                                    </div>
-                                                </div>
-                                                <div class="row mb--20">
-                                                    <div class="form__group">
-                                                        <label class="form__label" for="country">State <span class="required">*</span></label>
-                                                        <input type="text" name="state" id="country" class="form__input">
-                                                    </div>
-                                                </div>
-                                                <div class="row mb--20">
-                                                    <div class="form__group col-12">
-                                                        <label for="shipping_phone" class="form__label">Phone <span class="required">*</span></label>
-                                                        <input type="text" name="phone" id="shipping_phone" class="form__input">
-                                                    </div>
-                                                </div>
-                                                <div class="row mb--20">
-                                                    <div class="form__group col-12">
-                                                        <label for="shipping_email" class="form__label">Email Address  <span class="required">*</span></label>
-                                                        <input type="email" name="email" id="shipping_email" class="form__input">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div> 
-                                    <div class="row">
-                                        <div class="form__group col-12">
-                                            <label for="orderNotes" class="form__label">Order Notes</label>
-                                            <textarea class="form__input form__input--textarea" id="orderNotes" name="ordernote" placeholder="Notes about your order, e.g. special notes for delivery."></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="col-12">
-                                        <div class="form__group">
-                                            <button type="submit" class="btn">Save</button>
-                                        </div>
-                                    </div>
-                                    
-                                </form>
-                            </div>
+                            
+                            
                         </div>
                         <div class="col-xl-5 offset-xl-1 col-lg-6 mt-md--40">
                             <div class="order-details">
@@ -340,28 +469,101 @@
                                     
                                 <div class="checkout-payment">
                                     <form action="{% url 'user:place_order' %}" class="payment-form" method="POST" id="checkoutForm">
-                                        {%csrf_token%}
+                                        {% csrf_token %}
                                         <h3>Address</h3>
                                         {% for i in user_profile %}
-                                        <label>
-                                            <input type="radio" name="address_id" id="address_id" value="{{ i.id }}" checked>
-
-                                            {{ i.firstname }} {{ i.lastname }}<br>
-                                            {{ i.streetaddress }}<br>
-                                            {{ i.town }}, {{ i.state }}<br>
-                                            {{ i.phone }}
-                                            {{ i.email }}
-                                            {{ i.ordernote }}<br>
-                                            {{ i.company_name }}<br>
-                                            {{ i.country }}<br>
-                                            
-
-                                        </label>
+                                            <label>
+                                                <input type="radio" name="address_id" id="address_id" value="{{ i.id }}" checked>
+                                    
+                                                {{ i.firstname }} {{ i.lastname }}<br>
+                                                {{ i.streetaddress }}<br>
+                                                {{ i.town }}, {{ i.state }}<br>
+                                                {{ i.phone }}
+                                                {{ i.email }}
+                                                {{ i.ordernote }}<br>
+                                                {{ i.company_name }}<br>
+                                                {{ i.country }}<br>
+                                    
+                                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal-{{forloop.counter}}" data-whatever="@mdo">Edit Address</button>
+                                            </label>
+                                    
+                                            <br>
                                         {% endfor %}
-                                      <br>
+                                    </form>
+                                    
+                                    <!-- edit_address_modal.html -->
+                                    
+                                    {% for i in user_profile %}
+                                    <div class="modal fade" id="exampleModal-{{forloop.counter}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-md" role="document" style="max-width: 30%; max-height: 20%;">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel">Edit Address for {{ i.firstname }} {{ i.lastname }}</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form action="{% url 'user:edit_address' i.id%}" method="POST" >
+                                                        {%csrf_token%}
+                                                        <div class="form-group">
+                                                            <label for="recipient-name" class="col-form-label">Recipient:</label>
+                                                            <input type="text" class="form-control" name="firstname" id="recipient-name" value="{{ i.firstname }}">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="recipient-name" class="col-form-label">Recipient:</label>
+                                                            <input type="text" class="form-control" name="lastname" id="recipient-name" value="{{ i.lastname }}">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="street-address" class="col-form-label">Street Address:</label>
+                                                            <textarea class="form-control" id="street-address" name="streetaddress">{{ i.streetaddress }}</textarea>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="town-state" class="col-form-label">Town:</label>
+                                                            <input type="text" class="form-control" id="town-state" name="town" value="{{ i.town }}">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="town-state" class="col-form-label">State:</label>
+                                                            <input type="text" class="form-control" id="town-state" name="state" value="{{ i.state }}">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="phone" class="col-form-label">Phone:</label>
+                                                            <input type="text" class="form-control" id="phone" name="phone" value="{{ i.phone }}">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="email" class="col-form-label">Email:</label>
+                                                            <input type="email" class="form-control" id="email" name="email" value="{{ i.email }}">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="ordernote" class="col-form-label">Order Note:</label>
+                                                            <textarea class="form-control" id="ordernote" name="ordernote" value="{{i.ordernote}}"></textarea>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="company-name" class="col-form-label">Company Name:</label>
+                                                            <input type="text" class="form-control" id="company-name" name="companyname" value="{{ i.company_name }}">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="country" class="col-form-label">Country:</label>
+                                                            <input type="text" class="form-control" id="country"  name="country" value="{{ i.country }}">
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                <div class="modal-footer">
+                                                   
+                                                    <input type="submit" class="btn btn-success" value="Save changes"> 
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                    
+                                    {% endfor %}
+                                    
+
+                                      
                                       
                                       <h3>Payment</h3>
-                                      <div class="payment-group mb--10">
+                                    <div class="payment-group mb--10">
                                         <div class="payment-radio">
                                             <input type="radio" value="razorpay" name="payment_method" id="razorpay">
                                             <label class="payment-label" for="razorpay">Razorpay</label>
@@ -370,6 +572,7 @@
                                             <p>Make your payment directly through Razorpay. Your order will not be shipped until the payment is confirmed.</p>
                                         </div>
                                     </div>
+                                    
                                     
                                        
                                         <div class="payment-group mb--10">
@@ -832,6 +1035,9 @@ Hasthemes</p>
             </div>
         </div>
         <!-- Qicuk View Modal End -->
+       
+
+
 
         <!-- Global Overlay Start -->
         <div class="global-overlay"></div>
@@ -850,6 +1056,11 @@ Hasthemes</p>
 
     <!-- Main JS -->
     <script src="{%static 'assets/js/main.js'%}"></script>
+
+
+
+    
+
     <!-- <script>
         $(document).ready(function () {
             $('#success_tic').modal({ backdrop: 'static', keyboard: false, show: false });
@@ -959,7 +1170,7 @@ addressRadios.forEach(function(radio) {
             success: function (data) {
                 console.log('Payment details saved successfully');
                 // Redirect to the success page
-                window.location.href = '/home/';
+                window.location.href = 'user_temp/home/';
             },
             
             error: function (error) {
@@ -970,6 +1181,11 @@ addressRadios.forEach(function(radio) {
     
 
     
+</script>
+<script>
+    function submitForm() {
+        document.getElementById("editForm").submit();
+    }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 

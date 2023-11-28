@@ -140,16 +140,19 @@
                                 
                                 
                                 
-                                    <div class="toolbar-item mini-cart-btn">
-                                        <a  class="toolbar-btn js-toolbar">
-                                            <span class="mini-cart-btn__icon">
-                                                <i class="flaticon-bag"></i>
-                                            </span>
-                                           
-                                                <!-- Cart count will be displayed here -->
-                                            </sup>
-                                        </a>
-                                    </div>
+                                {% if cart_items %}
+                            <div class="toolbar-item mini-cart-btn">
+                                <a href="#miniCart" class="toolbar-btn js-toolbar">
+                                    <span class="mini-cart-btn__icon">
+                                        <i class="flaticon-bag"></i>
+                                    </span>
+                                    <!-- <sup class="mini-cart-btn__count">
+                                        {{ cart_items.count }}
+                                    </sup> -->
+                                </a>
+                            </div>
+                        {% endif %}
+
                                     
                                 </div>
                             </div>
@@ -1196,64 +1199,41 @@
         <!-- OffCanvas Menu End -->
 
         <!-- Mini Cart Start -->
-        <aside class="mini-cart" id="miniCart">
-            <div class="mini-cart-wrapper">
-                <div class="mini-cart__close">
-                    <a href="#" class="btn-close"><i class="flaticon-cross"></i></a>
+        {% if cart_items %}
+    <aside class="mini-cart" id="miniCart">
+        <div class="mini-cart-wrapper">
+            <div class="mini-cart__close">
+                <a href="#" class="btn-close"><i class="flaticon-cross"></i></a>
+            </div>
+            <div class="mini-cart-inner">
+                <h3 class="mini-cart__heading mb--45">Shopping Cart</h3>
+                <div class="mini-cart__content">
+                    <ul class="mini-cart__list">
+                        {% for cart_item in cart_items %}
+                            <li class="mini-cart__product">
+                                <a href="{%url 'cart:delete_cart_item' cart_item.id %}" class="mini-cart__product-remove">
+                                    <i class="flaticon-cross"></i>
+                                </a>
+                                <div class="mini-cart__product-image">
+                                    <img src="{{ cart_item.product.product_image.url }}" alt="products">
+                                </div>
+                                <div class="mini-cart__product-content">
+                                    <a class="mini-cart__product-title" href="#">{{ cart_item.product.product_name }}</a>
+                                    <span class="mini-cart__product-quantity"> ${{ cart_item.product.product_price }}</span>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
                 </div>
-                <div class="mini-cart-inner">
-                    <h3 class="mini-cart__heading mb--45">Shopping Cart</h3>
-                    <div class="mini-cart__content">
-                        <ul class="mini-cart__list">
-                            <li class="mini-cart__product">
-                                <a href="#" class="mini-cart__product-remove">
-                                    <i class="flaticon-cross"></i>
-                                </a>
-                                <div class="mini-cart__product-image">
-                                    <img src="{% static 'assets/img/products/product-11-90x90.jpg' %}" alt="products">
-                                </div>
-                                <div class="mini-cart__product-content">
-                                    <a class="mini-cart__product-title" href="product-details.html">Lexbaro Begadi</a>
-                                    <span class="mini-cart__product-quantity">1 x $49.00</span>
-                                </div>
-                            </li>
-                            <li class="mini-cart__product">
-                                <a href="#" class="mini-cart__product-remove">
-                                    <i class="flaticon-cross"></i>
-                                </a>
-                                <div class="mini-cart__product-image">
-                                    <img src="{% static 'assets/img/products/product-12-90x90.jpg' %}" alt="products">
-                                </div>
-                                <div class="mini-cart__product-content">
-                                    <a class="mini-cart__product-title" href="product-details.html">Lexbaro Begadi</a>
-                                    <span class="mini-cart__product-quantity">1 x $49.00</span>
-                                </div>
-                            </li>
-                            <li class="mini-cart__product">
-                                <a href="#" class="mini-cart__product-remove">
-                                    <i class="flaticon-cross"></i>
-                                </a>
-                                <div class="mini-cart__product-image">
-                                    <img src="{% static 'assets/img/products/product-13-90x90.jpg' %}" alt="products">
-                                </div>
-                                <div class="mini-cart__product-content">
-                                    <a class="mini-cart__product-title" href="product-details.html">Lexbaro Begadi</a>
-                                    <span class="mini-cart__product-quantity">1 x $49.00</span>
-                                </div>
-                            </li>
-                        </ul>
-                        <div class="mini-cart__total">
-                            <span>Subtotal</span>
-                            <span class="ammount">$98.00</span>
-                        </div>
-                        <div class="mini-cart__buttons">
-                            <a href="" class="btn btn-fullwidth btn-bg-primary mb--20">View Cart</a>
-                            <a href="checkout.html" class="btn btn-fullwidth btn-bg-primary">Checkout</a>
-                        </div>
-                    </div>
+                <div class="mini-cart__buttons">
+                    <a href="{% url 'cart:cart' %}" class="btn btn-fullwidth btn-bg-primary mb--20">View Cart</a>
+                    <a href="{% url 'cart:checkout' %}" class="btn btn-fullwidth btn-bg-primary">Checkout</a>
                 </div>
             </div>
-        </aside>
+        </div>
+    </aside>
+{% endif %}
+
         <!-- Mini Cart End -->
 
         <!-- Qicuk View Modal Start -->
@@ -1363,7 +1343,7 @@
                             toast: true,
                             position: "top-end",
                             showConfirmButton: false,
-                            timer: null,
+                            timer: 2000,
                             timerProgressBar: true,
                             didOpen: (toast) => {
                                 toast.onmouseenter = Swal.stopTimer;
@@ -1389,7 +1369,7 @@
                         toast: true,
                         position: "top-end",
                         showConfirmButton: false,
-                        timer: null,
+                        timer: 2000,
                         timerProgressBar: true,
                         didOpen: (toast) => {
                             toast.onmouseenter = Swal.stopTimer;
