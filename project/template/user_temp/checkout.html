@@ -39,13 +39,13 @@
 <body> 
 
     <!-- Preloader Start -->
-    <div class="ft-preloader active">
+    <!-- <div class="ft-preloader active">
         <div class="ft-preloader-inner h-100 d-flex align-items-center justify-content-center">
             <div class="ft-child ft-bounce1"></div>
             <div class="ft-child ft-bounce2"></div>
             <div class="ft-child ft-bounce3"></div>
         </div>
-    </div>
+    </div> -->
     <!-- Preloader End -->
 
     <!-- Main Wrapper Start -->
@@ -484,7 +484,14 @@
                                                 {{ i.company_name }}<br>
                                                 {{ i.country }}<br>
                                     
-                                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal-{{forloop.counter}}" data-whatever="@mdo">Edit Address</button>
+                                                <button type="button" class="btn btn-link" data-toggle="modal" data-target="#exampleModal-{{forloop.counter}}" data-whatever="@mdo" style="background-color: transparent; cursor: default; text-decoration: underline; color: inherit; border: none;">Edit Address</button>
+
+
+
+
+                                               
+
+
                                             </label>
                                     
                                             <br>
@@ -504,7 +511,7 @@
                                                     </button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <form action="{% url 'user:edit_address' i.id%}" method="POST" >
+                                                    <form action="{% url 'user:edit_address' i.id %}" method="POST" >
                                                         {%csrf_token%}
                                                         <div class="form-group">
                                                             <label for="recipient-name" class="col-form-label">Recipient:</label>
@@ -546,12 +553,13 @@
                                                             <label for="country" class="col-form-label">Country:</label>
                                                             <input type="text" class="form-control" id="country"  name="country" value="{{ i.country }}">
                                                         </div>
+                                                        <div class="modal-footer">
+                                                   
+                                                            <input type="submit" class="btn btn-success" value="Save changes"> 
+                                                        </div>
                                                     </form>
                                                 </div>
-                                                <div class="modal-footer">
-                                                   
-                                                    <input type="submit" class="btn btn-success" value="Save changes"> 
-                                                </div>
+                                                
                                             </div>
                                         </div>
                                         
@@ -1209,7 +1217,7 @@ addressRadios.forEach(function(radio) {
                         icon: "success"
                     }).then(function() {
                         // Redirect to the home page after the user clicks "OK"
-                        window.location.href = "{% url 'user:home' %}";
+                       //location.href = "{% url 'user:home' %}";
                     });
                 {% elif message.tags == 'error' %}
                     Swal.fire({

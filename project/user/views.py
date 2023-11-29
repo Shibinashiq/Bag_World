@@ -661,18 +661,15 @@ def full_order_view(request, order_id):
 
 
 
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib import messages
-
 
 @login_required
 def edit_address(request, address_id):
-    print('hhhhhhhhhhhhhhhhhhhhhhhhh')
-    # Fetch the user's profile based on the given address_id
+  
+    
     profile = get_object_or_404(Profile, id=address_id, user=request.user)
 
     if request.method == 'POST':
-        # Get the form data from the request
+       
         firstname = request.POST.get('firstname')
         lastname = request.POST.get('lastname')
         companyname = request.POST.get('companyname')
@@ -684,12 +681,12 @@ def edit_address(request, address_id):
         email = request.POST.get('email')
         ordernote = request.POST.get('ordernote')
 
-        # Perform validation
+      
         if not firstname or not lastname or not country or not streetaddress or not town or not state or not phone or not email:
             messages.error(request, 'All fields are required.')
-            return render(request, 'your_template.html', {'profile': profile})
+            return render(request, 'user_temp/checkout.html', {'profile': profile})
 
-        # Update the profile with the form data
+       
         profile.firstname = firstname
         profile.lastname = lastname
         profile.company_name = companyname
@@ -702,11 +699,11 @@ def edit_address(request, address_id):
         profile.ordernote = ordernote
         profile.save()
 
-        # Display a success message
+        
         messages.success(request, 'Address updated successfully.')
 
-        # Redirect to another page or refresh the current page
-        return redirect('cart:checkout')  # Change 'some_redirect_url' to the desired URL
+       
+        return redirect('cart:checkout') 
 
     return render(request, 'user_temp/checkout.html', {'profile': profile})
 
