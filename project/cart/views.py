@@ -1,4 +1,3 @@
-import datetime
 from admin_side.models import Coupon
 from user.models import Profile
 from django.db.models import  F
@@ -19,7 +18,7 @@ def cart(request):
             messages.error(request, 'Your cart is empty. Please add items to your cart.')
             return redirect('user:shop') 
 
-        total_price = Decimal(0) 
+        product_total_price = Decimal(0) 
         
         shipping_charge = 20  
         for i in cart:
@@ -27,10 +26,10 @@ def cart(request):
                 A=i.offer_price*i.quantity
             else:
                 A=i.product.product_price*i.quantity
-            total_price+=A
-        print(total_price) 
+            product_total_price+=A
+         
         
-        grand_total = total_price + shipping_charge
+        grand_total = product_total_price + shipping_charge
         user_profile=Profile.objects.all()
         
         print(grand_total)
@@ -38,7 +37,7 @@ def cart(request):
             'cart': cart,
             'shipping_charge': shipping_charge,
             'grand_total': grand_total,
-            'total_price': total_price,
+            'total_price': product_total_price,
             'user_profile':user_profile
         }
 
@@ -109,71 +108,66 @@ def add_cart(request):
            
     return render(request, 'user_temp/cart.html')
 
-
-
 def update_cart(request, action, product_id):
-    
     if request.method == 'POST':
-        
         cart_item = Cart.objects.filter(user=request.user, product_id=product_id).first()
         if cart_item:
+            # Check if the product has an offer
+            offer_price = None
+            if cart_item.product.product_offer is not None:
+                if cart_item.product.product_offer.end_date >= date.today():
+                    offer_price = cart_item.product.product_price - cart_item.product.product_offer.discount_amount
             
             if action == "increase":
-                if cart_item.product.product_quantity==cart_item.quantity:
-                     response_data = {
+                if cart_item.product.product_quantity == cart_item.quantity:
+                    response_data = {
                         'success': False,
-                         'error': 'Product out of stock',
-                        }
-                     return JsonResponse(response_data, status=400)
-                    # messages.error(request,'Product out of stock')
-            
+                        'error': 'Product out of stock',
+                    }
+                    return JsonResponse(response_data, status=400)
                 else:
                     cart_item.quantity += 1
-            
-                
             elif action == "decrease":
-                if cart_item.quantity>1:
-                  cart_item.quantity -= 1
+                if cart_item.quantity > 1:
+                    cart_item.quantity -= 1
                 else:
-                    #  messages.error(request,'you cant order the product below 1')
-                 response_data = {
+                    response_data = {
                         'success': False,
-                         'error': 'minimum quantity should be 1',
-                        }
-                 return JsonResponse(response_data, status=400)
-                    
-                # if cart_item.quantity <= 0:
-                #     # Remove the item from the cart if the quantity becomes zero or less
-                #     cart_item.delete()
+                        'error': 'Minimum quantity should be 1',
+                    }
+                    return JsonResponse(response_data, status=400)
             else:
                 return HttpResponseBadRequest("Invalid action")
             
-           
+            # Update the total_price based on offer_price or regular price
+            if offer_price is not None:
+                cart_item.total_price = offer_price * cart_item.quantity
+            else:
+                cart_item.total_price = cart_item.product.product_price * cart_item.quantity
+
             cart_item.save()
 
             # Calculate the total for the entire cart
             cart_items = Cart.objects.filter(user=request.user)
-            cartQnty=cart_item.quantity
+            cartQnty = cart_item.quantity
             total = sum(item.total_price for item in cart_items)
 
             status = 'Cart Updated Successfully'
-           
-            
+
             response_data = {
-                                'success': True,
-                                'total': total,
-                                'qnty': cartQnty,
-                                'productId':product_id,
-                                'subTotal':cart_item.total_price
-                                
-                            }
+                'success': True,
+                'total': total,
+                'qnty': cartQnty,
+                'productId': product_id,
+                'subTotal': cart_item.total_price
+            }
 
             return JsonResponse(response_data, status=200)
-           
         else:
             return HttpResponseBadRequest("Cart item not found")
     else:
         return HttpResponseBadRequest("Invalid request method")
+
    
 
      

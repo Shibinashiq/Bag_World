@@ -427,7 +427,7 @@ def place_order(request):
             messages.success(request, 'Order placed successfully!')
 
             # Redirect to the checkout.html page
-            return render(request, 'user_temp/checkout.html')
+            return render(request, 'user_temp/home.html')
 
         
         
@@ -461,7 +461,7 @@ def place_order(request):
             messages.success(request, 'Order placed successfully!')
 
             # Redirect to the checkout.html page
-            return render(request, 'user_temp/checkout.html')
+            return render(request, 'user_temp/home.html')
 
            
 
@@ -503,7 +503,7 @@ def place_order(request):
             
             
             messages.success(request, 'Order placed successfully!')
-            return render(request, 'user_temp/checkout.html')
+            return render(request, 'user_temp/order_success.html')
 
     return redirect('user:home')
 

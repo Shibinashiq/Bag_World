@@ -875,7 +875,17 @@ Hasthemes</p>
                                     </div>
                                     <div class="mini-cart__product-content">
                                         <a class="mini-cart__product-title" href="#">{{ cart_item.product.product_name }}</a>
-                                        <span class="mini-cart__product-quantity"> ${{cart_item.product.product_price}}</span>
+                                        <div class="product__price">
+                                            {% if cart_item.product.discounted_price is not None %}
+                                                <span class="money discount">{{ cart_item.product.discounted_price }}</span>
+                                                <span class="sign">$</span>
+                                                <br>
+                                                <del class="line-through" style="font-size: 85%;">{{ cart_item.product.product_price }}</del>
+                                            {% else %}
+                                                <span class="money regular">{{ cart_item.product.product_price }}</span>
+                                                <span class="sign">$</span>
+                                            {% endif %}
+                                        </div>
                                        
                                     </div>
                                 </li>

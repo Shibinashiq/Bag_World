@@ -1114,6 +1114,7 @@ addressRadios.forEach(function(radio) {
 <script>
     function placeOrder() {
         var selectedPaymentMethod = document.querySelector('input[name="payment_method"]:checked');
+        console.log(selectedPaymentMethod.value, "payment_method")
         if (!selectedPaymentMethod) {
             alert('Please choose a payment method');
             return;
@@ -1134,27 +1135,29 @@ addressRadios.forEach(function(radio) {
                 "handler": function (response) {
                     console.log(response.razorpay_payment_id);
                     // Send the payment ID and total amount to your Django backend
-                    savePaymentDetails(response.razorpay_payment_id, totalAmount);
+                    savePaymentDetails(response.razorpay_payment_id, totalAmount, 'razorpay');
                 }
             };
 
             var rzp1 = new Razorpay(options);
             rzp1.open();
+        } else if (paymentMethod === 'cash') {
+            // For cash payment, call the place_order URL directly
+            savePaymentDetails(null, totalAmount, 'cash');
         } else {
-            // Handle other payment methods or submit the form as needed
-            document.getElementById("checkoutForm").submit();
+            // Handle other payment methods as needed
+            alert('Invalid payment method');
         }
     }
 
-
-    function savePaymentDetails(paymentId, totalAmount) {
+    function savePaymentDetails(paymentId, totalAmount, paymentMethod) {
         const url = '/place_order/';
     
         const csrfToken = "{{ csrf_token }}";
     
         // Get the value of the element with ID 'address_id'
         var addressId = document.getElementById('address_id').value;
-    
+        
         $.ajax({
             url: url,
             type: 'POST',
@@ -1164,13 +1167,13 @@ addressRadios.forEach(function(radio) {
             data: {
                 payment_id: paymentId,
                 total_amount: totalAmount,
-                payment_method: 'razorpay',
+                payment_method: paymentMethod,
                 address_id: addressId  // Use the retrieved addressId here
             },
             success: function (data) {
                 console.log('Payment details saved successfully');
-                // Redirect to the success page
-                window.location.href = 'user_temp/home/';
+                // Redirect to the success page or perform other actions as needed
+                window.location.href = 'home/';
             },
             
             error: function (error) {
@@ -1178,10 +1181,16 @@ addressRadios.forEach(function(radio) {
             }
         });
     }
-    
-
-    
 </script>
+
+
+
+
+
+
+
+
+
 <script>
     function submitForm() {
         document.getElementById("editForm").submit();
