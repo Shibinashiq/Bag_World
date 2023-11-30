@@ -102,7 +102,7 @@
                                                         <a href="compare.html">Compare</a>
                                                     </li>
                                                     <li>
-                                                        <a href="{% url 'user:track_order' %}">Track Order</a>
+                                                      
                                                     </li>
                                                     <li>
                                                         <a href="wishlist.html">Wishlist</a>
@@ -1127,12 +1127,12 @@ addressRadios.forEach(function(radio) {
             alert('Please choose a payment method');
             return;
         }
-
+    
         var paymentMethod = selectedPaymentMethod.value;
-
+    
         if (paymentMethod === 'razorpay') {
             var totalAmount = parseFloat(document.getElementById('totalamount').textContent); // Adjust this line based on your HTML structure
-
+    
             var options = {
                 "key": "rzp_test_WHOEXgrD9IAr4I",
                 "amount": totalAmount * 100, // Razorpay expects the amount in paisa, so multiply by 100
@@ -1146,7 +1146,7 @@ addressRadios.forEach(function(radio) {
                     savePaymentDetails(response.razorpay_payment_id, totalAmount, 'razorpay');
                 }
             };
-
+    
             var rzp1 = new Razorpay(options);
             rzp1.open();
         } else if (paymentMethod === 'cash') {
@@ -1157,7 +1157,7 @@ addressRadios.forEach(function(radio) {
             alert('Invalid payment method');
         }
     }
-
+    
     function savePaymentDetails(paymentId, totalAmount, paymentMethod) {
         const url = '/place_order/';
     
@@ -1165,7 +1165,7 @@ addressRadios.forEach(function(radio) {
     
         // Get the value of the element with ID 'address_id'
         var addressId = document.getElementById('address_id').value;
-        
+    
         $.ajax({
             url: url,
             type: 'POST',
@@ -1181,14 +1181,49 @@ addressRadios.forEach(function(radio) {
             success: function (data) {
                 console.log('Payment details saved successfully');
                 // Redirect to the success page or perform other actions as needed
-                window.location.href = 'home/';
+                showSuccessPage();  // Call the function to show the success page
             },
-            
             error: function (error) {
                 console.error('Failed to save payment details:', error);
             }
         });
     }
+    
+    function showSuccessPage() {
+        // Assuming you have a success page with ID 'successPage', adjust as needed
+        var successPage = document.getElementById('successPage');
+        successPage.style.display = 'block';  // Show the success page
+    }
+    
+
+    function savePaymentDetails(paymentId, totalAmount, paymentMethod) {
+        const url = '/place_order/';
+        const csrfToken = "{{ csrf_token }}";
+        var addressId = document.getElementById('address_id').value;
+    
+        $.ajax({
+            url: url,
+            type: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken
+            },
+            data: {
+                payment_id: paymentId,
+                total_amount: totalAmount,
+                payment_method: paymentMethod,
+                address_id: addressId
+            },
+            success: function (data) {
+                console.log('Payment details saved successfully');
+                // Redirect to the success page or perform other actions as needed
+                window.location.href = "{% url 'user:order_success' %}";  // Replace with the correct URL
+            },
+            error: function (error) {
+                console.error('Failed to save payment details:', error);
+            }
+        });
+    }
+    
 </script>
 
 

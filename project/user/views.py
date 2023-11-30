@@ -51,7 +51,7 @@ def home(request):
     }
 
     # Debugging: Output information to the console
-    print(f"User: {request.user}, Cart Items: {cart_items}")
+
 
     return render(request, 'user_temp/home.html', context)
 
@@ -200,7 +200,7 @@ def change_pass(request):
 
 
 
-from datetime import date
+# from datetime import date
 
 def shop(request):
     # Filter products that are not deleted and have a quantity greater than 0
@@ -260,8 +260,7 @@ def product_view(request, product_id):
 
    
 #     for user_wallet in user_wallets:
-#         print(f"User: {user_wallet.user}, Wallet Amount: {user_wallet.wallet_amount}")
-
+#        
 #     context = {
 #         'user_wallets': user_wallets,
 #     }
@@ -374,7 +373,7 @@ def place_order(request):
             products_in_order.append(item.product)
 
         payment_mode = request.POST.get('payment_method')
-        print(payment_mode)
+        
         payment_id = request.POST.get('payment_id')
 
         if not payment_mode:
@@ -432,7 +431,9 @@ def place_order(request):
             messages.success(request, 'Order placed successfully!')
 
             # Redirect to the checkout.html page
-            return render(request, 'user_temp/home.html')
+            return redirect('user:home')
+            
+             # return render( 'user_temp/home.html')
 
         
         
@@ -466,7 +467,7 @@ def place_order(request):
             messages.success(request, 'Order placed successfully!')
 
             # Redirect to the checkout.html page
-            return render(request, 'user_temp/home.html')
+            return redirect('user:home')
 
            
 
@@ -561,8 +562,8 @@ def cancel_order(request, order_id):
 
 
 
-def track_order(request):
-    return render(request,'user_temp/order_track.html')
+def order_success(request):
+    return render(request,'user_temp/order_success.html')
 
 
 

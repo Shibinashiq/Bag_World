@@ -15,7 +15,7 @@ urlpatterns = [
     
     path('shop',views.shop,name='shop'),
     path('product_view/<int:product_id>/',views.product_view, name='product_view'),
-    path('track_order', views.track_order, name='track_order'),
+    # path('track_order', views.track_order, name='track_order'),
     
     
     
@@ -41,7 +41,9 @@ urlpatterns = [
     
     
     path('full_order_view/<int:order_id>/', views.full_order_view, name='full_order_view'),
-    # path('order_success',views.order_success,name='order_success'),
+    
+    path('order_success',views.order_success,name='order_success'),
+    
     # path('about_us',views.about_us,name='about_us.html'),
     # path('contact_page',views.contact_page,name='contact_page.html'),
    
