@@ -139,20 +139,18 @@
                                 </div>
                                 
                                 
-                                
                                 {% if cart_items %}
-                            <div class="toolbar-item mini-cart-btn">
-                                <a href="#miniCart" class="toolbar-btn js-toolbar">
-                                    <span class="mini-cart-btn__icon">
-                                        <i class="flaticon-bag"></i>
-                                    </span>
-                                    <!-- <sup class="mini-cart-btn__count">
-                                        {{ cart_items.count }}
-                                    </sup> -->
-                                </a>
-                            </div>
-                        {% endif %}
-
+                                <div class="toolbar-item mini-cart-btn">
+                                    <a href="#miniCart" class="toolbar-btn js-toolbar">
+                                        <span class="mini-cart-btn__icon">
+                                            <i class="flaticon-bag"></i>
+                                        </span>
+                                        <!-- <sup class="mini-cart-btn__count">
+                                            02
+                                        </sup> -->
+                                    </a>
+                                </div>
+                                {%endif%}
                                     
                                 </div>
                             </div>
@@ -1199,41 +1197,45 @@
         <!-- OffCanvas Menu End -->
 
         <!-- Mini Cart Start -->
-        {% if cart_items %}
-    <aside class="mini-cart" id="miniCart">
-        <div class="mini-cart-wrapper">
-            <div class="mini-cart__close">
-                <a href="#" class="btn-close"><i class="flaticon-cross"></i></a>
-            </div>
-            <div class="mini-cart-inner">
-                <h3 class="mini-cart__heading mb--45">Shopping Cart</h3>
-                <div class="mini-cart__content">
-                    <ul class="mini-cart__list">
-                        {% for cart_item in cart_items %}
-                            <li class="mini-cart__product">
-                                <a href="{%url 'cart:delete_cart_item' cart_item.id %}" class="mini-cart__product-remove">
-                                    <i class="flaticon-cross"></i>
-                                </a>
-                                <div class="mini-cart__product-image">
-                                    <img src="{{ cart_item.product.product_image.url }}" alt="products">
-                                </div>
-                                <div class="mini-cart__product-content">
-                                    <a class="mini-cart__product-title" href="#">{{ cart_item.product.product_name }}</a>
-                                    <span class="mini-cart__product-quantity"> ${{ cart_item.product.product_price }}</span>
-                                </div>
-                            </li>
-                        {% endfor %}
-                    </ul>
+       
+        <aside class="mini-cart" id="miniCart">
+            <div class="mini-cart-wrapper">
+                <div class="mini-cart__close">
+                    <a href="#" class="btn-close"><i class="flaticon-cross"></i></a>
                 </div>
-                <div class="mini-cart__buttons">
-                    <a href="{% url 'cart:cart' %}" class="btn btn-fullwidth btn-bg-primary mb--20">View Cart</a>
-                    <a href="{% url 'cart:checkout' %}" class="btn btn-fullwidth btn-bg-primary">Checkout</a>
+                <div class="mini-cart-inner">
+                    <h3 class="mini-cart__heading mb--45">Shopping Cart</h3>
+                    <div class="mini-cart__content">
+                        <ul class="mini-cart__list">
+                            {% for cart_item in cart_items %}
+                                <li class="mini-cart__product">
+                                    <a href="#" class="mini-cart__product-remove">
+                                        <i class="flaticon-cross"></i>
+                                    </a>
+                                    <div class="mini-cart__product-image">
+                                        <img src="{{ cart_item.product.product_image.url }}" alt="{{ cart_item.product.product_name }}">
+                                    </div>
+                                    <div class="mini-cart__product-content">
+                                        <a class="mini-cart__product-title" href="#">{{ cart_item.product.product_name }}</a>
+                                        <span class="mini-cart__product-quantity">{{ cart_item.quantity }} x ${{ cart_item.product.product_price }}</span>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                        <!-- Add other elements, such as total and buttons, if needed -->
+                        <!-- <div class="mini-cart__total">
+                            <span>Subtotal</span>
+                            <span class="ammount">$98.00</span>
+                        </div> -->
+                        <div class="mini-cart__buttons">
+                            <a href="{% url 'cart:cart' %}" class="btn btn-fullwidth btn-bg-primary mb--20">View Cart</a>
+                            <a href="{% url 'cart:checkout' %}" class="btn btn-fullwidth btn-bg-primary">Checkout</a>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </aside>
-{% endif %}
-
+        </aside>
+        
         <!-- Mini Cart End -->
 
         <!-- Qicuk View Modal Start -->
@@ -1328,7 +1330,7 @@
     <!-- ************************* JS Files ************************* -->
 
     <!-- jQuery JS -->
-    <script src="{% static 'assets/js/vendor.js' %}"></script>
+    <script src="{% static 'assets/js/vendor1.js' %}"></script>
 
     <!-- Main JS -->
     <script src="{% static 'assets/js/main.js' %}"></script>

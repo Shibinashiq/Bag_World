@@ -11,19 +11,22 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Favicons -->
-    <link rel="shortcut icon" href="{%static 'assets/img/favicon.ico'%}" type="image/x-icon">
-    <link rel="apple-touch-icon" href="{%static 'assets/img/icon.png'%}">
+    <link rel="shortcut icon" href="{% static 'assets/img/favicon.ico' %}" type="image/x-icon">
+    <link rel="apple-touch-icon" href="{% static 'assets/img/icon.png' %}">
 
     <!-- ************************* CSS Files ************************* -->
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="{%static 'assets/css/bootstrap.css'%}">
+    <link rel="stylesheet" href="{% static 'assets/css/bootstrap.css' %}">
 
     <!-- Vendor CSS -->
-    <link rel="stylesheet" href="{%static 'assets/css/vendor.css'%}">
+    <link rel="stylesheet" href="{% static 'assets/css/vendor.css' %}">
 
     <!-- style css -->
-    <link rel="stylesheet" href="{%static 'assets/css/main.css'%}">
+    <link rel="stylesheet" href="{% static 'assets/css/main.css' %}">
+    <!-- Add these links in the <head> section of your HTML file -->
+
+
 </head>
 
 <body>
@@ -127,14 +130,21 @@
                                         <i class="flaticon-heart"></i>
                                     </a>
                                 </div>
+                                <div class="toolbar-item">
+                                    <a href="{% url 'cart:cart' %}" class="toolbar-btn">
+                                        <i class="flaticon-bag"></i>
+                                    </a>
+                                </div>
+
+
                                 <div class="toolbar-item mini-cart-btn">
                                     <a href="#miniCart" class="toolbar-btn js-toolbar">
                                         <span class="mini-cart-btn__icon">
                                             <i class="flaticon-bag"></i>
                                         </span>
-                                        <sup class="mini-cart-btn__count">
-                                            02
-                                        </sup>
+                                        <!-- <sup class="mini-cart-btn__count">
+                                            {{ cart_items.count }}
+                                        </sup> -->
                                     </a>
                                 </div>
                             </div>
@@ -178,7 +188,9 @@
                                     <button type="button" class="nav-link" data-bs-toggle="tab" role="tab" data-bs-target="#downloads" aria-controls="downloads" aria-selected="true">Downloads</button>
                                     <button type="button" class="nav-link" data-bs-toggle="tab" role="tab" data-bs-target="#addresses" aria-controls="addresses" aria-selected="true">addresses</button>
                                     <button type="button" class="nav-link" data-bs-toggle="tab" role="tab" data-bs-target="#wallet" aria-controls="wallet" aria-selected="true">wallet</button>
-                                    <button type="button" class="nav-link" data-bs-toggle="tab" role="tab" data-bs-target="#accountdetails" aria-controls="accountdetails" aria-selected="true">Account Details</button> 
+                                    <button type="button" class="nav-link" data-bs-toggle="tab" role="tab" data-bs-target="#accountdetails" aria-controls="accountdetails" aria-selected="true">Account Details</button>
+
+                                    
                                     <a href="{% url 'user:change_pass' %}" class="nav-link" role="tab" aria-controls="pass" aria-selected="true">Change Password</a>
 
                                     <button class="nav-link" type="submit" href="{%url 'user:user_logout'%}">Logout</button>
@@ -302,33 +314,39 @@
                                     <div class="tab-pane fade" id="addresses">
                                         <p class="mb--20">The following addresses will be used on the checkout page by default.</p>
                                         <div class="row">
-                                            <div class="col-md-6 mb-sm--20">
-                                                <div class="text-block">
-                                                    <h4 class="mb--20">Billing address</h4>
-                                                    {% if user_profile %}
-                                                        {% for i in user_profile %}
-                                                            <p> {{ i.firstname }} {{ i.lastname }}<br>
+                                            {% if user_profile %}
+                                                {% for i in user_profile %}
+                                                    <div class="card col-md-3 mb-3">
+                                                        <div class="card-body">
+                                                            <h4 class="card-title mb-3">Billing Address</h4>
+                                                            <p>{{ i.firstname }} {{ i.lastname }}<br>
                                                                 {{ i.streetaddress }}<br>
                                                                 {{ i.town }}<br>{{ i.state }}<br>
-                                                                {{ i.country }}</p>
-                                                            
-                                                        {% endfor %}
-                                                    {% else %}
+                                                                {{ i.country }}
+                                                            </p>
+                                                          
+                                                           
+                                                        </div>
+                                                    </div>
+                                                {% endfor %}
+                                            {% else %}
+                                                <div class="card col-md-3 mb-3">
+                                                    <div class="card-body">
                                                         <p>You have not set up this type of address yet.</p>
-                                                    {% endif %}
+                                                    </div>
                                                 </div>
-                                                
-                                               <a href="#">Edit</a>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="text-block">
-                                                    <h4 class="mb--20">Shopping address</h4>
-                                                    <a href="#">Edit</a>
-                                                    <p>You have not set up this type of address yet.</p>
-                                                </div>
-                                            </div>
+                                            {% endif %}
                                         </div>
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
                                     </div>
+                                   
+
+                                    
                                     <div class="tab-pane fade" id="wallet">
                                        
                                         <div class="row">
@@ -920,6 +938,42 @@ Hasthemes</p>
         <!-- OffCanvas Menu End -->
 
         <!-- Mini Cart Start -->
+        <aside class="mini-cart" id="miniCart">
+            <div class="mini-cart-wrapper">
+                <div class="mini-cart__close">
+                    <a href="#" class="btn-close"><i class="flaticon-cross"></i></a>
+                </div>
+                <div class="mini-cart-inner">
+                    <h3 class="mini-cart__heading mb--45">Shopping Cart</h3>
+                    <div class="mini-cart__content">
+                        <ul class="mini-cart__list">
+                            {% for I in cart_item %}
+                                <li class="mini-cart__product">
+                                    <a href="#" class="mini-cart__product-remove">
+                                        <i class="flaticon-cross"></i>
+                                    </a>
+                                    <div class="mini-cart__product-image">
+                                        <img src="{{ I.product.product_image.url }}" alt="products">
+                                    </div>
+                                    <div class="mini-cart__product-content">
+                                        <a class="mini-cart__product-title" href="#">{{ I.product.product_name }}</a>
+                                        <span class="mini-cart__product-quantity">{{ I.quantity }} x ${{ I.product.product_price }}</span>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <!-- <div class="mini-cart__total">
+                        <span>Subtotal</span>
+                        <span class="ammount">${{ subtotal }}</span>
+                    </div> -->
+                    <div class="mini-cart__buttons">
+                        <a href="{% url 'cart:cart' %}" class="btn btn-fullwidth btn-bg-primary mb--20">View Cart</a>
+                        <a href="{% url 'cart:checkout' %}" class="btn btn-fullwidth btn-bg-primary">Checkout</a>
+                    </div>
+                </div>
+            </div>
+        </aside>
        
         <!-- Mini Cart End -->
 
@@ -1060,11 +1114,15 @@ Hasthemes</p>
         <!-- Scroll To Top End -->
     </div>
     <!-- Main Wrapper End -->
+<!-- Bootstrap JS and Popper.js (required for some Bootstrap components) -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
     <!-- ************************* JS Files ************************* -->
 
     <!-- jQuery JS -->
-    <script src="{%static 'assets/js/vendor.js'%}"></script>
+    <script src="{%static 'assets/js/vendor1.js'%}"></script>
 
     <!-- Main JS -->
     <script src="{%static 'assets/js/main.js'%}"></script>

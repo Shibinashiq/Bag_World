@@ -115,9 +115,13 @@
                                             <li>
                                                 <a href="/index">index</a>
                                             </li>
+                                            
                                         </ul>
+                                        <li class="mainmenu__item">
+                                            <a class="mainmenu__link" href="#" onclick="pdf()"><i class="bi bi-printer"></i> Print Order</a></li>
+                                        </li>
                                     </div>
-                                </li>
+                                
                             
 
                             
@@ -179,19 +183,7 @@
                                           <span class="badge rounded-pill bg-info">{{order.od_status}}</span>
                                         </div>
                                       
-                                        <div class="d-flex">
-                                           
-                                          <div class="dropdown">
-                                            <button class="btn btn-link p-0 text-muted" type="button" data-bs-toggle="dropdown">
-                                              <i class="bi bi-three-dots-vertical"></i>
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-menu-end">
-                                              <li><a class="dropdown-item" href="#"><i class="bi bi-pencil"></i> Edit</a></li>
-                                              <li><a class="dropdown-item" href="#" onclick="pdf()"><i class="bi bi-printer"></i> Print Order</a></li>
-
-                                            </ul>
-                                          </div>
-                                        </div>
+                                        
                                       </div>
                                       <table class="table table-borderless " >
                                         <tbody>
@@ -201,7 +193,7 @@
                                                     <div class="d-flex mb-2">
                                                       
                                                         <div class="flex-shrink-0">
-                                                            <!-- Assuming the first product in the order has an image -->
+                                                          
                                                            
                                                             <div class="d-flex mb-2">
                                                                 <div class="flex-shrink-0">
@@ -209,23 +201,28 @@
                                                                         <img src="{{ product_item.product_image.url }}" alt="{{ product_item.product_name }}" width="35" class="img-fluid">
                                                                         
                                                                     {% else %}
-                                                                        <!-- Provide a default image or handle the case where the product has no image -->
+                                                                      
                                                                         <img src="{% static 'path_to_default_image/default_image.jpg' %}" alt="Default Image" width="35" class="img-fluid">
                                                                     {% endif %}
                                                                 </div>
                                                                 <div class="flex-lg-grow-1 ms-3">
                                                                     <h6 class="small mb-0"><a href="{%url 'user:shop'%}" class="text-reset">{{ product_item.product_name }}</a></h6>
-                                                                    <!-- Add other product details if needed -->
+                                                                  
                                                                 </div>
+                                                            
                                                                 <div class="flex-lg-grow-1 ms-3">
-                                                                    <h6 class="small mb-0"><a href="{%url 'user:shop'%}" class="text-reset">{{ product_item.product_price}}</a></h6>
-                                                                    <!-- Add other product details if needed -->
+                                                                   
+                                                                    {% if product_item.product_offer %}
+                                
+                                                                        <span class="badge bg-danger">${{ product_item.product_offer.discount_amount }}</span>
+                                                                    {% endif %}
+                         
                                                                 </div>
                                                             </div>
                                                         
                                                         </div>
                                                         <div class="flex-lg-grow-1 ms-3">
-                                                            <!-- Assuming the first product in the order has a name -->
+                                                           
                                                             <h6 class="small mb-0"><a href="#" class="text-reset">{{ order.product.product_name }}</a></h6>
                                                         </div>
                                                     </div>

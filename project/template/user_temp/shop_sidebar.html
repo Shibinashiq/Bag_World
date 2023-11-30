@@ -875,32 +875,24 @@ Hasthemes</p>
                                     </div>
                                     <div class="mini-cart__product-content">
                                         <a class="mini-cart__product-title" href="#">{{ cart_item.product.product_name }}</a>
-                                        <div class="product__price">
-                                            {% if cart_item.product.discounted_price is not None %}
-                                                <span class="money discount">{{ cart_item.product.discounted_price }}</span>
-                                                <span class="sign">$</span>
-                                                <br>
-                                                <del class="line-through" style="font-size: 85%;">{{ cart_item.product.product_price }}</del>
-                                            {% else %}
-                                                <span class="money regular">{{ cart_item.product.product_price }}</span>
-                                                <span class="sign">$</span>
-                                            {% endif %}
-                                        </div>
-                                       
+                                        <span class="mini-cart__product-quantity">{{ cart_item.quantity }} x ${{ cart_item.product.product_price }}</span>
                                     </div>
                                 </li>
                             {% endfor %}
                         </ul>
-          
-                        </div>
-                        <div class="mini-cart__buttons">
-                            <a href="{%url 'cart:cart' %}" class="btn btn-fullwidth btn-bg-primary mb--20">View Cart</a>
-                            <a href="{%url 'cart:checkout'%}" class="btn btn-fullwidth btn-bg-primary">Checkout</a>
-                        </div>
+                    </div>
+                    <!-- <div class="mini-cart__total">
+                        <span>Subtotal</span>
+                        <span class="ammount">${{ subtotal }}</span>
+                    </div> -->
+                    <div class="mini-cart__buttons">
+                        <a href="{% url 'cart:cart' %}" class="btn btn-fullwidth btn-bg-primary mb--20">View Cart</a>
+                        <a href="{% url 'cart:checkout' %}" class="btn btn-fullwidth btn-bg-primary">Checkout</a>
                     </div>
                 </div>
             </div>
         </aside>
+        
         
         
 
@@ -917,7 +909,7 @@ Hasthemes</p>
     <!-- ************************* JS Files ************************* -->
 
     <!-- jQuery JS -->
-    <script src="{% static 'assets/js/vendor.js' %}"></script>
+    <script src="{% static 'assets/js/vendor1.js' %}"></script>
 
     <!-- Main JS -->
     <script src="{% static 'assets/js/main.js' %}"></script>

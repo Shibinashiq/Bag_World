@@ -27,28 +27,32 @@ from datetime import date
 from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 
+from datetime import date
+
+from django.contrib import messages
+
 def home(request):
-    # Filter products that are not deleted
     products = Product.objects.filter(is_deleted=False, product_quantity__gt=0)
+
     for product in products:
-        if product.product_offer:
-            if product.product_offer.end_date >= date.today():
-                product.discounted_price = product.product_price - product.product_offer.discount_amount
-            else:
-                product.discounted_price = None
+        if product.product_offer and product.product_offer.end_date >= date.today():
+            product.discounted_price = product.product_price - product.product_offer.discount_amount
         else:
             product.discounted_price = None
+
     if request.user.is_authenticated:
-            # Fetch the cart items for the authenticated user
         cart_items = Cart.objects.filter(user=request.user)
-    
-    # You might want to pass the products to the template
+    else:
+        cart_items = None  # or any default value you prefer
+
     context = {
         'products': products,
-        'cart_items':cart_items
-               
-               
-               }
+        'cart_items': cart_items,
+    }
+
+    # Debugging: Output information to the console
+    print(f"User: {request.user}, Cart Items: {cart_items}")
+
     return render(request, 'user_temp/home.html', context)
 
             
@@ -305,7 +309,7 @@ def user_profile(request):
 
     # Retrieve the user's address data
     user_profile = Profile.objects.filter(user=request.user.id)
-
+    cart_item=Cart.objects.filter(user=request.user)
     # Call the order_history function to get user order history
     user_order = Order.objects.filter(user=request.user).order_by('-created_at')
     order_details = []
@@ -334,7 +338,8 @@ def user_profile(request):
         'user_profile': user_profile,
         'user_order': user_order,
         'order_details': order_details,
-        'user_wallets':user_wallets
+        'user_wallets':user_wallets,
+        'cart_item':cart_item
     }
 
     return render(request, 'user_temp/user_profile.html', context)
@@ -650,6 +655,16 @@ def full_order_view(request, order_id):
 
     # Check if the order exists
     if order:
+        # Check if the product in the order has an offer and calculate the discounted price
+        for product in order.product.all():
+            if product.product_offer:
+                if product.product_offer.end_date >= datetime.now().date():
+                    product.discounted_price = product.product_price - product.product_offer.discount_amount
+                else:
+                    product.discounted_price = None
+            else:
+                product.discounted_price = None
+
         context = {
             'order': order
         }
@@ -657,8 +672,6 @@ def full_order_view(request, order_id):
     else:
         # Handle the case where the order doesn't exist (e.g., show an error message)
         return HttpResponse("Order not found.")
-
-
 
 
 

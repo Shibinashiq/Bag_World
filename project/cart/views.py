@@ -233,9 +233,12 @@ def checkout(request):
 
 def wishlist(request):
     list = Wishlist.objects.filter(user=request.user).order_by('created_at')
+    cart_item=Cart.objects.filter(user=request.user)
+    
     
     context = {
-        'list': list
+        'list': list,
+        'cart_item':cart_item
     }
     
     return render(request, 'user_temp/wishlist.html', context)
