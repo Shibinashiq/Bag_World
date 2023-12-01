@@ -205,7 +205,7 @@ def change_pass(request):
 def shop(request):
     # Filter products that are not deleted and have a quantity greater than 0
     products = Product.objects.filter(is_deleted=False, product_quantity__gt=0)
-
+    cart_items=[]
     for product in products:
         if product.product_offer:
             if product.product_offer.end_date >= date.today():
