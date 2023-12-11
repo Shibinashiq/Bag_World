@@ -31,6 +31,8 @@ from datetime import date
 
 from django.contrib import messages
 
+
+
 def home(request):
     products = Product.objects.filter(is_deleted=False, product_quantity__gt=0)
 
@@ -146,15 +148,15 @@ def otp_page(request):
                error_message='OTP expired'
         else:
             error_message='Oops,something went wrong'
-    return render(request, 'user_temp/otp.html', {'error_message':error_message})
+    return render(request, 'user_temp/otp.html',{'error_message': error_message})
 
-
+@login_required(login_url='user:user_login')
 def user_logout(request):
     if request.user.is_authenticated:
         logout(request)
     return redirect('user:home')
 
-@login_required
+@login_required(login_url='user:user_login')
 def change_pass(request):
     if request.method == 'POST':
         current_pass = request.POST.get('current_password')
@@ -170,18 +172,18 @@ def change_pass(request):
             # Password length validation
             if len(new_pass) < 8:
                 messages.error(request, 'Password must be at least 8 characters long')
-                return render(request, 'user_temp/pass_change.html')
+                return render(request, 'user_temp/home.html')
 
             # Password complexity validation
             pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$'
             if not re.match(pattern, new_pass):
                 messages.error(request, 'Password must meet complexity requirements')
-                return render(request, 'user_temp/pass_change.html')
+                return render(request, 'user_temp/home.html')
 
             # Previous password check
             if user.check_password(new_pass):
                 messages.error(request, 'New password cannot be the same as the old password')
-                return render(request, 'user_temp/pass_change.html')
+                return render(request, 'user_temp/home.html')
 
             # Check if new passwords match
             if new_pass == confirm_new_pass:
@@ -190,13 +192,13 @@ def change_pass(request):
                 update_session_auth_hash(request, user)  # Update the session to prevent the user from being logged out
                 messages.success(request, 'Password changed successfully')
                 # Redirect to the user profile or another page upon successful password change
-                return redirect('user:user_profile')  # Replace 'user:user_profile' with your actual URL name
+                return redirect('user:home')  # Replace 'user:user_profile' with your actual URL name
             else:
                 messages.error(request, 'New passwords do not match')
         else:
-            messages.error(request, 'Incorrect old password')
+            messages.error(request, 'Enter something or enter valid thing ')
 
-    return render(request, 'user_temp/pass_change.html')
+        return render(request, 'user_temp/home.html')
 
 
 
@@ -227,8 +229,8 @@ def shop(request):
 
 
 
-from datetime import date
 
+@login_required(login_url='user:user_login')
 def product_view(request, product_id):
     product = get_object_or_404(Product, pk=product_id, is_deleted=False,product_quantity__gt=0)
     products = Product.objects.filter(is_deleted=False, product_quantity__gt=0)
@@ -260,14 +262,14 @@ def product_view(request, product_id):
 
    
 #     for user_wallet in user_wallets:
-#        
+       
 #     context = {
 #         'user_wallets': user_wallets,
 #     }
 
 #     return render(request, 'user_temp/use_profile.html', context)
 
-
+@login_required(login_url='user:user_login')
 def user_profile(request):
     if request.method == 'POST':
         # Retrieve data from the request
@@ -309,6 +311,7 @@ def user_profile(request):
     # Retrieve the user's address data
     user_profile = Profile.objects.filter(user=request.user.id)
     cart_item=Cart.objects.filter(user=request.user)
+    print("Cart Items:", cart_item)
     # Call the order_history function to get user order history
     user_order = Order.objects.filter(user=request.user).order_by('-created_at')
     order_details = []
@@ -351,7 +354,7 @@ def user_profile(request):
 
 
 
-
+@login_required(login_url='user:user_login')
 def place_order(request):
     
     if request.method == 'POST':
@@ -515,7 +518,7 @@ def place_order(request):
 
 
 
-
+@login_required(login_url='user:user_login')
 def cancel_order(request, order_id):
     if request.method == 'POST':
         order = get_object_or_404(Order, id=order_id)
@@ -561,7 +564,7 @@ def cancel_order(request, order_id):
 
 
 
-
+@login_required(login_url='user:user_login')
 def order_success(request):
     return render(request,'user_temp/order_success.html')
 
@@ -570,7 +573,7 @@ def order_success(request):
 
 
 
-  
+@login_required(login_url='user:user_login') 
 def return_order(request, order_id):
     if request.method=='POST':
         order = Order.objects.get(id=order_id)
@@ -599,7 +602,7 @@ def return_order(request, order_id):
 
 
 
-
+@login_required(login_url='user:user_login')
 def wallet_item(request):  
     user_wallets = Wallet.objects.filter(user=request.user)
     context = {
@@ -613,43 +616,40 @@ def wallet_item(request):
 
 
 
+@login_required(login_url='user:user_login')
 def add_review(request, product_id):
-    
-    product = Product.objects.get(id=product_id)
-   
+    product = get_object_or_404(Product, id=product_id)
+
+    try:
+        order = Order.objects.get(product=product, user=request.user, od_status='Delivered')
+    except Order.DoesNotExist:
+        # Handle the case where no matching order is found
+        messages.error(request,"You can only add a review for products in delivered orders.")
+
     if request.method == 'POST':
         comment = request.POST.get('comment')
-       
-       
         user = request.user
-       
 
-        
         review = Review(
             user_instance=user,
             product=product,
             comment=comment,
-            
-            
-            
         )
         review.save()
-        
-       
-        return redirect('user:product_view', product_id=product_id)
-       
 
-    
+        return redirect('user:product_view', product_id=product_id)
+
     return render(request, 'user_temp/product_view.html')
 
 
-def success (request):
-    return (request,'user_temp/success.html')
+# @login_required(login_url='user_login')
+# def success (request):
+#     return (request,'user_temp/success.html')
 
 
 
 
-
+@login_required(login_url='user:user_login')
 def full_order_view(request, order_id):
     # Fetch the specific order based on order_id
     order = Order.objects.filter(user=request.user, id=order_id).first()
@@ -676,7 +676,7 @@ def full_order_view(request, order_id):
 
 
 
-@login_required
+@login_required(login_url='user:user_login')
 def edit_address(request, address_id):
   
     

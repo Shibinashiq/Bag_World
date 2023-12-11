@@ -8,8 +8,9 @@ from django.contrib import messages
 from .models import Product, Cart,Wishlist
 from decimal import Decimal
 from datetime import date
+from django.contrib.auth.decorators import login_required
 
-
+@login_required(login_url='user:user_login')
 def cart(request):
     if request.user.is_authenticated:
         cart = Cart.objects.filter(user=request.user).order_by('id')
@@ -49,7 +50,7 @@ def cart(request):
     
   # Import datetime module
 
-
+@login_required(login_url='user:user_login')
 def add_cart(request):
     if request.method == 'POST':
         if request.user.is_authenticated:
@@ -108,6 +109,7 @@ def add_cart(request):
            
     return render(request, 'user_temp/cart.html')
 
+# @login_required(login_url='user:user_login')
 def update_cart(request, action, product_id):
     if request.method == 'POST':
         cart_item = Cart.objects.filter(user=request.user, product_id=product_id).first()
@@ -173,7 +175,7 @@ def update_cart(request, action, product_id):
      
     
     
-    
+@login_required(login_url='user:user_login')    
 def delete_cart_item(request,product_id):
     if request.method == 'POST':
         dele = Cart.objects.filter(id = product_id)
@@ -187,7 +189,7 @@ def delete_cart_item(request,product_id):
     
     
     
-    
+@login_required(login_url='user:user_login')    
 def checkout(request):
     cart_items = Cart.objects.filter(user=request.user)
 
@@ -230,7 +232,7 @@ def checkout(request):
 
     return render(request, 'user_temp/checkout.html', context)
 
-
+@login_required(login_url='user:user_login')
 def wishlist(request):
     list = Wishlist.objects.filter(user=request.user).order_by('created_at')
     cart_item=Cart.objects.filter(user=request.user)
@@ -243,6 +245,8 @@ def wishlist(request):
     
     return render(request, 'user_temp/wishlist.html', context)
 
+
+@login_required(login_url='user:user_login')
 def add_wishlist(request, product_id):
     if request.method == 'POST':
         if request.user.is_authenticated:
@@ -279,7 +283,7 @@ def add_wishlist(request, product_id):
 
 
 
-
+@login_required(login_url='user:user_login')
 def remove_wishlist(request, product_id):
     if request.user.is_authenticated:
         # Use get_object_or_404 to get the Wishlist item or return a 404 if it doesn't exist
@@ -290,7 +294,7 @@ def remove_wishlist(request, product_id):
 
 
 
-
+@login_required(login_url='user:user_login')
 def wishlist_to_cart(request, wishlist_id):
     if request.user.is_authenticated:
         # Get the Wishlist item

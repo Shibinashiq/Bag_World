@@ -14,29 +14,34 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import logout
+from django.contrib.auth.decorators import user_passes_test
 
 
-@login_required(login_url='admin_side:admin_login')    
+def is_admin(user):
+    return user.is_authenticated and user.is_superuser  # Adjust the condition based on your requirements
+
+@user_passes_test(is_admin, login_url='admin_side:admin_login')
 def admin_dashboard(request):
-    return render(request,'admin_temp/dashboard.html')
+    return render(request, 'admin_temp/dashboard.html')
 
 
 
 def admin_login(request):
-    if request.method =='POST':
-        username=request.POST.get('username')
-        password=request.POST.get('password')
-        user=authenticate(username=username,password=password)
-        if user is not None and user.is_superuser:
-            login(request,user)
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(username=username, password=password)
+
+        if user is not None and user.is_active and user.is_staff:
+            login(request, user)
             return redirect('admin_side:admin_dashboard')
         else:
-            messages.error(request,'Invalid User Try Again')
+            messages.error(request, 'Invalid User. Try Again.')
             return redirect('admin_side:admin_login')
-    
-    return render(request,'admin_temp/admin_login.html')
 
-@login_required(login_url='admin_side:admin_login')   
+    return render(request, 'admin_temp/admin_login.html')
+
+@user_passes_test(is_admin, login_url='admin_side:admin_login')   
 def admin_logout(request):
     logout(request)
     # Redirect to the admin login page after logging out.
@@ -47,7 +52,7 @@ def admin_logout(request):
 
 # def add_product(request):
 #    return render(request,'admin_temp/add-product.html')
-
+@user_passes_test(is_admin, login_url='admin_side:admin_login')
 def brand(request):
     brand = Brand.objects.all()
     context = {
@@ -55,7 +60,7 @@ def brand(request):
     }
     return render(request,'admin_temp/brand.html',context)
 
-@login_required(login_url='admin_side:admin_login')   
+@user_passes_test(is_admin, login_url='admin_side:admin_login')   
 def add_brand(request):
     if request.user.is_superuser:
         if request.method=='POST':
@@ -92,7 +97,7 @@ def add_brand(request):
         return redirect('admin_login')
         
         
-@login_required(login_url='admin_side:admin_login')     
+@user_passes_test(is_admin, login_url='admin_side:admin_login')    
 def edit_brand(request, brand_id):
    if request.user.is_superuser:
         if request.method == 'POST':
@@ -135,7 +140,7 @@ def edit_brand(request, brand_id):
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseForbidden
 
-@login_required(login_url='admin_side:admin_login')    
+@user_passes_test(is_admin, login_url='admin_side:admin_login')    
 def brand_delete(request, brand_id):
     if request.user.is_superuser:
         brand = get_object_or_404(Brand, id=brand_id)
@@ -151,7 +156,7 @@ def brand_delete(request, brand_id):
 
 
 
-@login_required(login_url='admin_side:admin_login')   
+@user_passes_test(is_admin, login_url='admin_side:admin_login')   
 def category(request):
     cat=Category.objects.all()
     context={
@@ -159,7 +164,8 @@ def category(request):
     }
     
     return render(request,'admin_temp/category.html',context)
-@login_required(login_url='admin_side:admin_login')    
+
+@user_passes_test(is_admin, login_url='admin_side:admin_login')    
 def add_category(request):
     if request.user.is_superuser:
         if request.method == 'POST':
@@ -201,7 +207,7 @@ def add_category(request):
     else:
         return redirect('admin_login') 
     
-@login_required(login_url='admin_side:admin_login')       
+@user_passes_test(is_admin, login_url='admin_side:admin_login')       
 def edit_category(request, cat_id):
     if request.user.is_superuser:
         if request.method == 'POST':
@@ -236,7 +242,7 @@ def edit_category(request, cat_id):
         return redirect('admin_login') 
     
     
-@login_required(login_url='admin_side:admin_login')    
+@user_passes_test(is_admin, login_url='admin_side:admin_login')    
 def category_delete(request, cat_id):
     if request.user.is_superuser:
         category = get_object_or_404(Category, id=cat_id)
@@ -250,7 +256,7 @@ def category_delete(request, cat_id):
         return redirect('admin_login')
 
 
-@login_required(login_url='admin_side:admin_login')   
+@user_passes_test(is_admin, login_url='admin_side:admin_login')   
 def product(request):
     products = Product.objects.all()
     brand = Brand.objects.filter(is_deleted=False)
@@ -267,7 +273,7 @@ def product(request):
     }
     return render(request, 'admin_temp/product .html', context)
 
-@login_required(login_url='admin_side:admin_login')
+@user_passes_test(is_admin, login_url='admin_side:admin_login')
 def add_product(request):
     if request.user.is_superuser:
         if request.method == 'POST':
@@ -342,7 +348,8 @@ def add_product(request):
     else:
         return redirect('admin_login')
     
-@login_required(login_url='admin_side:admin_login')    
+    
+@user_passes_test(is_admin, login_url='admin_side:admin_login')    
 def edit_product(request, product_id):
     if request.user.is_superuser:
         pro = get_object_or_404(Product, id=product_id)
@@ -367,7 +374,16 @@ def edit_product(request, product_id):
 
             brand, created = Brand.objects.get_or_create(brand_name=product_brand)
             category, created = Category.objects.get_or_create(category_name=product_category)
-            offer, created = Offer.objects.get_or_create(offer_name=product_offer)
+
+            if product_offer:
+                # Offer name provided, check if it exists or create a new one
+                offer, created = Offer.objects.get_or_create(
+                    offer_name=product_offer, 
+                    defaults={'discount_amount': 0.0}  # Set default value for discount_amount
+                )
+            else:
+                # No offer selected or entered
+                offer = None
 
             # Check for any changes before saving
             if (
@@ -388,7 +404,6 @@ def edit_product(request, product_id):
                 # Save the product instance
                 pro.save()
 
-              
                 for image in product_images:
                     # Save each image to the product instance
                     pro.product_images.create(image=image)
@@ -415,10 +430,8 @@ def edit_product(request, product_id):
     else:
         messages.error(request, 'You do not have permission to edit products.')
         return redirect('admin_side:product')
-
-
     
-    
+@user_passes_test(is_admin, login_url='admin_side:admin_login') 
 def product_delete(request, product_id):
     if request.user.is_superuser:
         product = get_object_or_404(Product, id=product_id)
@@ -430,7 +443,7 @@ def product_delete(request, product_id):
     else:
         return redirect('admin_login') 
     
-   
+@user_passes_test(is_admin, login_url='admin_side:admin_login')  
 def product_undelete(request, product_id):
     if request.user.is_superuser:
         product = get_object_or_404(Product, id=product_id)
@@ -444,7 +457,7 @@ def product_undelete(request, product_id):
 
 
     
-@login_required(login_url='admin_side:admin_login')     
+@user_passes_test(is_admin, login_url='admin_side:admin_login')     
 def admin_user(request):
     register_details = User.objects.filter(is_superuser=False)
     context = {
@@ -452,7 +465,7 @@ def admin_user(request):
     }
     return render(request, 'admin_temp/admin_user.html', context)
 
-@login_required(login_url='admin_side:admin_login')    
+@user_passes_test(is_admin, login_url='admin_side:admin_login')   
 def user_block(request, user_id):
     user = User.objects.get(id=user_id)
     user.is_active = False
@@ -460,7 +473,7 @@ def user_block(request, user_id):
     messages.success(request, f'User {user.username} is Blocked ')
     return redirect('admin_side:admin_user')
 
-@login_required(login_url='admin_side:admin_login')   
+@user_passes_test(is_admin, login_url='admin_side:admin_login')   
 def user_unblock(request, user_id):
     user = User.objects.get(id=user_id)
     user.is_active = True
@@ -471,10 +484,10 @@ def user_unblock(request, user_id):
     
     
     
-@login_required(login_url='admin_side:admin_login')          
+@user_passes_test(is_admin, login_url='admin_side:admin_login')          
 def orders(request):
     user_id = request.user.id  # Get the user's ID
-    orders = Order.objects.filter(user=user_id)  # Filter orders based on the user's ID
+    orders = Order.objects.all() # Filter orders based on the user's ID
     
     context={
         'orders':orders
@@ -485,7 +498,7 @@ def orders(request):
 
 
 
-@login_required(login_url='admin_side:admin_login')
+@user_passes_test(is_admin, login_url='admin_side:admin_login')
 def update_status(request, order_id):
     if request.method == 'POST':
         new_status = request.POST.get('order_status')
@@ -506,7 +519,7 @@ def update_status(request, order_id):
 
 
 
-@login_required(login_url='admin_side:admin_login')   
+@user_passes_test(is_admin, login_url='admin_side:admin_login')   
 def offer(request):
     off=Offer.objects.all()
     context={
@@ -515,7 +528,7 @@ def offer(request):
     return render(request,'admin_temp/offer.html',context)
 
 
-@login_required(login_url='admin_side:admin_login')   
+@user_passes_test(is_admin, login_url='admin_side:admin_login')   
 def add_offer(request):
     if request.method == 'POST':
         offer_name = request.POST.get('offer_name')
@@ -547,7 +560,7 @@ def add_offer(request):
 
     return render(request, 'admin_temp/add_offer.html')
    
-@login_required(login_url='admin_side:admin_login')
+@user_passes_test(is_admin, login_url='admin_side:admin_login')
 def edit_offer(request, offer_id):
     offer = Offer.objects.get(id=offer_id)
     
@@ -568,7 +581,7 @@ def edit_offer(request, offer_id):
 
     return render(request, 'admin_temp/edit_offer.html', {'i': offer})
 
-@login_required(login_url='admin_side:admin_login')
+@user_passes_test(is_admin, login_url='admin_side:admin_login')
 def offer_delete(request, offer_id):
     if request.user.is_superuser:
         offer = get_object_or_404(Offer, id=offer_id)
@@ -581,7 +594,7 @@ def offer_delete(request, offer_id):
     else:
         return redirect('admin_login')
 
-@login_required(login_url='admin_side:admin_login')
+@user_passes_test(is_admin, login_url='admin_side:admin_login')
 def offer_undelete(request, offer_id):
     if request.user.is_superuser:
         offer = get_object_or_404(Offer, id=offer_id)
@@ -597,7 +610,7 @@ def offer_undelete(request, offer_id):
 
 
 
-@login_required(login_url='admin_side:admin_login')   
+@user_passes_test(is_admin, login_url='admin_side:admin_login')   
 def coupon(request):
     coupon=Coupon.objects.all()
     context={
@@ -612,7 +625,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Coupon
 from datetime import datetime
 
-@login_required(login_url='admin_side:admin_login')   
+@user_passes_test(is_admin, login_url='admin_side:admin_login')   
 def add_coupon(request):
     if request.method == 'POST':
         coupon_code = request.POST.get('coupon_code')
@@ -662,8 +675,8 @@ def add_coupon(request):
 
 
 
-@login_required(login_url='admin_side:admin_login')   
-
+  
+@user_passes_test(is_admin, login_url='admin_side:admin_login')
 def edit_coupon(request, coupon_id):
     coupon = get_object_or_404(Coupon, id=coupon_id)
     
@@ -684,6 +697,8 @@ def edit_coupon(request, coupon_id):
             coupon.coupon_code = coupon_code
             coupon.discount = discount
             coupon.min_price = min_price
+            coupon.start_date= start_date
+            coupon.end_date=end_date
             coupon.save()
             messages.success(request, 'Coupon updated successfully.')
             return redirect('admin_side:coupon')
@@ -692,7 +707,7 @@ def edit_coupon(request, coupon_id):
 
 
 
-@login_required(login_url='admin_side:admin_login')
+@user_passes_test(is_admin, login_url='admin_side:admin_login')
 def coupon_delete(request, coupon_id):
     if request.user.is_superuser:
         coupon = get_object_or_404(Coupon, id=coupon_id)
@@ -704,6 +719,8 @@ def coupon_delete(request, coupon_id):
     else:
         return redirect('admin_login') 
     
+    
+@user_passes_test(is_admin, login_url='admin_side:admin_login')     
 def coupon_undelete(request,coupon_id):
     if request.user.is_superuser:
         coupon = get_object_or_404(Coupon, id=coupon_id)

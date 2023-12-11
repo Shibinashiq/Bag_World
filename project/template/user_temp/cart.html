@@ -115,14 +115,9 @@
                                                     <li>
                                                         <a href="{% url 'cart:cart' %}">Cart</a>
                                                     </li>
+                                                    
                                                     <li>
-                                                        <a href="compare.html">Compare</a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="order-tracking.html">Track Order</a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="wishlist.html">Wishlist</a>
+                                                        <a href="{% url 'cart:wishlist' %}">Wishlist</a>
                                                     </li>
                                                 </ul>
                                             </div>
@@ -199,7 +194,7 @@
                                                    
                                                         <th>price</th>
                                                         <th>quantity</th>
-                                                        <th>Product Price</th>
+                                                        <!-- <th>Product Price</th> -->
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -276,15 +271,18 @@
                                                         </span>
                                                     </td>
                                                              -->
-                                                            <td class="product-total-price">
+                                                             <!-- <td class="product-total-price">
                                                                 <span class="product-price-wrapper">
-                                                                    {%if i.offer_price%}
-                                                                    <span id="productTotal{{i.product.id}}" = class="money">{{ i.offer_price}}</span>
-                                                                    {%else%}
-                                                                    <span id="productTotal{{i.product.id}}" class="money">{{ i.product_total_price}}</span>
-                                                                    {%endif%}
+                                                                    {% if i.offer_price %}
+                                                                        <span id="productTotal{{ i.product.id }}" class="money">{{ i.total_price }}</span>
+                                                                    {% else %}
+                                                                        <span id="productTotal{{ i.product.id }}" class="money">{{ i.product_total_price }}</span>
+                                                                    {% endif %}
                                                                 </span>
-                                                            </td>
+                                                            </td> -->
+                                                            
+                                                            
+                                                            
                                                         </tr>
                                                     {% endfor %}
                                                 </tbody>
@@ -688,68 +686,10 @@ Hasthemes</p>
                     </ul>
                 </div>
             </div>
-        </aside>
+       
         <!-- OffCanvas Menu End -->
 
-        <!-- Mini Cart Start -->
-        <!-- <aside class="mini-cart" id="miniCart">
-            <div class="mini-cart-wrapper">
-                <div class="mini-cart__close">
-                    <a href="#" class="btn-close"><i class="flaticon-cross"></i></a>
-                </div>
-                <div class="mini-cart-inner">
-                    <h3 class="mini-cart__heading mb--45">Shopping Cart</h3>
-                    <div class="mini-cart__content">
-                        <ul class="mini-cart__list">
-                            <li class="mini-cart__product">
-                                <a href="#" class="mini-cart__product-remove">
-                                    <i class="flaticon-cross"></i>
-                                </a>
-                                <div class="mini-cart__product-image">
-                                    <img src="assets/img/products/product-11-90x90.jpg" alt="products">
-                                </div>
-                                <div class="mini-cart__product-content">
-                                    <a class="mini-cart__product-title" href="product-details.html">Lexbaro Begadi</a>
-                                    <span class="mini-cart__product-quantity">1 x $49.00</span>
-                                </div>
-                            </li>
-                            <li class="mini-cart__product">
-                                <a href="#" class="mini-cart__product-remove">
-                                    <i class="flaticon-cross"></i>
-                                </a>
-                                <div class="mini-cart__product-image">
-                                    <img src="assets/img/products/product-12-90x90.jpg" alt="products">
-                                </div>
-                                <div class="mini-cart__product-content">
-                                    <a class="mini-cart__product-title" href="product-details.html">Lexbaro Begadi</a>
-                                    <span class="mini-cart__product-quantity">1 x $49.00</span>
-                                </div>
-                            </li>
-                            <li class="mini-cart__product">
-                                <a href="#" class="mini-cart__product-remove">
-                                    <i class="flaticon-cross"></i>
-                                </a>
-                                <div class="mini-cart__product-image">
-                                    <img src="assets/img/products/product-13-90x90.jpg" alt="products">
-                                </div>
-                                <div class="mini-cart__product-content">
-                                    <a class="mini-cart__product-title" href="product-details.html">Lexbaro Begadi</a>
-                                    <span class="mini-cart__product-quantity">1 x $49.00</span>
-                                </div>
-                            </li>
-                        </ul>
-                        <div class="mini-cart__total">
-                            <span>Subtotal</span>
-                            <span class="ammount">$98.00</span>
-                        </div>
-                        <div class="mini-cart__buttons">
-                            <a href="cart.html" class="btn btn-fullwidth btn-bg-primary mb--20">View Cart</a>
-                            <a href="checkout.html" class="btn btn-fullwidth btn-bg-primary">Checkout</a>
-                        </div>
-                    </div>
-                </div>
-            </div> -->
-        </aside>
+       
         <!-- Mini Cart End -->
 
         <!-- Qicuk View Modal Start -->
@@ -1059,6 +999,9 @@ JavaScript for updating the cart and handling out-of-stock items -->
         return cookieValue;
     }
 </script>
+
+
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -1118,5 +1061,5 @@ JavaScript for updating the cart and handling out-of-stock items -->
 </body>
 
 
-<!-- Mirrored from htmldemo.net/payne/payne/cart.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 11 Oct 2023 15:26:57 GMT -->
+
 </html>

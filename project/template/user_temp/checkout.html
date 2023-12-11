@@ -93,19 +93,14 @@
                                                         <a href="{% url 'user:user_profile' %}">My Account</a>
                                                     </li>
                                                     <li>
-                                                        <a href="checkout.html">Checkout</a>
+                                                        <a href="{% url 'cart:checkout' %}">Checkout</a>
                                                     </li>
                                                     <li>
                                                         <a href="{% url 'cart:cart' %}">Cart</a>
                                                     </li>
+                                                   
                                                     <li>
-                                                        <a href="compare.html">Compare</a>
-                                                    </li>
-                                                    <li>
-                                                      
-                                                    </li>
-                                                    <li>
-                                                        <a href="wishlist.html">Wishlist</a>
+                                                        <a href="{% url 'cart:wishlist' %}">Wishlist</a>
                                                     </li>
                                                 </ul>
                                             </div>
@@ -135,16 +130,16 @@
                                         <i class="flaticon-heart"></i>
                                     </a>
                                 </div>
-                                <div class="toolbar-item mini-cart-btn">
+                                <!-- <div class="toolbar-item mini-cart-btn">
                                     <a href="#miniCart" class="toolbar-btn js-toolbar">
                                         <span class="mini-cart-btn__icon">
                                             <i class="flaticon-bag"></i>
                                         </span>
                                         <sup class="mini-cart-btn__count">
-                                            02
+                                           
                                         </sup>
                                     </a>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
                     </div>
@@ -160,9 +155,11 @@
             <div class="container">
                 <div class="row">
                     <div class="col-12 text-center">
-                        <h1 class="page-title">Checkout</h1>
+                        <figure class="logo--normal">
+                            <img src="{%static 'assets/img/logo/logo.png'%}" alt="Logo">
+                        </figure>
                         <ul class="breadcrumb">
-                            <li><a href="index.html">Home</a></li>
+                            <li><a href="{%url 'user:home'%}">Home</a></li>
                             <li class="current"><span>Checkout</span></li>
                         </ul>
                     </div>
@@ -468,9 +465,12 @@
                                   
                                     
                                 <div class="checkout-payment">
+                                    {%if user_profile%}
+                                    <h3>Address</h3>
+                                    {%endif%}
                                     <form action="{% url 'user:place_order' %}" class="payment-form" method="POST" id="checkoutForm">
                                         {% csrf_token %}
-                                        <h3>Address</h3>
+                                      
                                         {% for i in user_profile %}
                                             <label>
                                                 <input type="radio" name="address_id" id="address_id" value="{{ i.id }}" checked>
@@ -1270,5 +1270,5 @@ addressRadios.forEach(function(radio) {
 {% endif %}
 
 <!-- <script src="{% static 'assets/js/checkout.js '%}"></script> -->
-<!-- Mirrored from htmldemo.net/payne/payne/checkout.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 11 Oct 2023 15:26:56 GMT -->
+
 </html>

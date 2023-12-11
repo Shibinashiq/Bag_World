@@ -42,6 +42,7 @@ EMAIL_HOST_PASSWORD = 'hquwjrjywolieork'  # Your Gmail password or app-specific 
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -51,6 +52,8 @@ INSTALLED_APPS = [
     'user',
     'admin_side',
     'cart',
+    'chatboat',
+ 
     
     
 ]
