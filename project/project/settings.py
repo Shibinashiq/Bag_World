@@ -42,6 +42,7 @@ EMAIL_HOST_PASSWORD = 'hquwjrjywolieork'  # Your Gmail password or app-specific 
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'channels',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -52,7 +53,7 @@ INSTALLED_APPS = [
     'user',
     'admin_side',
     'cart',
-    'chatboat',
+    'chat',
  
     
     
@@ -85,10 +86,17 @@ TEMPLATES = [
             ],
         },
     },
-]
+ ]
 
-WSGI_APPLICATION = 'project.wsgi.application'
+# WSGI_APPLICATION = 'project.wsgi.application'
+ASGI_APPLICATION = 'project.asgi.application'
 
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',  # Use InMemoryChannelLayer for development, replace with appropriate backend for production
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
