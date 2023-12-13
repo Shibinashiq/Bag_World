@@ -73,7 +73,7 @@
                                             
                                         </li>
                                         <li class="mainmenu__item">
-                                            <a href="{% url 'chat:chat' %}" class="mainmenu__link">Chat </a>
+                                            <a href="{% url 'chat:chatpage' %}" class="mainmenu__link">Chat </a>
                                         </li>
                                     </li>
                                         
@@ -306,61 +306,41 @@
                     <div class="row mb--42">
                         <div class="col-xl-5 col-lg-6 col-sm-10">
                             <h2 class="heading__secondary">NEW ARRIVALS</h2>
-                            <p>Neque porro quisquam est, qui dolorem ipsum quia dolor ipisci velit, sed quia non numquam
-                                eius modi </p>
+                            <p>Neque porro quisquam est, qui dolorem ipsum quia dolor ipisci velit, sed quia non numquam eius modi</p>
                         </div>
                     </div>
                     <div class="row">
-                        {%for i in Pro %} 
+                        {% for i in products %}
                         <div class="col-lg-3 col-md-4 col-sm-6 mb--65 mb-md--50">
-                           
                             <div class="payne-product">
-                               
                                 <div class="product__inner">
-                                    
                                     <div class="product__image">
                                         <figure class="product__image--holder">
                                             <img src="{{ i.product_image.url }}" alt="Product" width="210" height="233">
-
                                         </figure>
                                         <a href="product-details.html" class="product-overlay"></a>
-                                        <form method="POST" action="{% url 'cart:add_wishlist' i.id %}">
-                                            {% csrf_token %} <!-- Add the CSRF token for security -->
                                         
-                                            <div class="product__action">
-                                                <a data-bs-toggle="modal" data-bs-target="#productModal" class="action-btn">
-                                                    <i class="fa fa-eye"></i>
-                                                    <span class="sr-only">Quick View</span>
-                                                </a>
-                                                
-                                                <a href="" class="action-btn">
-                                                    <i class="fa fa-repeat"></i>
-                                                    <span class="sr-only">Add To Compare</span>
-                                                </a>
-                                                <a href="" class="action-btn">
-                                                    <i class="fa fa-shopping-cart"></i>
-                                                    <span class="sr-only">Add To Cart</span>
-                                                </a>
-                                            </div>
-                                        
-                                        
-                                         </div>
-                                   
-                                                <div class="product__info">
-                                                    <div class="product__info--left">
-                                                        <h3 class="product__title">
-                                                            <a href="product-details.html">{{i.product_name}}</a>
-                                                            <button type="submit" style="background: none; border: none;">
-                                                                <i class="fa fa-heart-o"></i>
-                                                                <span class="sr-only">Add to wishlist</span>
-                                                            </button>
-                                                        </h3>
-                                        </form> 
+                                    </div>
+                                    <div class="product__info">
+                                        <div class="product__info--left">
+                                            <h3 class="product__title">
+                                                        
+                                                <a href="product-details.html">{{ i.product_name }}</a>
+                                                <form method="post" action="{% url 'cart:add_wishlist' i.id %}">
+                                                    {% csrf_token %}
+                                                    <button type="submit" style="background: none; border: none;">
+                                                        <i class="fa fa-heart-o"></i>
+                                                        <span class="sr-only">Add to wishlist</span>
+                                                    </button>
+                                                </form>
+                                            </h3>
                                             <div class="product__price">
-                                                <span class="money">{{i.product_price}}</span>
+                                                <span class="money">{{ i.product_price }}</span>
                                                 <span class="sign">$</span>
                                             </div>
+                                            
                                         </div>
+                                        
                                         <div class="product__info--right">
                                             <span class="product__rating">
                                                 <i class="fa fa-star"></i>
@@ -373,13 +353,12 @@
                                     </div>
                                 </div>
                             </div>
-                         
                         </div>
-                        {%endfor%}
-                    </div>    
-                        
+                        {% endfor %}
+                    </div>
                 </div>
             </section>
+            
             
 
             <!-- Banner Area Start -->
@@ -442,215 +421,59 @@
                                 eius modi </p>
                         </div>
                     </div>
-                    <div class="row">
+                  
+                     <div class="row">
                         {% for i in products %}
-                                <div class="col-lg-3 col-md-4 col-sm-6 mb--65 mb-md--50">
-                                    <div class="payne-product">
-                                        <div class="product__inner">
-                                            <div class="product__image">
-                                                <figure class="product__image--holder">
-                                                    <img src="{{ i.product_image.url }}" alt="Product" width="210" height="233">
-                                                </figure>
-                                                <a href="product-details.html" class="product-overlay"></a>
-                                                
-                                                    
-                                                
-                                                </div>
-                                            </div>
-                                            <div class="product__info">
-                                                <div class="product__info--left">
-                                                    <h3 class="product__title">
+                        <div class="col-lg-3 col-md-4 col-sm-6 mb--65 mb-md--50">
+                            <div class="payne-product">
+                                <div class="product__inner">
+                                    <div class="product__image">
+                                        <figure class="product__image--holder">
+                                            <img src="{{ i.product_image.url }}" alt="Product" width="210" height="233">
+                                        </figure>
+                                        <a href="product-details.html" class="product-overlay"></a>
+                                        
+                                    </div>
+                                    <div class="product__info">
+                                        <div class="product__info--left">
+                                            <h3 class="product__title">
                                                         
-                                                        <a href="product-details.html">{{ i.product_name }}</a>
-                                                        <form method="post" action="{% url 'cart:add_wishlist' i.id %}">
-                                                            {% csrf_token %}
-                                                            <button type="submit" style="background: none; border: none;">
-                                                                <i class="fa fa-heart-o"></i>
-                                                                <span class="sr-only">Add to wishlist</span>
-                                                            </button>
-                                                        </form>
-                                                    </h3>
-                                                    
-                                                    <div class="product__price">
-                                                        {% if i.discounted_price is not None %}
-                                                            <span class="money discount">{{ i.discounted_price }}</span>
-                                                            
-                                                            <span class="sign">$</span>
-                                                            <br>
-                                                            <del class="line-through" style="font-size: 85%;">{{ i.product_price }}</del>
-                                                        {% else %}
-                                                            <span class="money regular">{{ i.product_price }}</span>
-                                                            <span class="sign">$</span>
-                                                        {% endif %}
-                                                    </div>
-                                                </div>
-                                                <div class="product__info--right">
-                                                    <span class="product__rating">
-                                                        <i class="fa fa-star"></i>
-                                                        <i class="fa fa-star"></i>
-                                                        <i class="fa fa-star"></i>
-                                                        <i class="fa fa-star"></i>
-                                                        <i class="fa fa-star"></i>
-                                                    </span>
-                                                </div>
+                                                <a href="product-details.html">{{ i.product_name }}</a>
+                                                <form method="post" action="{% url 'cart:add_wishlist' i.id %}">
+                                                    {% csrf_token %}
+                                                    <button type="submit" style="background: none; border: none;">
+                                                        <i class="fa fa-heart-o"></i>
+                                                        <span class="sr-only">Add to wishlist</span>
+                                                    </button>
+                                                </form>
+                                            </h3>
+                                            <div class="product__price">
+                                                <span class="money">{{ i.product_price }}</span>
+                                                <span class="sign">$</span>
                                             </div>
+                                            
+                                        </div>
+                                        
+                                        <div class="product__info--right">
+                                            <span class="product__rating">
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star"></i>
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
-                            {% endfor %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>     
 
-                        <!-- <div class="col-lg-3 col-md-4 col-sm-6 mb--65 mb-md--50">
-                            <div class="payne-product">
-                                <div class="product__inner">
-                                    <div class="product__image">
-                                        <figure class="product__image--holder">
-                                            <img src="{% static 'assets/img/products/product-04-270x300.jpg' %}" alt="Product">
-                                        </figure>
-                                        <a href="product-details.html" class="product-overlay"></a>
-                                        <div class="product__action">
-                                            <a data-bs-toggle="modal" data-bs-target="#productModal" class="action-btn">
-                                                <i class="fa fa-eye"></i>
-                                                <span class="sr-only">Quick View</span>
-                                            </a>
-                                            <a href="wishlist.html" class="action-btn">
-                                                <i class="fa fa-heart-o"></i>
-                                                <span class="sr-only">Add to wishlist</span>
-                                            </a>
-                                            <a href="wishlist.html" class="action-btn">
-                                                <i class="fa fa-repeat"></i>
-                                                <span class="sr-only">Add To Compare</span>
-                                            </a>
-                                            <a href="cart.html" class="action-btn">
-                                                <i class="fa fa-shopping-cart"></i>
-                                                <span class="sr-only">Add To Cart</span>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="product__info">
-                                        <div class="product__info--left">
-                                            <h3 class="product__title">
-                                                <a href="product-details.html">Lexbaro Begadi</a>
-                                            </h3>
-                                            <div class="product__price">
-                                                <span class="money">132.00</span>
-                                                <span class="sign">$</span>
-                                            </div>
-                                        </div>
-                                        <div class="product__info--right">
-                                            <span class="product__rating">
-                                                <i class="fa fa-star"></i>
-                                                <i class="fa fa-star"></i>
-                                                <i class="fa fa-star"></i>
-                                                <i class="fa fa-star"></i>
-                                                <i class="fa fa-star"></i>
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> -->
-                        <!-- <div class="col-lg-3 col-md-4 col-sm-6 mb--65 mb-md--50">
-                            <div class="payne-product">
-                                <div class="product__inner">
-                                    <div class="product__image">
-                                        <figure class="product__image--holder">
-                                            <img src="{% static 'assets/img/products/product-05-270x300.jpg' %}" alt="Product">
-                                        </figure>
-                                        <a href="product-details.html" class="product-overlay"></a>
-                                        <div class="product__action">
-                                            <a data-bs-toggle="modal" data-bs-target="#productModal" class="action-btn">
-                                                <i class="fa fa-eye"></i>
-                                                <span class="sr-only">Quick View</span>
-                                            </a>
-                                            <a href="wishlist.html" class="action-btn">
-                                                <i class="fa fa-heart-o"></i>
-                                                <span class="sr-only">Add to wishlist</span>
-                                            </a>
-                                            <a href="wishlist.html" class="action-btn">
-                                                <i class="fa fa-repeat"></i>
-                                                <span class="sr-only">Add To Compare</span>
-                                            </a>
-                                            <a href="cart.html" class="action-btn">
-                                                <i class="fa fa-shopping-cart"></i>
-                                                <span class="sr-only">Add To Cart</span>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="product__info">
-                                        <div class="product__info--left">
-                                            <h3 class="product__title">
-                                                <a href="product-details.html">Lexbaro Begadi</a>
-                                            </h3>
-                                            <div class="product__price">
-                                                <span class="money">132.00</span>
-                                                <span class="sign">$</span>
-                                            </div>
-                                        </div>
-                                        <div class="product__info--right">
-                                            <span class="product__rating">
-                                                <i class="fa fa-star"></i>
-                                                <i class="fa fa-star"></i>
-                                                <i class="fa fa-star"></i>
-                                                <i class="fa fa-star"></i>
-                                                <i class="fa fa-star"></i>
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> -->
-                        <!-- <div class="col-lg-3 col-md-4 col-sm-6 mb--65 mb-md--50">
-                            <div class="payne-product">
-                                <div class="product__inner">
-                                    <div class="product__image">
-                                        <figure class="product__image--holder">
-                                            <img src="{% static 'assets/img/products/product-06-270x300.jpg' %}" alt="Product">
-                                        </figure>
-                                        <a href="product-details.html" class="product-overlay"></a>
-                                        <div class="product__action">
-                                            <a data-bs-toggle="modal" data-bs-target="#productModal" class="action-btn">
-                                                <i class="fa fa-eye"></i>
-                                                <span class="sr-only">Quick View</span>
-                                            </a>
-                                            <a href="wishlist.html" class="action-btn">
-                                                <i class="fa fa-heart-o"></i>
-                                                <span class="sr-only">Add to wishlist</span>
-                                            </a>
-                                            <a href="wishlist.html" class="action-btn">
-                                                <i class="fa fa-repeat"></i>
-                                                <span class="sr-only">Add To Compare</span>
-                                            </a>
-                                            <a href="cart.html" class="action-btn">
-                                                <i class="fa fa-shopping-cart"></i>
-                                                <span class="sr-only">Add To Cart</span>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="product__info">
-                                        <div class="product__info--left">
-                                            <h3 class="product__title">
-                                                <a href="product-details.html">Lexbaro Begadi</a>
-                                            </h3>
-                                            <div class="product__price">
-                                                <span class="money">132.00</span>
-                                                <span class="sign">$</span>
-                                            </div>
-                                        </div>
-                                        <div class="product__info--right">
-                                            <span class="product__rating">
-                                                <i class="fa fa-star"></i>
-                                                <i class="fa fa-star"></i>
-                                                <i class="fa fa-star"></i>
-                                                <i class="fa fa-star"></i>
-                                                <i class="fa fa-star"></i>
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> -->
-                    </div>
+                       
+                    </div> 
                 </div>
+                
             </section>
             <!-- Product Area End -->
 

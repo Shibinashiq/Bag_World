@@ -1,0 +1,28 @@
+{% extends 'admin_temp/base.html' %}
+{% block content %}
+
+<main id="main" class="main">
+    <div class="container mt-5 mb-5">
+        <div class="row">
+            {% if user.is_authenticated %}
+                <h4 style="text-align: end; padding-right: 10px">Logged in as: {{ user.username }}</h4>
+                <input type="hidden" id="logged-in-user" value="{{ user.id }}">
+            {% endif %}
+            {% for thread in Threads %}
+                <div class="card">
+                    <div class="card-body p-4">
+                        <b>{{ thread.first_person }}</b>
+                        <input class="thread-id-input" type="hidden" value="{{ thread.id }}">
+                        <a href="{% url 'admin_chat' thread_id=thread.id recipient_id=thread.first_person %}">View Chat</a>
+                    </div>
+                </div>
+            {% endfor %}
+
+        </div>
+    </div>
+</main>
+
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="{% static 'assets/chat.js' %}"></script>
+{% endblock content %} 
