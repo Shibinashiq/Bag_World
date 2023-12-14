@@ -35,30 +35,37 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
         await super().disconnect(close_code)
 
-    async def receive(self, text_data=None):
-        data = json.loads(text_data)
-        message = data["message"]
-        sender_id = data["sender_id"]
-        sender_username = data["sender_username"]
+        async def receive(self, text_data=None):
+            try:
+                data = json.loads(text_data)
+                message = data.get("message")
+                sender_id = data.get("sender_id")
+                sender_username = data.get("sender_username")
 
-       
+                if message is not None and sender_id is not None and sender_username is not None:
+                    await self.save_message(
+                        sender=sender_id, message=message, thread_name=self.room_group_name, sender_username=sender_username
+                    )
 
-        await self.save_message(
-            sender=sender_id, message=message, thread_name=self.room_group_name, sender_username=sender_username
-        )
+                    print("This is the channel group name: ", self.room_group_name)
 
-        print("This is the channel group name: ", self.room_group_name)
+                    # Send the message to the channel layer
+                    await self.channel_layer.group_send(
+                        self.room_group_name,
+                        {
+                            "type": "chat_message",
+                            "message": message,
+                            "senderId": sender_id,
+                            "senderUsername": sender_username,
+                        },
+                    )
+                else:
+                    print("Received JSON data is missing required fields.")
 
-        # Send the message to the channel layer
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                "type": "chat_message",
-                "message": message,
-                "senderId": sender_id,
-                "senderUsername": sender_username,
-            },
-        )
+            except json.JSONDecodeError as e:
+                print(f"Error decoding JSON: {e}")
+            except KeyError as e:
+                print(f"Error accessing key: {e}")
 
     async def chat_message(self, event):
         print("Its entering here alright!!!")
