@@ -2,7 +2,6 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 from channels.db import database_sync_to_async
 from .models import Message
-
 from django.contrib.auth.models import User
 
 
@@ -12,11 +11,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
         # this is a nested dictionary and it will return the room_id which we are passing through the url
-        # current_user_id = self.scope['url_route']['kwargs']['id']
+        current_user_id = self.scope['url_route']['kwargs']['id']
         # other_user_id = int(self.scope['query_string'])
         # print(other_user_id)
 
-        # self.room_id = current_user_id
+        self.room_id = current_user_id
         self.room_group_name = f'group_{self.room_id}'
 
         # the channel_layer.group_add() takes two arguments
@@ -82,7 +81,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def save_message(self, sender, sender_username, message, thread_name):
-        user_instance = CustomUser.objects.get(id=sender)
+        user_instance = User.objects.get(id=sender)
 
         Message.objects.create(
             sender=user_instance, message=message, sender_username=user_instance.username, thread_name=thread_name)

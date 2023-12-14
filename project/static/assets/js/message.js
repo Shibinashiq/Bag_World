@@ -1,6 +1,6 @@
 let loc = window.location
-let wsStart = loc.protocol === 'https:' ? 'wss://' : 'ws://'
-let endpoint = wsStart + loc.host + '/ws/chat/chatpage/';
+let wsStart = loc.protocol ===  'ws://'
+let endpoint = 'ws://127.0.0.1:8000/'
 const USER_ID = $('#logged-in-user').val();
 const recipient_user = $('#recipient-user-id').val();
 
