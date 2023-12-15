@@ -1,198 +1,175 @@
-
 {% block content %}
-{%load static%}
-<style>
+{% load static %}
 
-    .chat-container {
-        max-width: 600px;
-        margin: 50px auto;
-    }
+<head>
+    <style>
+        .chat-container {
+            max-width: 600px;
+            margin: 50px auto;
+        }
 
-    .card {
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        margin-bottom: 150px;
-    }
+        .card {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 150px;
+        }
 
-    .card-header {
-        background-color: #007bff;
-        color: #fff;
-       
-    }
+        .card-header {
+            background-color: #007bff;
+            color: #fff;
+        }
 
-    .chat-box {
-        height: 300px;
-        overflow-y: scroll;
-        border: 1px solid #ccc;
-        padding: 15px;
-        background-color: #fff;
-    }
+        .chat-box {
+            height: 300px;
+            overflow-y: scroll;
+            border: 1px solid #ccc;
+            padding: 15px;
+            background-color: #fff;
+        }
 
-    .message {
-        margin-bottom: 15px;
-    }
+        .message {
+            margin-bottom: 15px;
+        }
 
-    .user-message {
-        background-color: #d4edda;
-        padding: 10px;
-        color: #155724;
-    }
+        .user-message {
+            background-color: #d4edda;
+            padding: 10px;
+            color: #155724;
+        }
 
-    .admin-message {
-        background-color: #cce5ff;
-        border-radius: 10px;
-        padding: 10px;
-        color: #004085;
-    }
+        .admin-message {
+            background-color: #cce5ff;
+            border-radius: 10px;
+            padding: 10px;
+            color: #004085;
+        }
 
-    .input-group {
-        border: 1px solid #ccc;
-        margin-top: 15px;
-    }
+        .input-group {
+            border: 1px solid #ccc;
+            margin-top: 15px;
+        }
 
-    .input-group input {
-        border: none;
-    }
+        .input-group input {
+            border: none;
+        }
+    </style>
+</head>
 
-    
-</style>
-<section class="bg-img1 txt-center p-lr-15 p-tb-92">
-    <h2 class="ltext-105 cl0 txt-center">
-        <span class="text-dark">Help</span>
-    </h2>
-</section>    
-<input id="logged-in-user" type="hidden" value="{{ user.id }}">
-<input id="recipient-user-id" type="hidden" value="2">
-<input class="thread-id-input" type="hidden" value="{{.id }}">
-<div class="container mt-5 mb-5">
-    <div class="card">
-        <div class="card-header bg-dark">
-            <h5 class="mb-0">Help!</h5>
-        </div>
-        <div class="card-body chat-box" id="chat-box">
-            <!-- Display old messages from the server -->
-            {% for chat in old_messages %}
-                {% if chat.sender.id == user.id %}
-                    <div class="d-flex mb-4 replied justify-content-start">
-                        <div class="msg_cotainer_send alert alert-primary">
-                            {{ chat.message }} <br>
-                            <span class="msg_time_send" style="font-size: 10px;">{{ chat.timestamp|date:"d D" }}, {{ chat.timestamp|time:"H:i" }}</span>
+<body>
+    <section class="bg-img1 txt-center p-lr-15 p-tb-92">
+        <h2 class="ltext-105 cl0 txt-center">
+            <span class="text-dark">Help</span>
+        </h2>
+    </section>
+
+    <input id="logged-in-user" type="hidden" value="{{ user.id }}">
+    <input id="recipient-user-id" type="hidden" value="2">
+<!--  -->
+    <div class="container mt-5 mb-5">
+        <div class="card">
+            <div class="card-header bg-dark">
+                <h5 class="mb-0">Help!</h5>
+            </div>
+            <div class="card-body chat-box" id="chat-box">
+                <!-- Display old messages from the server -->
+                {% for chat in old_messages %}
+                    <div class="message {% if chat.sender.id == user.id %}user-message{% else %}admin-message{% endif %}">
+                        {{ chat.message }} <br>
+                        <span class="msg-time">{{ chat.timestamp|date:"d D" }}, {{ chat.timestamp|time:"H:i" }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="card-footer">
+                <form class="message-form" id="message-form">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="input-message" name="message" placeholder="Type your message...">
+                        <div class="input-group-append">
+                            <button class="btn btn-dark" type="submit">Send</button>
                         </div>
                     </div>
-                {% else %}
-                    <div class="d-flex mb-4 replied justify-content-end">
-                        <div class="msg_cotainer_admin alert alert-dark">
-                            {{ chat.message }} <br>
-                            <span class="msg_time_send" style="font-size: 10px;">{{ chat.timestamp|date:"d D" }}, {{ chat.timestamp|time:"H:i" }}</span>
-                        </div>
-                    </div>
-                {% endif %}
-            {% endfor %}
-
-            <!-- Dummy message (if needed) -->
-            <div class="mb-4 replied">
-                <div class="msg_card_body">
-                    <!-- Add dummy message content here if needed -->
-                </div>
+                </form>
             </div>
         </div>
-        <div class="card-footer">
-            <form class="message-form" id="send-message-form">
-                <div class="input-group">
-                    <input type="text" class="form-control" id="input-message" name="message" placeholder="Type your message...">
-                    <div class="input-group-append">
-                        <button class="btn btn-dark" type="submit">Send</button>
-                    </div>
-                </div>
-            </form>
-        </div>
     </div>
-</div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        // Fetch the user IDs and thread ID from hidden inputs
-        var loggedInUserId = $("#logged-in-user").val();
-        var recipientUserId = $("#recipient-user-id").val();
-        var threadId = $(".thread-id-input").val();
-    
-        // Create a WebSocket connection
-        var socket = new WebSocket("ws://" + window.location.host + "/ws/chat/" + loggedInUserId + "/");
-    
-        // Event handler for when the WebSocket connection is opened
-        socket.onopen = function(event) {
-            console.log("WebSocket connection opened:", event);
-        };
-    
-        // Event handler for when a message is received from the WebSocket
-        socket.onmessage = function(event) {
-            var data = JSON.parse(event.data);
-    
-            // Update the chat box with the received message
-            var msgContainer = $('<div class="d-flex mb-4 replied"></div>');
-            var msgBody = $('<div class="msg_cotainer_send alert alert-primary"></div>');
-            msgBody.text(data.message + " \n");
-            msgBody.append('<span class="msg_time_send" style="font-size: 10px;">' + getCurrentTimestamp() + '</span>');
-            msgContainer.append(msgBody);
-    
-            // Determine if the message is sent by the current user or the recipient
-            if (data.senderId == loggedInUserId) {
-                $(".chat-box").append(msgContainer);
-            } else {
-                msgContainer.removeClass("replied").addClass("justify-content-end");
-                msgBody.removeClass("msg_cotainer_send alert alert-primary").addClass("msg_cotainer_admin alert alert-dark");
-                $(".chat-box").append(msgContainer);
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+
+   <script>
+   let input_message=document.getElementById('input-message')
+    let form = document.getElementById('message-form')
+    let userId = document.getElementById('logged-in-user').value
+    let socket = new WebSocket(`ws://127.0.0.1:8000/ws/chat/${userId}/`)
+
+    socket.onopen = async function(e){
+        
+    }
+
+       
+   </script>
+
+
+
+
+
+    <!-- <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var loggedInUserId = $("#logged-in-user").val();
+            var recipientUserId = $("#recipient-user-id").val();
+            var threadId = $(".thread-id-input").val();
+
+            var socket = new WebSocket("ws://" + window.location.host + "/ws/chat/" + loggedInUserId + "/");
+
+            socket.onopen = function (event) { 
+                console.log("WebSocket connection opened:", event);
+            };
+
+            socket.onmessage = function (event) {
+                var data = JSON.parse(event.data);
+
+                var msgContainer = $('<div class="message"></div>');
+                msgContainer.text(data.message + " \n");
+                msgContainer.append('<span class="msg-time">' + getCurrentTimestamp() + '</span>');
+
+                if (data.senderId == loggedInUserId) {
+                    msgContainer.addClass("user-message");
+                } else {
+                    msgContainer.addClass("admin-message");
+                }
+
+                $("#chat-box").append(msgContainer);
+            };
+
+            socket.onclose = function (event) {
+                console.log("WebSocket connection closed:", event);
+            };
+
+            $("#send-message-form").submit(function (event) {
+                event.preventDefault();
+
+                var message = $("#input-message").val();
+
+                socket.send(JSON.stringify({
+                    message: message,
+                    sender_id: loggedInUserId,
+                    sender_username: "YourSenderUsername", // Replace with the actual sender username
+                }));
+
+                $("#input-message").val("");
+            });
+
+            function getCurrentTimestamp() {
+                var now = new Date();
+                return now.toLocaleDateString("en-US", {
+                    weekday: 'short',
+                    day: 'numeric'
+                }) + ", " + now.toLocaleTimeString("en-US", {
+                    hour: 'numeric',
+                    minute: 'numeric'
+                });
             }
-        };
-    
-        // Event handler for when the WebSocket connection is closed
-        socket.onclose = function(event) {
-            console.log("WebSocket connection closed:", event);
-        };
-    
-        // Event handler for when the message form is submitted
-        $("#send-message-form").submit(function(event) {
-            event.preventDefault();
-    
-            // Get the message input value
-            var message = $("#input-message").val();
-    
-            // Send the message to the server through the WebSocket
-            socket.send(JSON.stringify({
-                message: message,
-                sender_id: loggedInUserId,
-                sender_username: "YourSenderUsername",  // Replace with the actual sender username
-            }));
-    
-            // Clear the input field
-            $("#input-message").val("");
         });
-    
-        // Function to get the current timestamp
-        function getCurrentTimestamp() {
-            var now = new Date();
-            return now.toLocaleDateString("en-US", { weekday: 'short', day: 'numeric' }) + ", " + now.toLocaleTimeString("en-US", { hour: 'numeric', minute: 'numeric' });
-        }
-    });
-</script>
-{%endblock%}
+    </script> -->
 </body>
 
 </html>
-<!-- <script>
-        // Your existing JavaScript code
-    
-        // Function to display old messages
-        function displayOldMessages(oldMessages) {
-            oldMessages.map(message => {
-                newMessage(message.message, message.user);  // Adjust based on your model fields
-            });
-        }
-    
-        // Pass the old messages directly to the JavaScript function
-        var oldMessages = {% if old_messages %} {{ old_messages|safe }} {% else %} null {% endif %};
-        displayOldMessages(oldMessages);
-    </script> 
-     -->
-    
-<!-- <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script src="{% static 'assets/js/message.js' %}"></script> -->
+{% endblock %}

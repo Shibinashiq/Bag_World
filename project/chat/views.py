@@ -9,8 +9,10 @@ from django.http import Http404
 
 @login_required(login_url='user:user_signup')
 def chatpage(request):
-#     user = request.user  # Get the authenticated user
-
+    user = request.user  # Get the authenticated user
+    #   context={
+          
+    #   }
 #     try:
 #         admin = User.objects.filter(is_superuser=True).first()
 #     except User.DoesNotExist:
@@ -23,11 +25,11 @@ def chatpage(request):
 #     thread = Thread.objects.filter(first_person=user, admin=admin).first()
 #     old_messages = ChatMessage.objects.filter(thread=thread).order_by('timestamp') if thread else None
 
-#     context = {
-#         'user': user,
-#         'old_messages': old_messages,
-#     }
-    return render(request, 'user_temp/chatpage.html')
+    context = {
+            'user': user,
+            # 'old_messages': old_messages,
+        }
+    return render(request, 'user_temp/chatpage.html',context)
 
 
 
@@ -53,3 +55,13 @@ def chatpage(request):
 #         'old_messages': old_messages,
 #     }
 #     return render(request, 'admin_side/admin_chat_messages.html', context)
+
+
+# views.py
+
+from django.http import JsonResponse
+
+def get_messages(request, thread_name):
+    messages = Message.objects.filter(thread_name=thread_name)
+    messages_data = [{'sender_username': msg.sender_username, 'message': msg.message, 'timestamp': msg.timestamp} for msg in messages]
+    return JsonResponse({'messages': messages_data})

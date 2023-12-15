@@ -10,12 +10,13 @@ from django.contrib.auth.models import User
 class ChatConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
+        print('connected')
         # this is a nested dictionary and it will return the room_id which we are passing through the url
         current_user_id = self.scope['url_route']['kwargs']['id']
         # other_user_id = int(self.scope['query_string'])
         # print(other_user_id)
 
-        self.room_id = current_user_id
+        self.room_id = f"admin_{current_user_id}"
         self.room_group_name = f'group_{self.room_id}'
 
         # the channel_layer.group_add() takes two arguments
@@ -39,6 +40,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             try:
                 data = json.loads(text_data)
                 message = data.get("message")
+                print("Received data:", text_data)
                 sender_id = data.get("sender_id")
                 sender_username = data.get("sender_username")
 
