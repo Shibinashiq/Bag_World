@@ -71,7 +71,7 @@
             </div>
             <div class="card-body chat-box" id="chat-box">
                 <!-- Display old messages from the server -->
-                {% for chat in old_messages %}
+                {% for chat in user_messages %}
                     <div class="message {% if chat.sender.id == user.id %}user-message{% else %}admin-message{% endif %}">
                         {{ chat.message }} <br>
                         <span class="msg-time">{{ chat.timestamp|date:"d D" }}, {{ chat.timestamp|time:"H:i" }}</span>
@@ -79,7 +79,8 @@
                 {% endfor %}
             </div>
             <div class="card-footer">
-                <form class="message-form" id="message-form">
+                <form class="message-form" id="message-form" method="POST">
+                    {%csrf_token%}
                     <div class="input-group">
                         <input type="text" class="form-control" id="input-message" name="message" placeholder="Type your message...">
                         <div class="input-group-append">
@@ -91,84 +92,62 @@
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
+
+   <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
    <script>
-   let input_message=document.getElementById('input-message')
-    let form = document.getElementById('message-form')
-    let userId = document.getElementById('logged-in-user').value
-    let socket = new WebSocket(`ws://127.0.0.1:8000/ws/chat/${userId}/`)
+    let inputMessage = document.getElementById('input-message');
+    let form = document.getElementById('message-form');
+    let userId = document.getElementById('logged-in-user').value;
+    let socket = new WebSocket(`ws://127.0.0.1:8000/ws/chat/${userId}/`);
 
-    socket.onopen = async function(e){
-        
-    }
+    socket.onopen = async function (e) {
+        console.log('WebSocket connection opened');
+    };
 
-       
-   </script>
+    socket.onmessage = async function (e) {
+        // Handle incoming messages from the server
+        console.log('WebSocket message received:', e.data);
+    };
 
+    socket.onerror = async function (e) {
+        console.log('WebSocket error:', e);
+    };
 
+    socket.onclose = async function (e) {
+        console.log('WebSocket connection closed');
+    };
 
+    form.addEventListener('submit', function (e) {
+        e.preventDefault(); // Prevent the default form submission
 
+        // Get the message from the input field
+        let message = inputMessage.value;
 
-    <!-- <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            var loggedInUserId = $("#logged-in-user").val();
-            var recipientUserId = $("#recipient-user-id").val();
-            var threadId = $(".thread-id-input").val();
-
-            var socket = new WebSocket("ws://" + window.location.host + "/ws/chat/" + loggedInUserId + "/");
-
-            socket.onopen = function (event) { 
-                console.log("WebSocket connection opened:", event);
+        // Check if the message is not empty
+        if (message.trim() !== '') {
+            // Create a JSON object with the message and other required data
+            let data = {
+                message: message,
+                sender_id: userId,  // Assuming 'userId' is the sender's ID
+                sender_username: 'username',  // Replace with the actual username
             };
 
-            socket.onmessage = function (event) {
-                var data = JSON.parse(event.data);
+            // Send the JSON data to the server through the WebSocket connection
+            socket.send(JSON.stringify(data));
 
-                var msgContainer = $('<div class="message"></div>');
-                msgContainer.text(data.message + " \n");
-                msgContainer.append('<span class="msg-time">' + getCurrentTimestamp() + '</span>');
+            // Clear the input field
+            inputMessage.value = '';
+        }
+    });
+    
+</script>
 
-                if (data.senderId == loggedInUserId) {
-                    msgContainer.addClass("user-message");
-                } else {
-                    msgContainer.addClass("admin-message");
-                }
+<!-- Closing body tag -->
 
-                $("#chat-box").append(msgContainer);
-            };
 
-            socket.onclose = function (event) {
-                console.log("WebSocket connection closed:", event);
-            };
 
-            $("#send-message-form").submit(function (event) {
-                event.preventDefault();
-
-                var message = $("#input-message").val();
-
-                socket.send(JSON.stringify({
-                    message: message,
-                    sender_id: loggedInUserId,
-                    sender_username: "YourSenderUsername", // Replace with the actual sender username
-                }));
-
-                $("#input-message").val("");
-            });
-
-            function getCurrentTimestamp() {
-                var now = new Date();
-                return now.toLocaleDateString("en-US", {
-                    weekday: 'short',
-                    day: 'numeric'
-                }) + ", " + now.toLocaleTimeString("en-US", {
-                    hour: 'numeric',
-                    minute: 'numeric'
-                });
-            }
-        });
-    </script> -->
 </body>
 
 </html>

@@ -10,13 +10,13 @@ from django.contrib.auth.models import User
 class ChatConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
-        print('connected')
+        # print('connected')
         # this is a nested dictionary and it will return the room_id which we are passing through the url
         current_user_id = self.scope['url_route']['kwargs']['id']
         # other_user_id = int(self.scope['query_string'])
         # print(other_user_id)
-
-        self.room_id = f"admin_{current_user_id}"
+        
+        self.room_id = f"user_{current_user_id}"
         self.room_group_name = f'group_{self.room_id}'
 
         # the channel_layer.group_add() takes two arguments
@@ -26,6 +26,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.room_group_name,
             self.channel_name
         )
+        
 
         await self.accept()
 
@@ -36,11 +37,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
         await super().disconnect(close_code)
 
-        async def receive(self, text_data=None):
+    async def receive(self, text_data=None):
             try:
                 data = json.loads(text_data)
                 message = data.get("message")
-                print("Received data:", text_data)
+                # print("Received data:", text_data)
                 sender_id = data.get("sender_id")
                 sender_username = data.get("sender_username")
 
@@ -49,7 +50,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         sender=sender_id, message=message, thread_name=self.room_group_name, sender_username=sender_username
                     )
 
-                    print("This is the channel group name: ", self.room_group_name)
+                    # print("This is the channel group name: ", self.room_group_name)
 
                     # Send the message to the channel layer
                     await self.channel_layer.group_send(
@@ -68,9 +69,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 print(f"Error decoding JSON: {e}")
             except KeyError as e:
                 print(f"Error accessing key: {e}")
-
+# 
     async def chat_message(self, event):
-        print("Its entering here alright!!!")
+        # print("Its entering here alright!!!")
 
         message = event["message"]
         sender_id = event["senderId"]
@@ -89,8 +90,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
 
     @database_sync_to_async
-    def save_message(self, sender, sender_username, message, thread_name):
+    def save_message(self, sender, message, thread_name, sender_username):
+        # print("Saving message to database...")
         user_instance = User.objects.get(id=sender)
-
+        # print("User instance:", user_instance)
         Message.objects.create(
-            sender=user_instance, message=message, sender_username=user_instance.username, thread_name=thread_name)
+            sender=user_instance, message=message, sender_username=sender_username, thread_name=thread_name
+        )
+        # print("Message saved successfully.")
+            
+        

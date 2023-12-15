@@ -8,28 +8,19 @@ from django.http import Http404
 
 
 @login_required(login_url='user:user_signup')
-def chatpage(request):
-    user = request.user  # Get the authenticated user
-    #   context={
-          
-    #   }
-#     try:
-#         admin = User.objects.filter(is_superuser=True).first()
-#     except User.DoesNotExist:
-#         # Handle the case where no superuser is found
-#         raise Http404("No superuser found")
 
-#     # Rest of your code...
+def chatpage(request):
+    user = request.user
+    print(user.id)  # Add this line for debugging
     
-#     # Check if a thread exists between the user and admin
-#     thread = Thread.objects.filter(first_person=user, admin=admin).first()
-#     old_messages = ChatMessage.objects.filter(thread=thread).order_by('timestamp') if thread else None
+    user_messages = Message.objects.filter(sender=user).order_by('timestamp')
+    print(user_messages)  
 
     context = {
-            'user': user,
-            # 'old_messages': old_messages,
-        }
-    return render(request, 'user_temp/chatpage.html',context)
+        'user_messages': user_messages,
+    }
+    return render(request, 'user_temp/chatpage.html', context)
+
 
 
 
