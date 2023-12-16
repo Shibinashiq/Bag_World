@@ -30,6 +30,23 @@ def admin_chat(request):
     }
     return render(request, 'admin_temp/admin_chat.html',context)
 
+@login_required
+def admin_chatpage(request, user_id):
+   
+    user = get_object_or_404(User, id=user_id)
+
+    # Fetch messages for the thread
+    thread_name = f"user_{request.user.id}_{user.id}"
+    messages = Message.objects.filter(thread_name=thread_name).order_by('timestamp')
+
+    context = {
+        'user': user,
+        'user_messages': messages,
+    }
+
+    return render(request, 'admin_temp/admin_chat_messages.html', context)
+
+
 # def admin_chatpage(request):
 #     # Retrieve threads associated with the current user (admin)
 #     threads = Thread.objects.by_user(user=request.user).prefetch_related('chatmessage_thread')

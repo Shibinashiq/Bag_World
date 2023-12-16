@@ -6,14 +6,13 @@
         <div class="row">
             <div class="col-md-6">
                 <h4 style="text-align: end; padding-right: 10px"></h4>
-                <input type="hidden" id="user-id" value="{{ user_id }}">
+                <input type="hidden" id="admin-id" value="{{ user_id }}">
             </div>
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-body p-4">
                         <b>{{ thread.first_person }}</b>
                         <input class="thread-id-input" type="hidden" value="{{ thread.id }}">
-                        <a href="">View Chat</a>
                     </div>
                 </div>
             </div>
@@ -26,36 +25,75 @@
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
-    // Obtain the user ID from the hidden input field
-    const userId = document.getElementById('user-id').value;
+    const adminId = "{{ user_id }}";  // Replace with the actual admin user ID
+    const adminChannel = new WebSocket(`ws://127.0.0.1:8000/ws/chat/${adminId}/`);
 
-    // WebSocket connection
-    //console.log('User ID:', userId);
-    const userChannel = new WebSocket(`ws://127.0.0.1:8000/ws/chat/${userId}/`);  
+    document.addEventListener('DOMContentLoaded', function () {
+        loadNotifications();
+    });
 
-    // Notification container
-    let notificationContainer = document.getElementById('notification-container');
+    adminChannel.onmessage = function (e) {
+        let messageData = JSON.parse(e.data);
 
-    userChannel.onmessage = function (e) {
-        let notificationData = JSON.parse(e.data);
+        // Check if the message is from a user
+        if (messageData.senderId) {
+            // Create a customized notification element for the user's message
+            let notificationElement = document.createElement('div');
+            notificationElement.className = 'custom-notification';
+            notificationElement.innerHTML = `
+                <div class="alert alert-info" role="alert">
+                    <strong>New Message</strong> from ${messageData.senderId}: ${messageData.message}
+                </div>
+            `;
 
-        // Create a customized notification element
-        let notificationElement = document.createElement('div');
-        notificationElement.className = 'custom-notification';
-        notificationElement.innerHTML = `
-            <div class="alert alert-info" role="alert">
-                <strong>New Message</strong> from ${notificationData.senderUsername}: ${notificationData.message}
-            </div>
-        `;
+            // Append the notification to the container
+            let notificationContainer = document.getElementById('notification-container');
+            notificationContainer.appendChild(notificationElement);
 
-        // Append the notification to the container
-        notificationContainer.appendChild(notificationElement);
-
-        // Remove the notification after a certain time (e.g., 5 seconds)
-        setTimeout(function () {
-            notificationContainer.removeChild(notificationElement);
-        }, 5000); // Adjust the time as needed
+            // Save the notification to local storage
+            saveNotification(messageData);
+        }
     };
+
+    function saveNotification(notificationData) {
+        let notifications = getNotificationsFromStorage();
+        notifications.push(notificationData);
+
+        // Save the updated notifications to local storage
+        localStorage.setItem('notifications', JSON.stringify(notifications));
+    }
+
+    function loadNotifications() {
+        let notifications = getNotificationsFromStorage();
+
+        // Display the stored notifications
+        notifications.forEach(function (notificationData) {
+            // Check if the stored message is from a user
+            if (notificationData.senderId) {
+                let notificationElement = document.createElement('div');
+                notificationElement.className = 'custom-notification';
+                notificationElement.innerHTML = `
+                    <div class="alert alert-info" role="alert">
+                        <strong>New Message</strong> from ${notificationData.senderId}: ${notificationData.message}
+                    </div>
+                `;
+
+                // Append the notification to the container
+                let notificationContainer = document.getElementById('notification-container');
+                notificationContainer.appendChild(notificationElement);
+            }
+        });
+    }
+
+    function getNotificationsFromStorage() {
+        // Retrieve stored notifications from local storage
+        let storedNotifications = localStorage.getItem('notifications');
+
+        // Parse the stored notifications or initialize an empty array
+        return storedNotifications ? JSON.parse(storedNotifications) : [];
+    }
 </script>
+
+
 
 {% endblock content %}
