@@ -25,9 +25,20 @@ def chatpage(request):
 @login_required
 def admin_chat(request):
     user_id = request.user.id
-    context={
-        'user_id':user_id
+
+    # Retrieve the user instance from the database
+    user_instance = User.objects.get(id=user_id)
+
+    # Now you can access the user_name attribute
+    user_name = user_instance.username
+
+    context = {
+        'user_id': user_id,
+        'user_name': user_name,
     }
+
+    print(user_name)  # This will print the user_name to the console
+
     return render(request, 'admin_temp/admin_chat.html',context)
 
 @login_required
