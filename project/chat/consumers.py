@@ -88,6 +88,17 @@ class ChatConsumer(AsyncWebsocketConsumer):
             ),
 
         )
+        await self.send_user_notification(sender_id, message)
+
+    async def send_user_notification(self, user_id, message):
+        user_channel_name = f"user_{user_id}"
+        await self.channel_layer.send(
+            user_channel_name,
+            {
+                "type": "user.message",
+                "message": message,
+            },
+        )
 
     @database_sync_to_async
     def save_message(self, sender, message, thread_name, sender_username):

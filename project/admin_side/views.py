@@ -22,8 +22,11 @@ def is_admin(user):
 
 @user_passes_test(is_admin, login_url='admin_side:admin_login')
 def admin_dashboard(request):
-    return render(request, 'admin_temp/dashboard.html')
-
+    user_id = request.user.id
+    context={
+        'user_id':user_id
+    }
+    return render(request, 'admin_temp/dashboard.html',context)
 
 
 def admin_login(request):

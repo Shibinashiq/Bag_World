@@ -61,7 +61,7 @@
         </h2>
     </section>
 
-    <input id="logged-in-user" type="hidden" value="{{ user.id }}">
+    <input id="logged-in-user" type="hidden" value="{{ user.id }}" data-username="{{ user.username }}">
     <input id="recipient-user-id" type="hidden" value="2">
 <!--  -->
     <div class="container mt-5 mb-5">
@@ -101,39 +101,53 @@
     let form = document.getElementById('message-form');
     let userId = document.getElementById('logged-in-user').value;
     let socket = new WebSocket(`ws://127.0.0.1:8000/ws/chat/${userId}/`);
-
-    socket.onopen = async function (e) {
+    let chatBox = document.getElementById('chat-box');
+    let username = document.getElementById('logged-in-user').dataset.username;
+    
+    socket.onopen = function (e) {
         console.log('WebSocket connection opened');
     };
-
-    socket.onmessage = async function (e) {
+    
+    socket.onmessage = function (e) {
         // Handle incoming messages from the server
-        console.log('WebSocket message received:', e.data);
+        let messageData = JSON.parse(e.data);
+        
+        // Create a new message element
+        let messageElement = document.createElement('div');
+        messageElement.className = `message ${messageData.senderId == userId ? 'user-message' : 'admin-message'}`;
+        messageElement.innerHTML = `${messageData.message} <br><span class="msg-time">${getCurrentTime()}</span>`;
+        
+        // Append the new message to the chat box
+        chatBox.appendChild(messageElement);
+        
+        // Scroll to the bottom of the chat box to show the latest message
+        chatBox.scrollTop = chatBox.scrollHeight;
     };
-
-    socket.onerror = async function (e) {
+    
+    socket.onerror = function (e) {
         console.log('WebSocket error:', e);
     };
-
-    socket.onclose = async function (e) {
+    
+    socket.onclose = function (e) {
         console.log('WebSocket connection closed');
     };
-
+    
     form.addEventListener('submit', function (e) {
         e.preventDefault(); // Prevent the default form submission
-
+        
         // Get the message from the input field
         let message = inputMessage.value;
-
+        
         // Check if the message is not empty
         if (message.trim() !== '') {
             // Create a JSON object with the message and other required data
             let data = {
                 message: message,
-                sender_id: userId,  // Assuming 'userId' is the sender's ID
-                sender_username: 'username',  // Replace with the actual username
+                sender_id: userId,
+                sender_username:username,
             };
-
+            console.log('user name ',username)
+            
             // Send the JSON data to the server through the WebSocket connection
             socket.send(JSON.stringify(data));
 
@@ -141,8 +155,18 @@
             inputMessage.value = '';
         }
     });
-    
+
+    function getCurrentTime() {
+        let now = new Date();
+        return `${now.getDate()} ${getShortMonth(now.getMonth())}, ${now.getHours()}:${now.getMinutes()}`;
+    }
+
+    function getShortMonth(monthIndex) {
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        return months[monthIndex];
+    }
 </script>
+
 
 <!-- Closing body tag -->
 

@@ -11,10 +11,10 @@ from django.http import Http404
 
 def chatpage(request):
     user = request.user
-    print(user.id)  # Add this line for debugging
+    # print(user.id)  # Add this line for debugging
     
     user_messages = Message.objects.filter(sender=user).order_by('timestamp')
-    print(user_messages)  
+    # print(user_messages)  
 
     context = {
         'user_messages': user_messages,
@@ -22,7 +22,13 @@ def chatpage(request):
     return render(request, 'user_temp/chatpage.html', context)
 
 
-
+@login_required
+def admin_chat(request):
+    user_id = request.user.id
+    context={
+        'user_id':user_id
+    }
+    return render(request, 'admin_temp/admin_chat.html',context)
 
 # def admin_chatpage(request):
 #     # Retrieve threads associated with the current user (admin)
