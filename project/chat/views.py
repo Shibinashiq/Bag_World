@@ -32,30 +32,35 @@ def admin_chat(request):
     # Now you can access the user_name attribute
     user_name = user_instance.username
 
+    # Retrieve messages where the admin is the sender and the user is the recipient
+    admin_messages = Message.objects.filter(sender=request.user, sender_username=user_name)
+
     context = {
         'user_id': user_id,
         'user_name': user_name,
+        'admin_messages': admin_messages,  # Add this to the context
     }
 
-    print(user_name)  # This will print the user_name to the console
+    print(admin_messages)  # This will print the user_name to the console
 
-    return render(request, 'admin_temp/admin_chat.html',context)
+    return render(request, 'admin_temp/admin_chat.html', context)
 
-@login_required
-def admin_chatpage(request, user_id):
-   
-    user = get_object_or_404(User, id=user_id)
 
-    # Fetch messages for the thread
-    thread_name = f"user_{request.user.id}_{user.id}"
-    messages = Message.objects.filter(thread_name=thread_name).order_by('timestamp')
+# @login_required
+# def admin_chatpage(request, user_id):
+       
+#     user = get_object_or_404(User, id=user_id)
 
-    context = {
-        'user': user,
-        'user_messages': messages,
-    }
+#     # Fetch messages for the thread
+#     thread_name = f"user_{request.user.id}_{user.id}"
+#     messages = Message.objects.filter(thread_name=thread_name).order_by('timestamp')
 
-    return render(request, 'admin_temp/admin_chat_messages.html', context)
+#     context = {
+#         'user': user,
+#         'user_messages': messages,
+#     }
+
+#     return render(request, 'admin_temp/admin_chat_message.html', context)
 
 
 # def admin_chatpage(request):

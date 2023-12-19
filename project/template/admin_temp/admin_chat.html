@@ -6,7 +6,12 @@
         <div class="row">
             <div class="col-md-6">
                 <h4 style="text-align: end; padding-right: 10px"></h4>
-                <input type="hidden" id="admin-id" value="{{ user_id }}"  user_name="{{ user_name }}">
+                <input type="hidden" id="user-id" value="{{ user_id }}" user_name="{{ user_name }}">
+            </div>
+            <div class="col-md-6">
+                <h4 style="text-align: end; padding-right: 10px"></h4>
+                <input type="hidden" id="user-id" value="{{ user_id }}" user_name="{{ user_name }}">
+               
             </div>
             <div class="col-md-6">
                 <div class="card">
@@ -25,12 +30,13 @@
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
-    const adminId = "{{ user_id }}";  // Replace with the actual admin user ID
+    const adminId = "{{ user_id }}";
+    console.log(adminId);  // Check if user_id is logged correctly
     const adminChannel = new WebSocket(`ws://127.0.0.1:8000/ws/chat/${adminId}/`);
     let userName;  // Declare userName outside the DOMContentLoaded event
 
     document.addEventListener("DOMContentLoaded", function() {
-        userName = document.getElementById("admin-id").getAttribute("user_name");
+        userName = document.getElementById("user-id").getAttribute("user_name");
         console.log(userName);
         // Now you can use the userName variable as needed
     });
@@ -47,11 +53,35 @@
             // Create a customized notification element for the user's message
             let notificationElement = document.createElement('div');
             notificationElement.className = 'custom-notification';
+            notificationElement.setAttribute('data-user-id', messageData.senderId); // Set user id attribute
             notificationElement.innerHTML = `
                 <div class="alert alert-info" role="alert">
                     <strong>New Message</strong> from ${userName}: ${messageData.message}
+                    <div class="reply-container">
+                        <input type="text" class="form-control reply-input" placeholder="Type your reply">
+                        <button class="btn btn-primary btn-sm send-reply-btn">Send Reply</button>
+                    </div>
                 </div>
             `;
+
+            // Add a click event listener to each notification element
+            notificationElement.addEventListener('click', function() {
+                // Focus on the reply input when the notification is clicked
+                this.querySelector('.reply-input').focus();
+            });
+
+            // Add click event listener for the send reply button
+            notificationElement.querySelector('.send-reply-btn').addEventListener('click', function (event) {
+                // Stop the event propagation to prevent triggering the notification's click event
+                event.stopPropagation();
+                const userId = notificationElement.getAttribute('data-user-id');
+                const replyMessage = notificationElement.querySelector('.reply-input').value;
+                // Send the reply message to the user with userId
+                // You can implement the logic to send the message through WebSocket or any other communication method
+                console.log(`Sending reply to user ${userId}: ${replyMessage}`);
+                // Clear the reply input after sending the reply
+                notificationElement.querySelector('.reply-input').value = '';
+            });
 
             // Append the notification to the container
             let notificationContainer = document.getElementById('notification-container');
@@ -71,6 +101,9 @@
     }
 
     function loadNotifications() {
+        let notificationContainer = document.getElementById('notification-container');
+        notificationContainer.innerHTML = ''; // Clear the existing notifications
+
         let notifications = getNotificationsFromStorage();
 
         // Display the stored notifications
@@ -79,14 +112,37 @@
             if (notificationData.senderId) {
                 let notificationElement = document.createElement('div');
                 notificationElement.className = 'custom-notification';
+                notificationElement.setAttribute('data-user-id', notificationData.senderId); // Set user id attribute
                 notificationElement.innerHTML = `
                     <div class="alert alert-info" role="alert">
                         <strong>New Message</strong> from ${userName}: ${notificationData.message}
+                        <div class="reply-container">
+                            <input type="text" class="form-control reply-input" placeholder="Type your reply">
+                            <button class="btn btn-primary btn-sm send-reply-btn">Send Reply</button>
+                        </div>
                     </div>
                 `;
 
+                // Add a click event listener to each notification element
+                notificationElement.addEventListener('click', function() {
+                    // Focus on the reply input when the notification is clicked
+                    this.querySelector('.reply-input').focus();
+                });
+
+                // Add click event listener for the send reply button
+                notificationElement.querySelector('.send-reply-btn').addEventListener('click', function (event) {
+                    // Stop the event propagation to prevent triggering the notification's click event
+                    event.stopPropagation();
+                    const userId = notificationElement.getAttribute('data-user-id');
+                    const replyMessage = notificationElement.querySelector('.reply-input').value;
+                    // Send the reply message to the user with userId
+                    // You can implement the logic to send the message through WebSocket or any other communication method
+                    console.log(`Sending reply to user ${userId}: ${replyMessage}`);
+                    // Clear the reply input after sending the reply
+                    notificationElement.querySelector('.reply-input').value = '';
+                });
+
                 // Append the notification to the container
-                let notificationContainer = document.getElementById('notification-container');
                 notificationContainer.appendChild(notificationElement);
             }
         });
