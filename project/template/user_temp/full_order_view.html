@@ -1,0 +1,771 @@
+{%load static%}
+<!doctype html>
+<html class="no-js" lang="zxx">
+
+
+<!-- Mirrored from htmldemo.net/payne/payne/shop-list-right-sidebar.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 11 Oct 2023 15:26:47 GMT -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Bag World</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Favicons -->
+    <link rel="shortcut icon" href="{% static 'assets/img/favicon.ico'%}" type="image/x-icon">
+    <link rel="apple-touch-icon" href="{% static 'assets/img/icon.png'%}">
+
+    <!-- ************************* CSS Files ************************* -->
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{% static 'assets/css/bootstrap.css'%}">
+
+    <!-- Vendor CSS -->
+    <link rel="stylesheet" href="{% static 'assets/css/vendor.css'%}">
+
+    <!-- style css -->
+    <link rel="stylesheet" href="{% static 'assets/css/main.css'%}">
+</head>
+<style>
+    
+    .card {
+        box-shadow: 0 20px 27px 0 rgb(0 0 0 / 5%);
+    }
+    .card {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        word-wrap: break-word;
+        background-color: #fff;
+        background-clip: border-box;
+        border: 0 solid rgba(0,0,0,.125);
+        border-radius: 1rem;
+    }
+    .text-reset {
+        --bs-text-opacity: 1;
+        color: inherit!important;
+    }
+    a {
+        color: #5465ff;
+        text-decoration: none;
+    }
+</style>
+
+
+<body>
+
+   
+    <!-- Main Wrapper Start -->
+    <div class="wrapper">
+        <!-- Header Start -->
+        <div class="header__inner header--fixed">
+            <div class="container">
+                <div class="header__main">
+                    <div class="header__col header__left">
+                        <a href="/" class="logo">
+                            <figure class="logo--normal">
+                                <img src="/static/assets/img/logo/logo.png" alt="Logo">
+                            </figure>
+                            
+                        </a>
+                    </div>
+                
+                    <div class="header__col header__center">
+                        <nav class="main-navigation d-none d-lg-block">
+                            <ul class="mainmenu">
+                                <li class="mainmenu__item menu-item-has-children position-relative">
+                                    <a href="/" class="mainmenu__link">Home</a>
+                                   
+                                </li>
+                                <li class="mainmenu__item">
+                                    <a href="/shop" class="mainmenu__link">Shop</a>
+                                
+                                </li><li class="mainmenu__item menu-item-has-children position-relative">
+                                    <a href="#" class="mainmenu__link">Blog</a>
+                                    
+                                </li>
+                                <li class="mainmenu__item">
+                                    <a href="contact-us.html" class="mainmenu__link">Contact Us</a>
+                                </li>
+                            
+                                
+                            
+                                <li class="mainmenu__item menu-item-has-children position-relative">
+                                    <a href="#" class="mainmenu__link">Pages</a>
+                                    <div class="inner-menu">
+                                        <ul class="sub-menu">
+                                            <li>
+                                                <a href="{% url 'user:user_profile' %}">My Account</a>
+                                            </li>
+                                            <li>
+                                                <a href="{% url 'cart:checkout' %}">Checkout</a>
+                                            </li>
+                                            <li>
+                                                <a href="{% url 'cart:cart' %}">Cart</a>
+                                            </li>
+                                           
+                                            <li>
+                                                <a href="{% url 'cart:wishlist' %}">Wishlist</a>
+                                            </li>
+                                        </ul>
+                                        <li class="mainmenu__item">
+                                            <a class="mainmenu__link" href="#" onclick="pdf()"><i class="bi bi-printer"></i> Print Order</a></li>
+                                        </li>
+                                    </div>
+                                
+                            
+
+                            
+                            </ul>
+                        </nav>
+                    </div>
+                   
+                </div>
+            </div>
+        </div>
+        <!-- Header End -->
+
+        <!-- Breadcrumb area Start -->
+        <section class="page-title-area bg-color" data-bg-color="#f4f4f4">
+            <div class="container">
+               
+                <div class="row">
+                    <div class="col-12 text-center">
+                       
+                        <ul class="breadcrumb">
+                            <li><a href="index.html">Home</a></li>
+                            <li class="current"><span>Shop List Right Sidebar</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Breadcrumb area End -->
+                       
+
+
+                                                
+        <!-- Main Content Wrapper Start -->
+        <div class="main-content-wrapper">
+           
+            <div class="shop-page-wrapper ptb--80">
+                <div class="container">
+                    <div class="row">
+                        <div class="container-fluid">
+
+                            <div class="container">
+                              <!-- Title -->
+                              <div class="d-flex justify-content-between align-items-center py-3">
+                                <h2 class="h5 mb-0"><a href="#" class="text-muted"></a> Order #16123222</h2>
+                              </div>
+                            
+                              <!-- Main content -->
+                              <div class="row" id="tablePrint">
+                                <div class="col-lg-8" >
+                                    <form>
+                                  <!-- Details -->
+                                  <div class="card mb-4">
+                                    <div class="card-body">
+                                      <div class="mb-3 d-flex justify-content-between">
+                                        <div>
+                                          <span class="me-3">22-11-2021</span>
+                                          <span class="me-3">#16123222</span>
+                                          <span class="me-3">Visa -1234</span>
+                                          <span class="badge rounded-pill bg-info">{{order.od_status}}</span>
+                                        </div>
+                                      
+                                        
+                                      </div>
+                                      <table class="table table-borderless " >
+                                        <tbody>
+                                            {% for product_item in order.product.all %}
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex mb-2">
+                                                      
+                                                        <div class="flex-shrink-0">
+                                                          
+                                                           
+                                                            <div class="d-flex mb-2">
+                                                                <div class="flex-shrink-0">
+                                                                    {% if product_item.product_image %}
+                                                                        <img src="{{ product_item.product_image.url }}" alt="{{ product_item.product_name }}" width="35" class="img-fluid">
+                                                                        
+                                                                    {% else %}
+                                                                      
+                                                                        <img src="{% static 'path_to_default_image/default_image.jpg' %}" alt="Default Image" width="35" class="img-fluid">
+                                                                    {% endif %}
+                                                                </div>
+                                                                <div class="flex-lg-grow-1 ms-3">
+                                                                    <h6 class="small mb-0"><a href="{%url 'user:shop'%}" class="text-reset">{{ product_item.product_name }}</a></h6>
+                                                                  
+                                                                </div>
+                                                            
+                                                                <div class="flex-lg-grow-1 ms-3">
+                                                                   
+                                                                    <!-- {% if product_item.product_offer %}
+                                                                    <div class="product-container">
+                                                                        <span class="badge bg-danger discount-badge">
+                                                                            -${{ product_item.product_offer.discount_amount }}
+                                                                        </span>
+                                                                        <h1 class="actual-price">Actual Price: ${{ product_item.product_price }}</h1>  
+                                                                    </div>
+                                                                {% endif %}
+                                                                 -->
+                         
+                                                                </div>
+                                                            </div>
+                                                        
+                                                        </div>
+                                                        <div class="flex-lg-grow-1 ms-3">
+                                                           
+                                                            <h6 class="small mb-0"><a href="#" class="text-reset">{{ order.product.product_name }}</a></h6>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                
+                                          
+                                            {% endfor %}
+                                        </td>
+                                                
+                                        <td class="text-end"></td>
+                                    </tr>
+                                        </tbody>
+                                        
+                                        <tfoot>
+                                          <!-- <tr>
+                                            <td colspan="2">Subtotal</td>
+                                            <td class="text-end">${{order.product.product_price}}</td> -->
+                                          </tr>
+                                          <tr>
+                                            <td colspan="2">Shipping</td>
+                                            <td class="text-end">$20.00</td>
+                                          </tr>
+                                          <!-- <tr>
+                                            <td colspan="2">Discount (Code: NEWYEAR)</td>
+                                            <td class="text-danger text-end">-$10.00</td>
+                                          </tr> -->
+                                          <tr class="fw-bold">
+                                            <td colspan="2">TOTAL</td>
+                                            <td class="text-end">${{ order.total_price }}</td>
+                                          </tr>
+                                        </tfoot>
+                                      </table>
+                                    </div>
+                                  </div>
+                                  <!-- Payment -->
+                                  <div class="card mb-4">
+                                    <div class="card-body">
+                                      <div class="row">
+                                        <div class="col-lg-6">
+                                          <h3 class="h6">Payment Method</h3>
+                                          <p>{{ order.payment_mode }} -{{ order.payment_id }} <br>
+                    Total: ${{ order.total_price }} <span class="badge bg-success rounded-pill">{{ order.od_status }}</span></p>
+                                        </div>
+                                        <div class="col-lg-6">
+                                          <h3 class="h6">Billing address</h3>
+                                          <address>
+                                            <strong>{{ order.profile.firstname }} {{ order.profile.lastname }}</strong><br>
+                                            {{ order.profile.streetaddress }}<br>
+                                            {{ order.profile.town }}, {{ order.profile.state }} {{ order.profile.zipcode }}<br>
+                                            <abbr title="Phone">Phone:</abbr> {{ order.profile.phone }}<br>
+                                            <abbr title="Email">Email:</abbr> {{ order.profile.email }}<br>
+                                            <abbr title="Company">Company:</abbr> {{ order.profile.company_name }}<br>
+                                            <abbr title="Country">Country:</abbr> {{ order.profile.country }}
+                                        </address>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </form>
+                                </div>
+                                <div class="col-lg-4">
+                                  <!-- Customer Notes -->
+                                  <div class="card mb-4">
+                                    <div class="card-body">
+                                      <h3 class="h6">Customer Notes</h3>
+                                      <p>{{order.profile.ordernote}}</p>
+                                  </div>
+                                  <div class="card mb-4">
+                                    <!-- Shipping information -->
+                                    <div class="card-body">
+                                      <h3 class="h6">Shipping Information</h3>
+                                      <strong>FedEx</strong>
+                                      <span><a href="#" class="text-decoration-underline" target="_blank">FF1234567890</a> <i class="bi bi-box-arrow-up-right"></i> </span>
+                                      <hr>
+                                      <h3 class="h6">Address</h3>
+                                      <address>
+                                        <strong>{{ order.profile.firstname }} {{ order.profile.lastname }}</strong><br>
+                                        {{ order.profile.streetaddress }} <br>
+                                        {{ order.profile.town }}, {{ order.profile.state }} {{ order.profile.zipcode }}<br>
+                                        <!-- 1355 Market St, Suite 900<br>
+                                        San Francisco, CA 94103<br> -->
+                                        <abbr title="Phone">Phone:</abbr> {{ order.profile.phone }}
+                                      </address>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                              </div>
+ 
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Main Content Wrapper Start -->
+        
+
+        <!-- Footer Start-->
+        <footer class="footer bg-color pt--70 pt-xs--60" data-bg-color="#f4f8fa">
+            <div class="container">
+                <div class="row border-bottom pb--60 pb-sm--28 pb-xs--49">
+                    <div class="col footer-column-1 mb-sm--42">
+                        <div class="footer-widget">
+                            <div class="textwidget">
+                                <figure class="footer-logo mb--10">
+                                    <img src="/static/assets/img/logo/logo.png" alt="Logo">
+                                </figure>
+                            </div>
+                            <div class="address-widget">
+                                <address>1203 Town Center Orive #L 335458 USA</address>
+                                <a href="tel:+84112345678">+841 123 456 78</a>
+                                <a href="mailto:info@company.com">info@company.com</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col footer-column-2 mb-md--33">
+                        <div class="footer-widget">
+                            <h3 class="widget-title mb--35 mb-sm--15">Store Menu</h3>
+                            <ul class="footer-menu">
+                                <li>
+                                    <a href="shop.html">
+                                        <i class="fa fa-angle-right"></i>
+                                        <span>Best Seller</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="shop.html">
+                                        <i class="fa fa-angle-right"></i>
+                                        <span>New Arrivals</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="shop.html">
+                                        <i class="fa fa-angle-right"></i>
+                                        <span>Men</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="shop.html">
+                                        <i class="fa fa-angle-right"></i>
+                                        <span>Women</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="shop.html">
+                                        <i class="fa fa-angle-right"></i>
+                                        <span>Accessories</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col footer-column-3 mb-sm--33">
+                        <div class="footer-widget">
+                            <h3 class="widget-title mb--35 mb-sm--15">Information</h3>
+                            <ul class="footer-menu">
+                                <li>
+                                    <a href="#">
+                                        <i class="fa fa-angle-right"></i>
+                                        <span>About Us</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <i class="fa fa-angle-right"></i>
+                                        <span>Delivery Information</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <i class="fa fa-angle-right"></i>
+                                        <span>Privacy Policy</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <i class="fa fa-angle-right"></i>
+                                        <span>Terms &amp; Conditions</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <i class="fa fa-angle-right"></i>
+                                        <span>Look Books</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col footer-column-4 mb-xs--33">
+                        <div class="footer-widget">
+                            <h3 class="widget-title mb--35 mb-sm--15">Question</h3>
+                            <div class="footer-widget">
+                                <ul class="footer-menu">
+                                    <li>
+                                        <a href="#">
+                                            <i class="fa fa-angle-right"></i>
+                                            <span>Help</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="order-tracking.html">
+                                            <i class="fa fa-angle-right"></i>
+                                            <span>Track Order</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#">
+                                            <i class="fa fa-angle-right"></i>
+                                            <span>Support</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="shop.html">
+                                            <i class="fa fa-angle-right"></i>
+                                            <span>Shopping &amp; Delivery</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#">
+                                            <i class="fa fa-angle-right"></i>
+                                            <span>FAQs</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col footer-column-5">
+                        <div class="footer-widget">
+                            <h3 class="widget-title mb--35 mb-sm--15">My Account</h3>
+                            <ul class="footer-menu">
+                                <li>
+                                    <a href="my-account.html">
+                                        <i class="fa fa-angle-right"></i>
+                                        <span>My Account</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="order-tracking.html">
+                                        <i class="fa fa-angle-right"></i>
+                                        <span>Order Delivery</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="wishlist.html">
+                                        <i class="fa fa-angle-right"></i>
+                                        <span>Wishlist</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <i class="fa fa-angle-right"></i>
+                                        <span>Newsletter</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="row ptb--20">
+                    <div class="col-12 text-center">
+                        <p class="copyright-text">© Payne 2021 Made With <i class="fa fa-heart"></i> By
+                                            Hasthemes</p>
+                        <div class="social space-10">
+                            <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer" class="social__link">
+                                <i class="fa fa-facebook"></i>
+                                <span class="sr-only">Facebook</span>
+                            </a>
+                            <a href="https://www.twitter.com/" target="_blank" rel="noopener noreferrer" class="social__link">
+                                <i class="fa fa-twitter"></i>
+                                <span class="sr-only">Twitter</span>
+                            </a>
+                            <a href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer" class="social__link">
+                                <i class="fa fa-linkedin"></i>
+                                <span class="sr-only">Linkedin</span>
+                            </a>
+                            <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" class="social__link">
+                                <i class="fa fa-instagram"></i>
+                                <span class="sr-only">Instagram</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- Footer End-->
+
+        <!-- OffCanvas Menu Start -->
+        <aside class="offcanvas-navigation" id="offcanvasnav">
+            <div class="offcanvas-navigation__inner">
+                <a href="#" class="btn-close">
+                    <i class="flaticon-cross"></i>
+                    <span class="sr-only">Close Offcanvas Navigtion</span>
+                </a>
+                <div class="offcanvas-navigation__top">
+                    <ul class="offcanvas-menu">
+                        <li class="has-children">
+                            <a href="#">
+                                <span class="mm-text">Home</span>
+                            </a>
+                            
+                        </li>
+                        <li>
+                            <a href="shop.html">
+                                <span class="mm-text">New Arrivals</span>
+                            </a>
+                        </li>
+                        <li class="has-children">
+                            <a href="#">
+                                <span class="mm-text">Shop</span>
+                            </a>
+                           
+                        </li>
+                                <li class="has-children">
+                                    <a href="#">
+                                        <span class="overlay-menu__title">Single Product</span>
+                                    </a>
+                                    <ul class="sub-menu">
+                                        <li>
+                                            <a href="product-details.html">
+                                                <span class="mm-text">Tab Style 1</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="product-details-tab-style-2.html">
+                                                <span class="mm-text">Tab Style 2</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="product-details-tab-style-3.html">
+                                                <span class="mm-text">Tab Style 3</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="product-details-gallery-left.html">
+                                                <span class="mm-text">Gallery Left</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="product-details-gallery-right.html">
+                                                <span class="mm-text">Gallery Right</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="product-details-sticky-left.html">
+                                                <span class="mm-text">Sticky Left</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="product-details-sticky-right.html">
+                                                <span class="mm-text">Sticky Right</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="product-details-slider-box.html">
+                                                <span class="mm-text">Slider Box</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="product-details-slider-full-width.html">
+                                                <span class="mm-text">Slider Box Full Width</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="product-details-affiliate.html">
+                                                <span class="mm-text">Affiliate Proudct</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="product-details-variable.html">
+                                                <span class="mm-text">Variable Proudct</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="product-details-group.html">
+                                                <span class="mm-text">Group Product</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="has-children">
+                                    <a href="#">
+                                        <span class="overlay-menu__title">Shop Pages</span>
+                                    </a>
+                                    <ul class="sub-menu">
+                                        <li>
+                                            <a href="my-account.html">
+                                                <span class="mm-text">My Account</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="cart.html">
+                                                <span class="mm-text">Shopping Cart</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="checkout.html">
+                                                <span class="mm-text">Check Out</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="wishlist.html">
+                                                <span class="mm-text">Wishlist</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="order-tracking.html">
+                                                <span class="mm-text">Order tracking</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="compare.html">
+                                                <span class="mm-text">compare</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        
+                        <li class="has-children">
+                            <a href="#">
+                                <span class="mm-text">Pages</span>
+                            </a>
+                            <ul class="sub-menu">
+                                <li>
+                                    <a href="my-account.html">
+                                        <span class="mm-text">My Account</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="checkout.html">
+                                        <span class="mm-text">Checkout</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="cart.html">
+                                        <span class="mm-text">Cart</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="compare.html">
+                                        <span class="mm-text">Compare</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="order-tracking.html">
+                                        <span class="mm-text">Track Order</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="wishlist.html">
+                                        <span class="mm-text">Wishlist</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="contact-us.html">
+                                <span class="mm-text">Contact Us</span>
+                            </a>
+                        </li>
+                    
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Global Overlay Start -->
+        <div class="global-overlay"></div>
+        <!-- Global Overlay End -->
+
+        <!-- Scroll To Top Start -->
+        <a class="scroll-to-top" href="#"><i class="fa fa-angle-double-up"></i></a>
+        <!-- Scroll To Top End -->
+    
+    <!-- Main Wrapper End -->
+
+    <!-- ************************* JS Files ************************* -->
+
+    <!-- jQuery JS -->
+    <script src="/static/assets/js/vendor1.js"></script>
+    <script>
+        function pdf() {
+            const x = document.body.innerHTML;
+            const y = document.getElementById('tablePrint').innerHTML;
+            document.body.innerHTML = y;
+            window.print();
+            document.body.innerHTML = x; // Restore the original content
+        }
+      </script>
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script>
+        {% if messages %}
+            document.addEventListener('DOMContentLoaded', function() {
+                {% for message in messages %}
+                    {% if message.tags == 'success' %}
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: "top-end",
+                            showConfirmButton: false,
+                            timer: 2000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.onmouseenter = Swal.stopTimer;
+                                toast.onmouseleave = Swal.resumeTimer;
+                            }
+                        });
+    
+                        Toast.fire({
+                            icon: "success",
+                            title: "{{ message }}"
+                        });
+                    {% endif %}
+                {% endfor %}
+            });
+        {% endif %}
+    </script>
+    <script>
+    {% if messages %}
+        document.addEventListener('DOMContentLoaded', function() {
+            {% for message in messages %}
+                {% if message.tags == 'error' %}
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: "top-end",
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.onmouseenter = Swal.stopTimer;
+                            toast.onmouseleave = Swal.resumeTimer;
+                        }
+                    });
+
+                    Toast.fire({
+                        icon: "error",
+                        title: "{{ message }}"
+                    });
+                {% endif %}
+            {% endfor %}
+        });
+    {% endif %}
+</script>
+
+    <!-- Main JS -->
+    <script src="{% static 'assets/assets/js/main.js script' %}">
+
+        
+ 

@@ -6,7 +6,12 @@
 
     <form class="forms-sample" action="" enctype="multipart/form-data" method="POST">
        
+        <ul class="messages">
+            {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.error }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
 
+        </ul>
         {% csrf_token %}
         <div class="form-group">
             <label for="category_name">Category Name</label>

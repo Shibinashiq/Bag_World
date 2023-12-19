@@ -1,0 +1,172 @@
+{% block content %}
+{% load static %}
+
+<head>
+    <style>
+        .chat-container {
+            max-width: 600px;
+            margin: 50px auto;
+        }
+
+        .card {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 150px;
+        }
+
+        .card-header {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .chat-box {
+            height: 300px;
+            overflow-y: scroll;
+            border: 1px solid #ccc;
+            padding: 15px;
+            background-color: #fff;
+        }
+
+        .message {
+            margin-bottom: 15px;
+        }
+
+        .user-message {
+            background-color: #d4edda;
+            padding: 10px;
+            color: #155724;
+        }
+
+        .admin-message {
+            background-color: #cce5ff;
+            border-radius: 10px;
+            padding: 10px;
+            color: #004085;
+        }
+
+        .input-group {
+            border: 1px solid #ccc;
+            margin-top: 15px;
+        }
+
+        .input-group input {
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+    <section class="bg-img1 txt-center p-lr-15 p-tb-92">
+        <h2 class="ltext-105 cl0 txt-center">
+            <span class="text-dark">Help</span>
+        </h2>
+    </section>
+
+    <input id="logged-in-user" type="hidden" value="{{ user.id }}" data-username="{{ user.username }}">
+    <input id="recipient-user-id" type="hidden" value="2">
+<!--  -->
+    <div class="container mt-5 mb-5">
+        <div class="card">
+            <div class="card-header bg-dark">
+                <h5 class="mb-0">Help!</h5>
+            </div>
+            <div class="card-body chat-box" id="chat-box">
+                <!-- Display old messages from the server -->
+                {% for chat in user_messages %}
+                    <div class="message {% if chat.sender.id == user.id %}user-message{% else %}admin-message{% endif %}">
+                        {{ chat.message }} <br>
+                        <span class="msg-time">{{ chat.timestamp|date:"d D" }}, {{ chat.timestamp|time:"H:i" }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="card-footer">
+                <form class="message-form" id="message-form" method="POST">
+                    {%csrf_token%}
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="input-message" name="message" placeholder="Type your message...">
+                        <div class="input-group-append">
+                            <button class="btn btn-dark" type="submit">Send</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let inputMessage = document.getElementById('input-message');
+            let form = document.getElementById('message-form');
+            let userId = document.getElementById('logged-in-user').value;
+            let socket = new WebSocket(`ws://127.0.0.1:8000/ws/chat/${userId}/`);
+            let chatBox = document.getElementById('chat-box');
+            let username = document.getElementById('logged-in-user').dataset.username;
+    
+            socket.onopen = function (e) {
+                console.log('WebSocket connection opened');
+            };
+    
+            socket.onmessage = function (e) {
+                let messageData = JSON.parse(e.data);
+                console.log('Received message:', messageData); // Log the received message to the console
+    
+                let messageElement = document.createElement('div');
+                if (messageData.senderId == userId) {
+                    messageElement.className = 'user-message';
+                } else {
+                    messageElement.className = 'admin-message';
+                }
+                messageElement.innerHTML = `${messageData.message} <br><span class="msg-time">${getCurrentTime()}</span>`;
+                chatBox.appendChild(messageElement);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            };
+    
+            socket.onerror = function (e) {
+                console.log('WebSocket error:', e);
+            };
+    
+            socket.onclose = function (e) {
+                console.log('WebSocket connection closed');
+            };
+    
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                let message = inputMessage.value;
+                if (message.trim() !== '') {
+                    let data = {
+                        message: message,
+                        sender_id: userId,
+                        sender_username: username,
+                    };
+                    socket.send(JSON.stringify(data));
+                    inputMessage.value = '';
+                }
+            });
+    
+            function getCurrentTime() {
+                let now = new Date();
+                return `${now.getDate()} ${getShortMonth(now.getMonth())}, ${now.getHours()}:${now.getMinutes()}`;
+            }
+    
+            function getShortMonth(monthIndex) {
+                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                return months[monthIndex];
+            }
+    
+            // Ensure WebSocket connection is closed on page unload or logout
+            window.addEventListener('beforeunload', function () {
+                socket.close();
+            });
+        });
+    </script>
+    
+
+<!-- Closing body tag -->
+
+
+
+</body>
+
+</html>
+{% endblock %}

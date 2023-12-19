@@ -1,0 +1,59 @@
+{% extends 'admin_temp/base.html' %}
+
+{% block content %}
+<div class="card-body">
+    <h4 class="card-title">Offer Management</h4>
+    <div class="table-responsive">
+        <button class="btn btn-primary" id="add-product-button" style="background-color: #007BFF; color: #fff; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s;">
+            <a href="{% url 'admin_side:add_offer' %}" style="color: #fff; text-decoration: none;">Add Offer</a>
+        </button>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Offer Name</th>
+                    <th>Discount </th>
+                    
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <ul class="messages">
+                    {% for message in messages %}
+                    <li {% if message.tags %} class="{{ message.error }}"{% endif %}>{{ message }}</li>
+                    {% endfor %}
+        
+                </ul>
+        
+                {% for i in off %}
+                <tr>
+                    <td>{{ i.offer_name }}</td>
+                    <td>{{ i.discount_amount }}</td>
+                    <td>{{ i.start_date }}</td>
+                    <td>{{ i.end_date }}</td>
+                    <!-- <td>{{ i.end_date }}</td> -->
+                    <!-- <td>
+                        {% if coupon.is_active %}
+                            Yes
+                        {% else %}
+                            No
+                        {% endif %}
+                    </td> -->
+                    <td>
+                        <a href="{%url 'admin_side:edit_offer' i.id %}" class="btn btn-success">Edit</a>
+                        {% if not i.is_deleted %}
+                            <a href="{% url 'admin_side:offer_delete' i.id %}" class="btn btn-danger">Delete Offer</a>
+                        {% else %}
+                            <a href="{% url 'admin_side:offer_undelete' i.id %}" class="btn btn-success">Undelete Offer</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

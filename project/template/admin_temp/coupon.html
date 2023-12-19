@@ -1,0 +1,52 @@
+{% extends 'admin_temp/base.html' %}
+
+{% block content %}
+<div class="card-body">
+    <h4 class="card-title">Coupon Management</h4>
+    <div class="table-responsive">
+        <button class="btn btn-primary" id="add-product-button" style="background-color: #007BFF; color: #fff; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s;">
+            <a href="{% url 'admin_side:add_coupon' %}" style="color: #fff; text-decoration: none;">Add Coupon</a>
+        </button>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Coupon Code</th>
+                    <th>Discount</th>
+                    <th>Minimum Price</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <ul class="messages">
+                    {% for message in messages %}
+                    <li {% if message.tags %} class="{{ message.error }}"{% endif %}>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+                {% for i in coupon %}
+                <tr>
+                    <td>{{ i.coupon_code }}</td>
+                    <td>{{ i.discount }}</td>
+                    <td>{{ i.min_price }}</td>
+                    <td>{{ i.start_date }}</td>
+                    <td>{{ i.end_date }}</td>
+                    
+                    
+                    
+                    <td>
+                        <a href="{% url 'admin_side:edit_coupon' i.id %}"class="btn btn-success">Edit</a>
+                        {% if not i.is_deleted %}
+                            <a href="{% url 'admin_side:coupon_delete' i.id %}" class="btn btn-danger">Delete Coupon</a>
+                        {% else %}
+                            <a href="{% url 'admin_side:coupon_undelete' i.id %}" class="btn btn-success">Undelete Coupon</a>
+                        {% endif %}
+
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+{% endblock %}

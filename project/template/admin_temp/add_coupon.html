@@ -1,0 +1,59 @@
+{% extends 'admin_temp/base.html' %}
+{% block content %}
+
+
+
+
+<div class="card-body">
+    <h4 class="card-title">Add Coupon</h4>
+    <p class="card-description">Add a new coupon</p>
+
+    <form method="POST" enctype="multipart/form-data">
+        <ul class="messages">
+            {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+
+        {% csrf_token %}
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="coupon_code">Coupon Code</label>
+                    <input type="text" class="form-control" id="coupon_code" name="coupon_code">
+                </div>
+                <div class="form-group">
+                    <label for="discount">Discount</label>
+                    <input type="number" class="form-control" id="discount" name="discount">
+                </div>
+                <div class="form-group">
+                    <label for="min_price">Minimum Price</label>
+                    <input type="number" class="form-control" id="min_price" name="min_price">
+                </div>
+                <div class="form-group">
+                    <label for="start_date">Start Date</label>
+                    <input type="date" class="form-control" id="start_date" name="start_date">
+                </div>
+                <div class="form-group">
+                    <label for="end_date">End Date</label>
+                    <input type="date" class="form-control" id="end_date" name="end_date">
+                <!-- </div> 
+                 <div class="form-group">
+                    <label for="is_active">Is Active</label>
+                    <select class="form-control" id="is_active" name="is_active">
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                </div> -->
+            </div>
+            <button type="submit" class="btn btn-success">Save</button>
+        </div>
+
+       
+    </form>
+</div>
+
+
+
+{% endblock %} 
