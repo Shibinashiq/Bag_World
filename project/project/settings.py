@@ -118,8 +118,8 @@ DATABASES = {
         'NAME': 'bag',  # Replace with your database name
         'USER': 'postgres',  # Replace with your PostgreSQL username
         'PASSWORD': 'admin',  # Replace with your PostgreSQL password
-        'HOST': 'localhost',  # Replace with your PostgreSQL host if it's not localhost
-        'PORT': '',  
+        'HOST': '',# Replace with your PostgreSQL host if it's not localhost
+        'PORT': '5432',  
     }
 }
 
