@@ -115,11 +115,11 @@ CHANNEL_LAYERS = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'bag',  # Replace with your database name
-        'USER': 'postgres',  # Replace with your PostgreSQL username
-        'PASSWORD': 'admin',  # Replace with your PostgreSQL password
-        'HOST': '',# Replace with your PostgreSQL host if it's not localhost
-        'PORT': '5432',  
+        'NAME': 'Bagworld',
+        'USER': 'Bagworld',
+        'PASSWORD': 'Bagworld',
+        'HOST': 'bagworld.cfiy66equxip.eu-north-1.rds.amazonaws.com',
+        'PORT': '5432',
     }
 }
 

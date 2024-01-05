@@ -935,31 +935,7 @@ Hasthemes</p>
                                     "prevArrow": {"buttonClass": "slick-btn slick-prev", "iconClass": "fa fa-angle-double-left" },
                                     "nextArrow": {"buttonClass": "slick-btn slick-next", "iconClass": "fa fa-angle-double-right" }
                                 }'>
-                                <div class="item">
-                                    <figure class="product-gallery__image">
-                                        <img src="assets/img/products/product-03-270x300.jpg" alt="Product">
-                                        <span class="product-badge sale">Sale</span>
-                                    </figure>
-                                </div>
-                                <div class="item">
-                                    <figure class="product-gallery__image">
-                                        <img src="assets/img/products/product-04-270x300.jpg" alt="Product">
-                                        <span class="product-badge sale">Sale</span>
-                                    </figure>
-                                </div>
-                                <div class="item">
-                                    <figure class="product-gallery__image">
-                                        <img src="assets/img/products/product-05-270x300.jpg" alt="Product">
-                                        <span class="product-badge sale">Sale</span>
-                                    </figure>
-                                </div>
-                                <div class="item">
-                                    <figure class="product-gallery__image">
-                                        <img src="assets/img/products/product-06-270x300.jpg" alt="Product">
-                                        <span class="product-badge sale">Sale</span>
-                                    </figure>
-                                </div>
-                                </div>
+                               
                             </div>
                             <div class="col-lg-6">
                                 <div class="modal-box product-summary">
@@ -1075,77 +1051,81 @@ Hasthemes</p>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
-    $(document).ready(function () {
-        function placeOrder() {
-            var selectedPaymentMethod = document.querySelector('input[name="payment_method"]:checked');
-            console.log(selectedPaymentMethod.value, "payment_method")
-            if (!selectedPaymentMethod) {
-                alert('Please choose a payment method');
-                return;
-            }
-
-            var paymentMethod = selectedPaymentMethod.value;
-
-            if (paymentMethod === 'razorpay') {
-                var totalAmount = parseFloat(document.getElementById('totalamount').textContent); // Adjust this line based on your HTML structure
-
-                var options = {
-                    "key": "rzp_test_WHOEXgrD9IAr4I",
-                    "amount": totalAmount * 100, // Razorpay expects the amount in paisa, so multiply by 100
-                    "currency": "INR",
-                    "name": "Bag world",
-                    "description": "Thanks for buying from us",
-                    "image": "https://example.com/your_logo",
-                    "handler": function (response) {
-                        console.log(response.razorpay_payment_id);
-                        // Send the payment ID and total amount to your Django backend
-                        savePaymentDetails(response.razorpay_payment_id, totalAmount, 'razorpay');
-                    }
-                };
-
-                var rzp1 = new Razorpay(options);
-                rzp1.open();
-            } else if (paymentMethod === 'cash') {
-                // For cash payment, call the place_order URL directly
-                savePaymentDetails(null, 0, 'cash'); // Assuming totalAmount is not needed for cash payment
-            } else {
-                // Handle other payment methods as needed
-                alert('Invalid payment method');
-            }
+    function placeOrder() {
+        var selectedPaymentMethod = document.querySelector('input[name="payment_method"]:checked');
+        console.log(selectedPaymentMethod.value, "payment_method");
+        if (!selectedPaymentMethod) {
+            alert('Please choose a payment method');
+            return;
         }
 
-        function savePaymentDetails(paymentId, totalAmount, paymentMethod) {
-            const url = '/place_order/';
-            const csrfToken = "{{ csrf_token }}";
-            var addressId = document.getElementById('address_id').value;
-            console.log( addressId)
+        var paymentMethod = selectedPaymentMethod.value;
 
-            $.ajax({
-                url: url,
-                type: 'POST',
-                headers: {
-                    'X-CSRFToken': csrfToken
-                },
-                data: {
-                    payment_id: paymentId,
-                    total_amount: totalAmount,
-                    payment_method: paymentMethod,
-                    address_id: addressId
-                },
-                
-                success: function (data) {
-                    console.log('Payment details saved successfully');
-                    // Redirect to the success page or perform other actions as needed
-                    window.location.href = "{% url 'user:order_success' %}";  // Replace with the correct URL
-                },
-                error: function (error) {
-                    console.error('Failed to save payment details:', error);
+        if (paymentMethod === 'razorpay') {
+            var totalAmount = parseFloat(document.getElementById('totalamount').textContent); // Adjust this line based on your HTML structure
+
+            var options = {
+                "key": "rzp_test_WHOEXgrD9IAr4I",
+                "amount": totalAmount * 100, // Razorpay expects the amount in paisa, so multiply by 100
+                "currency": "INR",
+                "name": "Bag world",
+                "description": "Thanks for buying from us",
+                "image": "https://example.com/your_logo",
+                "handler": function (response) {
+                   // console.log(response.razorpay_payment_id);
+                    // Send the payment ID and total amount to your Django backend
+                    savePaymentDetails(response.razorpay_payment_id, totalAmount, 'razorpay');
                 }
-            });
-        }
+            };
 
+            var rzp1 = new Razorpay(options);
+            rzp1.open();
+        } else if (paymentMethod === 'cash') {
+            // For cash payment, call the place_order URL directly
+            savePaymentDetails(null, 0, 'cash'); // Assuming totalAmount is not needed for cash payment
+        } else {
+            // Handle other payment methods as needed
+            alert('Invalid payment method');
+        }
+    }
+
+    function savePaymentDetails(paymentId, totalAmount, paymentMethod) {
+        const url = '/place_order/';
+        const csrfToken = "{{ csrf_token }}";
+        var addressId = document.getElementById('address_id').value;
+console.log('Address ID:', addressId);
+        //console.log(addressId);
+        console.log('Payment ID:', paymentId);
+        console.log('Total Amount:', totalAmount);
+        console.log('Payment Method:', paymentMethod);
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken
+            },
+            data: {
+                payment_id: paymentId,
+                total_amount: totalAmount,
+                payment_method: paymentMethod,
+                address_id: addressId
+            },
+             
+            success: function (data) {
+                console.log('Payment details saved successfully');
+                // Redirect to the success page or perform other actions as needed
+                window.location.href = data.redirect_url;  // Assuming your backend sends a JSON response with a 'redirect_url' attribute
+            },
+            error: function (error) {
+                console.error('Failed to save payment details:', error);
+            }
+        });
+    } 
+
+    $(document).ready(function () {
         // Set up the button click event
-        document.querySelector('.btn-success').addEventListener('click', placeOrder);
+        $('.btn-success').on('click', placeOrder);
     });
 </script>
 
