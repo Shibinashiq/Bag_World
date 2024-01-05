@@ -580,7 +580,7 @@
                                             <p>Make your payment directly through Razorpay. Your order will not be shipped until the payment is confirmed.</p>
                                         </div>
                                     </div>
-                                    
+                                    <form>
                                     
                                        
                                         <div class="payment-group mb--10">
@@ -1069,162 +1069,87 @@ Hasthemes</p>
 
     
 
-    <!-- <script>
-        $(document).ready(function () {
-            $('#success_tic').modal({ backdrop: 'static', keyboard: false, show: false });
-    
-            // Listen for the "Place Order" button click
-            $('#place-order-btn').click(function (e) {
-                e.preventDefault(); // Prevent the form submission
-    
-                // Determine which payment method is selected
-                var selectedPaymentMethod = $('input[name="payment-method"]:checked').val();
-    
-                // Depending on the selected payment method, you can customize the success message
-                var successMessage = "";
-                if (selectedPaymentMethod === "bank") {
-                    successMessage = "Your order has been placed successfully with Direct Bank Transfer.";
-                } else if (selectedPaymentMethod === "cheque") {
-                    successMessage = "Your order has been placed successfully with Cheque Payments.";
-                } else if (selectedPaymentMethod === "cash") {
-                    successMessage = "Your order has been placed successfully with Cash on Delivery.";
-                }
-    
-                // Update the modal content with the success message
-                $('#success_tic .page-body .head h3').text("Order Placed Successfully");
-                $('#success_tic .page-body .head h4').text(successMessage);
-    
-                // Show the modal
-                $('#success_tic').modal('show');
-            });
-        });
-    </script> -->
 </body>
-
-<!-- <script>
-  // Get all the radio buttons with the class "address-radio"
-
-
-// Add a change event listener to each radio button
-addressRadios.forEach(function(radio) {
-  radio.addEventListener('change', function() {
-    if (radio.checked) {
-      console.log(radio.value); // This will log the value of the selected radio button
-    }
-  });
-});
-<!-- Include this in your order_success.html template -->
-
 
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
-    function placeOrder() {
-        var selectedPaymentMethod = document.querySelector('input[name="payment_method"]:checked');
-        console.log(selectedPaymentMethod.value, "payment_method")
-        if (!selectedPaymentMethod) {
-            alert('Please choose a payment method');
-            return;
-        }
-    
-        var paymentMethod = selectedPaymentMethod.value;
-    
-        if (paymentMethod === 'razorpay') {
-            var totalAmount = parseFloat(document.getElementById('totalamount').textContent); // Adjust this line based on your HTML structure
-    
-            var options = {
-                "key": "rzp_test_WHOEXgrD9IAr4I",
-                "amount": totalAmount * 100, // Razorpay expects the amount in paisa, so multiply by 100
-                "currency": "INR",
-                "name": "Bag world",
-                "description": "Thanks for buying from us",
-                "image": "https://example.com/your_logo",
-                "handler": function (response) {
-                    console.log(response.razorpay_payment_id);
-                    // Send the payment ID and total amount to your Django backend
-                    savePaymentDetails(response.razorpay_payment_id, totalAmount, 'razorpay');
-                }
-            };
-    
-            var rzp1 = new Razorpay(options);
-            rzp1.open();
-        } else if (paymentMethod === 'cash') {
-            // For cash payment, call the place_order URL directly
-            savePaymentDetails(null, totalAmount, 'cash');
-        } else {
-            // Handle other payment methods as needed
-            alert('Invalid payment method');
-        }
-    }
-    
-    function savePaymentDetails(paymentId, totalAmount, paymentMethod) {
-        const url = '/place_order/';
-    
-        const csrfToken = "{{ csrf_token }}";
-    
-        // Get the value of the element with ID 'address_id'
-        var addressId = document.getElementById('address_id').value;
-    
-        $.ajax({
-            url: url,
-            type: 'POST',
-            headers: {
-                'X-CSRFToken': csrfToken
-            },
-            data: {
-                payment_id: paymentId,
-                total_amount: totalAmount,
-                payment_method: paymentMethod,
-                address_id: addressId  // Use the retrieved addressId here
-            },
-            success: function (data) {
-                console.log('Payment details saved successfully');
-                // Redirect to the success page or perform other actions as needed
-                showSuccessPage();  // Call the function to show the success page
-            },
-            error: function (error) {
-                console.error('Failed to save payment details:', error);
+    $(document).ready(function () {
+        function placeOrder() {
+            var selectedPaymentMethod = document.querySelector('input[name="payment_method"]:checked');
+            console.log(selectedPaymentMethod.value, "payment_method")
+            if (!selectedPaymentMethod) {
+                alert('Please choose a payment method');
+                return;
             }
-        });
-    }
-    
-    function showSuccessPage() {
-        // Assuming you have a success page with ID 'successPage', adjust as needed
-        var successPage = document.getElementById('successPage');
-        successPage.style.display = 'block';  // Show the success page
-    }
-    
 
-    function savePaymentDetails(paymentId, totalAmount, paymentMethod) {
-        const url = '/place_order/';
-        const csrfToken = "{{ csrf_token }}";
-        var addressId = document.getElementById('address_id').value;
-    
-        $.ajax({
-            url: url,
-            type: 'POST',
-            headers: {
-                'X-CSRFToken': csrfToken
-            },
-            data: {
-                payment_id: paymentId,
-                total_amount: totalAmount,
-                payment_method: paymentMethod,
-                address_id: addressId
-            },
-            success: function (data) {
-                console.log('Payment details saved successfully');
-                // Redirect to the success page or perform other actions as needed
-                window.location.href = "{% url 'user:order_success' %}";  // Replace with the correct URL
-            },
-            error: function (error) {
-                console.error('Failed to save payment details:', error);
+            var paymentMethod = selectedPaymentMethod.value;
+
+            if (paymentMethod === 'razorpay') {
+                var totalAmount = parseFloat(document.getElementById('totalamount').textContent); // Adjust this line based on your HTML structure
+
+                var options = {
+                    "key": "rzp_test_WHOEXgrD9IAr4I",
+                    "amount": totalAmount * 100, // Razorpay expects the amount in paisa, so multiply by 100
+                    "currency": "INR",
+                    "name": "Bag world",
+                    "description": "Thanks for buying from us",
+                    "image": "https://example.com/your_logo",
+                    "handler": function (response) {
+                        console.log(response.razorpay_payment_id);
+                        // Send the payment ID and total amount to your Django backend
+                        savePaymentDetails(response.razorpay_payment_id, totalAmount, 'razorpay');
+                    }
+                };
+
+                var rzp1 = new Razorpay(options);
+                rzp1.open();
+            } else if (paymentMethod === 'cash') {
+                // For cash payment, call the place_order URL directly
+                savePaymentDetails(null, 0, 'cash'); // Assuming totalAmount is not needed for cash payment
+            } else {
+                // Handle other payment methods as needed
+                alert('Invalid payment method');
             }
-        });
-    }
-    
+        }
+
+        function savePaymentDetails(paymentId, totalAmount, paymentMethod) {
+            const url = '/place_order/';
+            const csrfToken = "{{ csrf_token }}";
+            var addressId = document.getElementById('address_id').value;
+            console.log( addressId)
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                data: {
+                    payment_id: paymentId,
+                    total_amount: totalAmount,
+                    payment_method: paymentMethod,
+                    address_id: addressId
+                },
+                
+                success: function (data) {
+                    console.log('Payment details saved successfully');
+                    // Redirect to the success page or perform other actions as needed
+                    window.location.href = "{% url 'user:order_success' %}";  // Replace with the correct URL
+                },
+                error: function (error) {
+                    console.error('Failed to save payment details:', error);
+                }
+            });
+        }
+
+        // Set up the button click event
+        document.querySelector('.btn-success').addEventListener('click', placeOrder);
+    });
 </script>
+
+
 
 
 

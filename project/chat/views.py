@@ -46,48 +46,6 @@ def admin_chat(request):
     return render(request, 'admin_temp/admin_chat.html', context)
 
 
-# @login_required
-# def admin_chatpage(request, user_id):
-       
-#     user = get_object_or_404(User, id=user_id)
-
-#     # Fetch messages for the thread
-#     thread_name = f"user_{request.user.id}_{user.id}"
-#     messages = Message.objects.filter(thread_name=thread_name).order_by('timestamp')
-
-#     context = {
-#         'user': user,
-#         'user_messages': messages,
-#     }
-
-#     return render(request, 'admin_temp/admin_chat_message.html', context)
-
-
-# def admin_chatpage(request):
-#     # Retrieve threads associated with the current user (admin)
-#     threads = Thread.objects.by_user(user=request.user).prefetch_related('chatmessage_thread')
-#     context = {
-#         'Threads': threads,
-#     }
-#     return render(request, 'admin_side/admin_chat.html', context)
-
-# def admin_chat(request, thread_id, recipient_id):
-#     # Retrieve the thread and recipient user based on thread_id and recipient_id
-    
-#     thread = get_object_or_404(Thread, id=thread_id, admin=request.user)
-#     recipient_user = get_object_or_404(User, username=recipient_id)
-    
-#     # Retrieve old messages for the thread
-#     old_messages = ChatMessage.objects.filter(thread=thread).order_by('timestamp')
-#     context = {
-#         'Thread': thread,
-#         'RecipientUser': recipient_user,
-#         'old_messages': old_messages,
-#     }
-#     return render(request, 'admin_side/admin_chat_messages.html', context)
-
-
-# views.py
 
 from django.http import JsonResponse
 
