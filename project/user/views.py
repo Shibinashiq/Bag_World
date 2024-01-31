@@ -111,44 +111,45 @@ def user_signup(request):
     return render(request,'user_temp/signup.html')
     
     
-    
 def otp_page(request):
     error_message = None
+
     if request.method == 'POST':
-        otp = request.POST['otp']
-        username = request.session['username']  
-        otp_secret_key = request.session['otp_secret_key']  # Use square brackets here
-        otp_valid_until = request.session['otp_valid_date']  # Use square brackets here
-        
+        otp = request.POST.get('otp')
+        username = request.session.get('username')  # Use get method to avoid KeyError
+        otp_secret_key = request.session.get('otp_secret_key')
+        otp_valid_until = request.session.get('otp_valid_date')
+
         if otp_secret_key and otp_valid_until is not None:
             valid_until = datetime.fromisoformat(otp_valid_until)
 
             if valid_until > datetime.now():
                 totp = pyotp.TOTP(otp_secret_key, interval=60)
                 if totp.verify(otp):
-                    
-                    username=request.session['username']
-                    password=request.session['password']
-                    email=request.session['email']
-                    
-                    # if email is not None and otp_secret_key is not None and otp_valid_until is not None:
-                    user = User.objects.create(username=username, email=email, password=make_password(password))
-                    user.save()
-                    login(request, user)
-                    if request.session['username']:
-                        del request.session['username']
-                        del request.session['password']
-                        del request.session['email']
-                        del request.session['otp_secret_key']
-                        del request.session['otp_valid_date']
-                    return redirect('user:home')
+                    if username and otp_secret_key and otp_valid_until:  # Check if username is present
+                        password = request.session.get('password')
+                        email = request.session.get('email')
+
+                        user = User.objects.create(username=username, email=email, password=make_password(password))
+                        user.save()
+                        login(request, user)
+
+                        # Clear session variables after successful login
+                        for key in ['username', 'password', 'email', 'otp_secret_key', 'otp_valid_date']:
+                            del request.session[key]
+
+                        return redirect('user:home')
+                    else:
+                        error_message = 'Oops, something went wrong'
                 else:
-                    error_message='invalid OTP'
+                    error_message = 'Invalid OTP'
             else:
-               error_message='OTP expired'
+                error_message = 'OTP expired'
         else:
-            error_message='Oops,something went wrong'
-    return render(request, 'user_temp/otp.html',{'error_message': error_message})
+            error_message = 'Oops, something went wrong'
+
+    return render(request, 'user_temp/otp.html', {'error_message': error_message})
+
 
 @login_required(login_url='user:user_login')
 def user_logout(request):
@@ -431,10 +432,17 @@ def place_order(request):
             order.save()
             cart.delete()
 
-            messages.success(request, 'Order placed successfully!')
+            data = {
+                'message': 'Order placed successfully!',
+                'redirect_url': '/order_success'  # Replace with your actual URL
+            }
+
+            # Return JsonResponse instead of redirecting
+            return JsonResponse(data)
+                
 
             # Redirect to the checkout.html page
-            return redirect('user:home')
+           
             
              # return render( 'user_temp/home.html')
 
@@ -467,12 +475,14 @@ def place_order(request):
 
             order.save()
             cart.delete()
-            messages.success(request, 'Order placed successfully!')
+            data = {
+                'message': 'Order placed successfully!',
+                'redirect_url': '/order_success'  # Replace with your actual URL
+            }
 
-            # Redirect to the checkout.html page
-            return redirect('user:home')
-
-           
+            # Return JsonResponse instead of redirecting
+            return JsonResponse(data)
+                
 
             # You can include Razorpay logic here if needed
 
@@ -511,8 +521,14 @@ def place_order(request):
             cart.delete()
             
             
-            messages.success(request, 'Order placed successfully!')
-            return render(request, 'user_temp/order_success.html')
+            data = {
+                'message': 'Order placed successfully!',
+                'redirect_url': '/order_success'  # Replace with your actual URL
+            }
+
+            # Return JsonResponse instead of redirecting
+            return JsonResponse(data)
+                
 
     return redirect('user:home')
 
