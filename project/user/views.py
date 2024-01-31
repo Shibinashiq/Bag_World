@@ -432,10 +432,17 @@ def place_order(request):
             order.save()
             cart.delete()
 
-            messages.success(request, 'Order placed successfully!')
+            data = {
+                'message': 'Order placed successfully!',
+                'redirect_url': '/order_success'  # Replace with your actual URL
+            }
+
+            # Return JsonResponse instead of redirecting
+            return JsonResponse(data)
+                
 
             # Redirect to the checkout.html page
-            return redirect('user:home')
+           
             
              # return render( 'user_temp/home.html')
 
@@ -468,12 +475,14 @@ def place_order(request):
 
             order.save()
             cart.delete()
-            messages.success(request, 'Order placed successfully!')
+            data = {
+                'message': 'Order placed successfully!',
+                'redirect_url': '/order_success'  # Replace with your actual URL
+            }
 
-            # Redirect to the checkout.html page
-            return redirect('user:home')
-
-           
+            # Return JsonResponse instead of redirecting
+            return JsonResponse(data)
+                
 
             # You can include Razorpay logic here if needed
 
@@ -512,8 +521,14 @@ def place_order(request):
             cart.delete()
             
             
-            messages.success(request, 'Order placed successfully!')
-            return render(request, 'user_temp/order_success.html')
+            data = {
+                'message': 'Order placed successfully!',
+                'redirect_url': '/order_success'  # Replace with your actual URL
+            }
+
+            # Return JsonResponse instead of redirecting
+            return JsonResponse(data)
+                
 
     return redirect('user:home')
 

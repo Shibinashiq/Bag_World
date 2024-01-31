@@ -115,10 +115,10 @@ CHANNEL_LAYERS = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'Bagworld',
-        'USER': 'Bagworld',
-        'PASSWORD': 'Bagworld',
-        'HOST': 'postgres',
+        'NAME': 'databasebag',
+        'USER': 'superuser',
+        'PASSWORD': 'superuser',
+        'HOST': 'shibin.cfiy66equxip.eu-north-1.rds.amazonaws.com',
         'PORT': '5432',
     }
 }
@@ -171,12 +171,3 @@ MEDIA_URL = '/media/'
 razor_pay_key_id='rzp_test_WHOEXgrD9IAr4I'
 
 key_secret='O117d4GaHwwPIB10RVyIcTqu'
-
-AWS_ACCESS_KEY_ID = 'your_access_key_id'
-AWS_SECRET_ACCESS_KEY = 'your_secret_access_key'
-AWS_STORAGE_BUCKET_NAME = 'your_bucket_name'
-AWS_S3_REGION_NAME = 'your_region'  # e.g., 'us-east-1'
-AWS_S3_REGION_NAME = 'your_region'  # e.g., 'us-east-1'
-AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
-AWS_DEFAULT_ACL = 'public-read'  # Set permissions for files uploaded to S3
-AWS_QUERYSTRING_AUTH = False 
