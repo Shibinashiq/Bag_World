@@ -115,14 +115,13 @@ CHANNEL_LAYERS = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'databasebag',
-        'USER': 'superuser',
-        'PASSWORD': 'superuser',
-        'HOST': 'shibin.cfiy66equxip.eu-north-1.rds.amazonaws.com',
+        'NAME': 'bag',
+        'USER': 'postgres',
+        'PASSWORD': 'admin',
+        'HOST': 'localhost',
         'PORT': '5432',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -171,3 +170,14 @@ MEDIA_URL = '/media/'
 razor_pay_key_id='rzp_test_WHOEXgrD9IAr4I'
 
 key_secret='O117d4GaHwwPIB10RVyIcTqu'
+
+
+# AWS_ACCESS_KEY_ID = ''
+# AWS_SECRET_ACCESS_KEY = ''
+# AWS_STORAGE_BUCKET_NAME = ''
+# AWS_S3_SIGNATURE_NAME = '',
+# AWS_S3_REGION_NAME = ''
+# AWS_S3_FILE_OVERWRITE = False
+# AWS_DEFAULT_ACL =  None
+# AWS_S3_VERITY = True
+# DEFAULT_FILE_STORAGE = ''
