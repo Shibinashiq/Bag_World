@@ -40,13 +40,17 @@ def admin_login(request):
             return redirect('admin_side:admin_login')
 
     return render(request, 'admin_temp/admin_login.html')
+from django.views.decorators.cache import cache_control, never_cache
 
-@user_passes_test(is_admin, login_url='admin_side:admin_login')   
+@user_passes_test(is_admin, login_url='admin_side:admin_login')
+@cache_control(no_cache=True, must_revalidate=True)
+@never_cache
 def admin_logout(request):
+    # Logout the user
     logout(request)
+    
     # Redirect to the admin login page after logging out.
     return redirect('admin_side:admin_login')
-
 # def admin_users(request):
 #     return render(request,'admin_users.html')
 
@@ -425,7 +429,7 @@ def edit_product(request, product_id):
             'product': pro,
         }
         
-        return render(request, 'admin_temp\edit_product.html', context)
+        return render(request, 'admin_temp/edit_product.html', context)
 
     else:
         messages.error(request, 'You do not have permission to edit products.')
