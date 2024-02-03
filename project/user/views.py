@@ -632,6 +632,7 @@ def wallet_item(request):
 
 
 
+
 @login_required(login_url='user:user_login')
 def add_review(request, product_id):
     product = get_object_or_404(Product, id=product_id)
@@ -640,7 +641,8 @@ def add_review(request, product_id):
         order = Order.objects.get(product=product, user=request.user, od_status='Delivered')
     except Order.DoesNotExist:
         # Handle the case where no matching order is found
-        messages.error(request,"You can only add a review for products in delivered orders.")
+        messages.error(request, "You can only add a review for products in delivered orders.")
+        return redirect('user:product_view', product_id=product_id)
 
     if request.method == 'POST':
         comment = request.POST.get('comment')
@@ -658,9 +660,7 @@ def add_review(request, product_id):
     return render(request, 'user_temp/product_view.html')
 
 
-# @login_required(login_url='user_login')
-# def success (request):
-#     return (request,'user_temp/success.html')
+
 
 
 

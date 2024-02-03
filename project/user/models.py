@@ -17,7 +17,7 @@ class Profile(models.Model):
     state = models.CharField(max_length=50)
     phone = models.CharField(max_length=10)
     email = models.EmailField()
-    ordernote = models.TextField()
+    ordernote = models.TextField(blank=True, null=True)
     company_name = models.CharField(max_length=100)  # Add company name field
     country = models.CharField(max_length=100)  # Add country field
 
