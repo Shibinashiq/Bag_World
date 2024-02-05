@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-o)nn^r!t-%e#!xhs===fj2f@&lva8@rv&ti5dxlot^m93es1y&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['bagworld.online', '51.20.120.162']
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
@@ -42,8 +42,8 @@ EMAIL_HOST_PASSWORD = 'hquwjrjywolieork'  # Your Gmail password or app-specific 
 # Application definition
 
 INSTALLED_APPS = [
-    'daphne',
-    'channels',
+    #'daphne',
+    #'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -132,7 +132,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'bag',
-        'USER': 'postgres',
+        'USER': 'bagworld',
         'PASSWORD': 'admin',
         'HOST': 'localhost',
         'PORT': '5432',
@@ -173,6 +173,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 STATIC_URL = '/static/'
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
