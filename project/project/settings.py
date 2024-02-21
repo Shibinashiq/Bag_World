@@ -42,7 +42,6 @@ EMAIL_HOST_PASSWORD = 'hquwjrjywolieork'  # Your Gmail password or app-specific 
 # Application definition
 
 INSTALLED_APPS = [
-    'daphne',
     'channels',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -134,7 +133,7 @@ DATABASES = {
         'NAME': 'bag',
         'USER': 'postgres',
         'PASSWORD': 'admin',
-        'HOST': 'localhost',
+        'HOST': 'db',
         'PORT': '5432',
     }
 }
