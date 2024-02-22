@@ -1,21 +1,23 @@
-# Use the official Python image as a base image
-FROM python:3
+# Use an image with Python  3.9 installed
+FROM python:3.9-slim
 
 # Set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE  1
+ENV PYTHONUNBUFFERED  1
 
-# Set the working directory
+# Create the working directory and set it as the working directory
+RUN mkdir -p /watch web/project/project
 WORKDIR /watch web/project/project
 
 # Copy only the requirements file to the container
 COPY requirements.txt .
 
 # Install dependencies
-RUN pip install -r requirements.txt
+RUN pip install --upgrade pip && \
+    pip install -r requirements.txt
 
 # Copy the rest of the application code
 COPY . .
 
-# Run migrations
+# Run migrations (if applicable)
 CMD ["python", "manage.py", "migrate"]
